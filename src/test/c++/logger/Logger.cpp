@@ -3,17 +3,22 @@
 
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/bind.hpp>
+#include <boost/mpl/list.hpp>
 
 #include "logger/Logger.hpp"
 #include "logger/macros.hpp"
 #include "utils/raii-helper.hpp"
 
-using namespace CoconutTools;
-
 namespace {
 
-template <class L>
-void basicTest() {
+using namespace CoconutTools;
+using namespace CoconutTools::logger;
+
+typedef boost::mpl::list<Logger, volatile Logger> LoggerTypes;
+
+BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
     std::ostringstream output;
 
     {
@@ -30,16 +35,6 @@ void basicTest() {
     }
 
     BOOST_CHECK_EQUAL(output.str(), "critical\nerror\nwarning\ninfo\n");
-}
-
-BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
-
-BOOST_AUTO_TEST_CASE(basicSTTest) {
-    basicTest<logger::Logger>();
-}
-
-BOOST_AUTO_TEST_CASE(basicMTTest) {
-    basicTest<volatile logger::Logger>();
 }
 
 BOOST_AUTO_TEST_SUITE_END();

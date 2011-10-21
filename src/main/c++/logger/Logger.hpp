@@ -15,7 +15,7 @@
 namespace CoconutTools {
 namespace logger {
 
-class Logger : concurrent::Lockable<Logger> {
+class Logger : public concurrent::Lockable<Logger> {
 private:
 
     friend class concurrent::Lockable<Logger>;
@@ -109,7 +109,7 @@ public:
     }
 
     StreamRef log(const Context& context) volatile {
-        WriteLockingPtr self = lock<WriteLock>();
+        WriteLocked self = lock();
         StreamRef result = self->log(context);
         result.loggerLock().swap(self.lock());
         return result;

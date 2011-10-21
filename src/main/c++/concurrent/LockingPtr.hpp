@@ -11,14 +11,12 @@ template <class T, class M = boost::mutex, class L = boost::unique_lock<M> >
 class LockingPtr {
 public:
 
-    typedef T Value;
-
     typedef M Mutex;
 
     typedef L Lock;
 
-    LockingPtr(volatile Value& object, Mutex& mutex) :
-        object_(const_cast<Value&>(object)),
+    LockingPtr(volatile T& object, Mutex& mutex) :
+        object_(const_cast<T&>(object)),
         lock_(mutex) {
     }
 
@@ -27,11 +25,11 @@ public:
         lock_(*rhs.lock_.mutex()) {
     }
 
-    Value& operator*() {
+    T& operator*() {
         return object_;
     }
 
-    Value* operator->() {
+    T* operator->() {
         return &object_;
     }
 
@@ -41,7 +39,7 @@ public:
 
 private:
 
-    Value& object_;
+    T& object_;
 
     Lock lock_;
 
