@@ -9,11 +9,6 @@ public:
 
     static Null null;
 
-private:
-
-    Null() {
-    }
-
 };
 
 } // namespace utils

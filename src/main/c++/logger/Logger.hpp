@@ -12,7 +12,7 @@
 #include "Level.hpp"
 #include "Context.hpp"
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace logger {
 
 class Logger : public concurrent::Lockable<Logger> {

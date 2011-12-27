@@ -7,7 +7,7 @@
 #include "LockingPtr.hpp"
 #include "LockTraits.hpp"
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace concurrent {
 
 // TODO: storage (copying) policies for lockable?

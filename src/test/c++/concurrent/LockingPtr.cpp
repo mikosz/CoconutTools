@@ -9,7 +9,7 @@
 
 #include "concurrent/LockingPtr.hpp"
 
-using namespace CoconutTools;
+using namespace coconut_tools;
 
 namespace {
 

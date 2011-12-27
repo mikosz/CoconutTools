@@ -26,25 +26,40 @@ if(Boost_FOUND)
   include_directories(${BOOST_INCLUDE_DIRS})
 endif(Boost_FOUND)
 
+# Exceptions
+
+add_library(CoconutTools_Exceptions SHARED
+    "${SOURCE_DIR}/exceptions/Backtrace.cpp"
+    "${SOURCE_DIR}/exceptions/gcc/Backtrace.cpp"
+    )
+
 # Logger
 
-set(LOGGER_OBJS
-  "logger/Logger.cpp"
-)
+add_library(CoconutTools_Logger SHARED
+    "${SOURCE_DIR}/logger/Logger.cpp"
+    )
 
-add_library(CoconutTools_Logger SHARED "${SOURCE_DIR}/${LOGGER_OBJS}")
+# Utils
+
+add_library(CoconutTools_Utils SHARED
+    "${SOURCE_DIR}/utils/Formatter.cpp"
+    "${SOURCE_DIR}/utils/Null.cpp"
+    )
 
 # Tests
 
-set(TEST_OBJS
-  "unit-tests.cpp"
-  "logger/Logger.cpp"
-)
-
-foreach(TEST_OBJ ${TEST_OBJS})
-  set(ABSOLUTE_TEST_OBJS ${TEST_SOURCE_DIR}/${TEST_OBJ} ${ABSOLUTE_TEST_OBJS})
-endforeach(TEST_OBJ ${TEST_OBJS})
-
-add_executable(unit-tests ${ABSOLUTE_TEST_OBJS})
-target_link_libraries(unit-tests ${Boost_LIBRARIES}) 
+add_executable(unit-tests
+    "${TEST_SOURCE_DIR}/unit-tests.cpp"
+    "${TEST_SOURCE_DIR}/concurrent/Lockable.cpp"
+    "${TEST_SOURCE_DIR}/concurrent/LockingPtr.cpp"
+    "${TEST_SOURCE_DIR}/design-pattern/Factory.cpp"
+    "${TEST_SOURCE_DIR}/logger/Logger.cpp"
+    "${TEST_SOURCE_DIR}/utils/Formatter.cpp"
+    "${TEST_SOURCE_DIR}/utils/raii-helper.cpp"
+    )
+    
+target_link_libraries(unit-tests ${Boost_LIBRARIES})
+target_link_libraries(unit-tests CoconutTools_Exceptions)
+target_link_libraries(unit-tests CoconutTools_Utils)
+ 
 add_custom_target(test ALL ./unit-tests DEPENDS unit-tests)

@@ -6,7 +6,7 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace concurrent {
 
 template <class MutexType>

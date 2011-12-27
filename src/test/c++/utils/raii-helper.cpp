@@ -1,13 +1,14 @@
+#include <boost/test/auto_unit_test.hpp>
+
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/bind.hpp>
 
 #include "utils/raii-helper.hpp"
 
-using namespace CoconutTools;
+using namespace coconut_tools;
 
 namespace {
 

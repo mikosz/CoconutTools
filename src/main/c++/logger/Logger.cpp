@@ -1,3 +1,3 @@
 #include "Logger.hpp"
 
-using namespace CoconutTools::logger;
+using namespace coconut_tools::logger;

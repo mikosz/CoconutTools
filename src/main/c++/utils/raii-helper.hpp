@@ -3,7 +3,7 @@
 
 #include <boost/function.hpp>
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace utils {
 
 class RaiiHelper {

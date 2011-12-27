@@ -11,8 +11,8 @@
 
 namespace {
 
-using namespace CoconutTools;
-using namespace CoconutTools::logger;
+using namespace coconut_tools;
+using namespace coconut_tools::logger;
 
 typedef boost::mpl::list<Logger, volatile Logger> LoggerTypes;
 

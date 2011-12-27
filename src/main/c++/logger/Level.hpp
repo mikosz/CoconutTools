@@ -1,7 +1,7 @@
 #ifndef COCONUTTOOLS_LOGGER_LEVEL_HPP_
 #define COCONUTTOOLS_LOGGER_LEVEL_HPP_
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace logger {
 
 class Level {

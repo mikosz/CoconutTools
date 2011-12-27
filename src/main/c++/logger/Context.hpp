@@ -5,7 +5,7 @@
 
 #include "Level.hpp"
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace logger {
 
 struct Context {

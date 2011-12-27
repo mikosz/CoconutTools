@@ -9,7 +9,7 @@
 
 #include "concurrent/Lockable.hpp"
 
-using namespace CoconutTools;
+using namespace coconut_tools;
 
 namespace {
 
@@ -23,12 +23,6 @@ const size_t SLOW_THREAD_SLEEP_TIME_MS = 10;
 template <class M>
 class IntHolder : public concurrent::Lockable<IntHolder<M>, M> {
 public:
-
-    typedef IntHolder<M> Self;
-
-    typedef typename Self::WriteLock WriteLock;
-
-    typedef typename Self::WriteLockingPtr WriteLockingPtr;
 
     IntHolder() :
         value_(0) {
@@ -51,7 +45,7 @@ private:
 template <class I, class M>
 void sleepyIncrement(volatile I& v, M& m, size_t ops, size_t sleepTimeMs) {
     for (size_t i = 0; i < ops; ++i) {
-        typename I::WriteLockingPtr ptr = v.template lock<typename I::WriteLock>();
+        typename I::WriteLocked ptr = v.lock();
         int value = ptr->value();
         if (sleepTimeMs) {
             boost::this_thread::sleep(boost::posix_time::milliseconds(sleepTimeMs));

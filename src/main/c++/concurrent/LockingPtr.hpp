@@ -4,7 +4,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/locks.hpp>
 
-namespace CoconutTools {
+namespace coconut_tools {
 namespace concurrent {
 
 template <class T, class M = boost::mutex, class L = boost::unique_lock<M> >
