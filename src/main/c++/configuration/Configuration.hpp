@@ -2,11 +2,11 @@
 #define COCONUT_TOOLS_CONFIGURATION_CONFIGURATION_HPP_
 
 #include <string>
-#include <map>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/call_traits.hpp>
 #include <boost/optional.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "configuration-exceptions.hpp"
 
@@ -16,27 +16,46 @@ namespace configuration {
 class Configuration {
 public:
 
-    typedef std::map<std::string, std::string> Values;
+    typedef boost::unordered_map<std::string, std::string> Values;
 
     Configuration(const Values& values) :
         values_(values) {
     }
 
-    template <class T>
-    T get(const std::string& key) const {
+    template<class T>
+    T getRequired(const std::string& key) const {
         Values::const_iterator it = values_.find(key);
         if (it == values_.end()) {
-            throw
+            throw MissingRequiredValue(key);
         }
         return boost::lexical_cast<T>(it->second);
     }
 
-    template <class T>
+    template<class T>
+    boost::optional<T> get(const std::string& key, const boost::optional<T>& defaultValue =
+            boost::optional<T>()) const {
+        Values::const_iterator it = values_.find(key);
+        if (it == values_.end()) {
+            return defaultValue;
+        }
+        return boost::lexical_cast<T>(it->second);
+    }
 
+    void set(const std::string& key, const std::string& value) {
+        Values::iterator it = values_.find(key);
+        if (it == values_.end()) {
+            values_.insert(std::make_pair(key, value));
+        } else {
+            it->second = value;
+        }
+    }
 
-    template <class T>
-    void set(const std::string& key, const typename boost::call_traits<T>::param_type value) {
-        values_[key] = value;
+    bool unset(const std::string& key) {
+        return values_.erase(key);
+    }
+
+    bool has(const std::string& key) const {
+        return values_.count(key);
     }
 
 private:

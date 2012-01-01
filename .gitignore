@@ -1,8 +1,19 @@
+# eclipse project files
 .cproject
 .project
 .settings
 Debug/
 Release/
+
+# build artifacts
 *.so
 *.o
 *.a
+unit-tests
+
+# cmake project files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+

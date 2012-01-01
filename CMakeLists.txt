@@ -26,6 +26,12 @@ if(Boost_FOUND)
   include_directories(${BOOST_INCLUDE_DIRS})
 endif(Boost_FOUND)
 
+# Configuration
+
+add_library(CoconutTools_Configuration SHARED
+    "${SOURCE_DIR}/configuration/configuration-exceptions.cpp"
+    )
+
 # Exceptions
 
 add_library(CoconutTools_Exceptions SHARED
@@ -50,6 +56,7 @@ add_library(CoconutTools_Utils SHARED
 
 add_executable(unit-tests
     "${TEST_SOURCE_DIR}/unit-tests.cpp"
+    "${TEST_SOURCE_DIR}/configuration/Configuration.cpp"
     "${TEST_SOURCE_DIR}/concurrent/Lockable.cpp"
     "${TEST_SOURCE_DIR}/concurrent/LockingPtr.cpp"
     "${TEST_SOURCE_DIR}/design-pattern/Factory.cpp"
@@ -60,6 +67,7 @@ add_executable(unit-tests
     
 target_link_libraries(unit-tests ${Boost_LIBRARIES})
 target_link_libraries(unit-tests CoconutTools_Exceptions)
+target_link_libraries(unit-tests CoconutTools_Configuration)
 target_link_libraries(unit-tests CoconutTools_Utils)
  
 add_custom_target(test ALL ./unit-tests DEPENDS unit-tests)
