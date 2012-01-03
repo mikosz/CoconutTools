@@ -9,6 +9,7 @@
 #include <boost/unordered_map.hpp>
 
 #include "configuration-exceptions.hpp"
+#include "Reader.hpp"
 
 namespace coconut_tools {
 namespace configuration {
@@ -20,6 +21,10 @@ public:
 
     Configuration(const Values& values) :
         values_(values) {
+    }
+
+    Configuration(const Reader& reader) {
+        reader.read(values_);
     }
 
     template<class T>

@@ -1,7 +1,8 @@
+#include <boost/test/auto_unit_test.hpp>
+
 #include <sstream>
 #include <iostream>
 
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/bind.hpp>
 #include <boost/mpl/list.hpp>
 

@@ -12,16 +12,21 @@ configure_file("src/main/cmake/version.h.in" "${TARGET_DIR}/include/version.h")
 
 # Includes
 
-include_directories("/usr/include" "src/main/c++/" "${TARGET_DIR}/include")
+include_directories("/usr/include" "${SOURCE_DIR}" "${TEST_SOURCE_DIR}" "${TARGET_DIR}/include")
+include_directories("~/tools/gmock/include/")
+include_directories("~/tools/gmock/gtest/include/")
 
 # Libraries
+
+link_directories("~/tools/gmock/lib/")
+link_directories("~/tools/gmock/gtest/lib/")
 
 # Boost
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.46 COMPONENTS thread test_exec_monitor)
+find_package(Boost 1.46 COMPONENTS thread regex filesystem system test_exec_monitor)
 if(Boost_FOUND)
   include_directories(${BOOST_INCLUDE_DIRS})
 endif(Boost_FOUND)
@@ -30,6 +35,8 @@ endif(Boost_FOUND)
 
 add_library(CoconutTools_Configuration SHARED
     "${SOURCE_DIR}/configuration/configuration-exceptions.cpp"
+    "${SOURCE_DIR}/configuration/parsers/PropertiesParser.cpp"
+    "${SOURCE_DIR}/configuration/readers/BasicReader.cpp"
     )
 
 # Exceptions
@@ -45,6 +52,13 @@ add_library(CoconutTools_Logger SHARED
     "${SOURCE_DIR}/logger/Logger.cpp"
     )
 
+# System
+
+add_library(CoconutTools_System SHARED
+    "${SOURCE_DIR}/system/SystemError.cpp"
+    "${SOURCE_DIR}/system/tmp-file.cpp"
+    )
+
 # Utils
 
 add_library(CoconutTools_Utils SHARED
@@ -57,17 +71,23 @@ add_library(CoconutTools_Utils SHARED
 add_executable(unit-tests
     "${TEST_SOURCE_DIR}/unit-tests.cpp"
     "${TEST_SOURCE_DIR}/configuration/Configuration.cpp"
+    "${TEST_SOURCE_DIR}/configuration/parsers/PropertiesParser.cpp"
+    "${TEST_SOURCE_DIR}/configuration/readers/BasicReader.cpp"
     "${TEST_SOURCE_DIR}/concurrent/Lockable.cpp"
     "${TEST_SOURCE_DIR}/concurrent/LockingPtr.cpp"
     "${TEST_SOURCE_DIR}/design-pattern/Factory.cpp"
     "${TEST_SOURCE_DIR}/logger/Logger.cpp"
+    "${TEST_SOURCE_DIR}/system/tmp-file.cpp"
     "${TEST_SOURCE_DIR}/utils/Formatter.cpp"
     "${TEST_SOURCE_DIR}/utils/raii-helper.cpp"
     )
-    
-target_link_libraries(unit-tests ${Boost_LIBRARIES})
+
 target_link_libraries(unit-tests CoconutTools_Exceptions)
 target_link_libraries(unit-tests CoconutTools_Configuration)
+target_link_libraries(unit-tests CoconutTools_System)
 target_link_libraries(unit-tests CoconutTools_Utils)
- 
+target_link_libraries(unit-tests ${Boost_LIBRARIES})
+target_link_libraries(unit-tests gmock)
+target_link_libraries(unit-tests gtest)
+
 add_custom_target(test ALL ./unit-tests DEPENDS unit-tests)
