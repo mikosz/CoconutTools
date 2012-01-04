@@ -11,7 +11,7 @@ namespace configuration {
 class Reader {
 public:
 
-    typedef boost::unordered_map<std::string, std::string> Values;
+    typedef boost::unordered_multimap<std::string, std::string> Values;
 
     virtual void read(Values& values) const = 0;
 

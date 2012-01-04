@@ -36,7 +36,7 @@ PropertiesParser::ParsedConfiguration PropertiesParser::parse() const {
         boost::smatch matches;
         if (boost::regex_match(line, EMPTY_LINE_REGEX)) {
         } else if (boost::regex_match(line, matches, CATEGORY_REGEX)) {
-            categoryPrefix = matches[1] + ".";
+            categoryPrefix = boost::trim_copy(matches[1].str()) + ".";
         } else if (boost::regex_match(line, matches, VALUE_REGEX)) {
             std::string key = boost::trim_copy(matches[1].str());
             std::string value = boost::trim_copy(matches[2].str());

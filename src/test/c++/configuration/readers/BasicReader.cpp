@@ -35,8 +35,10 @@ BOOST_AUTO_TEST_CASE(ReadsParsedValues) {
     reader.read(readValues);
 
     BOOST_CHECK_EQUAL(readValues.size(), 2);
-    BOOST_CHECK_EQUAL(readValues["key"], "value");
-    BOOST_CHECK_EQUAL(readValues["key2"], "value2");
+    BOOST_REQUIRE(readValues.count("key"));
+    BOOST_CHECK_EQUAL(readValues.find("key")->second, "value");
+    BOOST_REQUIRE(readValues.count("key2"));
+    BOOST_CHECK_EQUAL(readValues.find("key2")->second, "value2");
 }
 
 BOOST_AUTO_TEST_SUITE_END();

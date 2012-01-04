@@ -8,6 +8,7 @@
 #include <boost/optional.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "utils/Sequence.hpp"
 #include "configuration-exceptions.hpp"
 #include "Reader.hpp"
 
@@ -17,7 +18,7 @@ namespace configuration {
 class Configuration {
 public:
 
-    typedef boost::unordered_map<std::string, std::string> Values;
+    typedef boost::unordered_multimap<std::string, std::string> Values;
 
     Configuration(const Values& values) :
         values_(values) {
@@ -28,7 +29,7 @@ public:
     }
 
     template<class T>
-    T getRequired(const std::string& key) const {
+    T getRequiredValue(const std::string& key) const {
         Values::const_iterator it = values_.find(key);
         if (it == values_.end()) {
             throw MissingRequiredValue(key);
@@ -37,13 +38,17 @@ public:
     }
 
     template<class T>
-    boost::optional<T> get(const std::string& key, const boost::optional<T>& defaultValue =
+    boost::optional<T> getValue(const std::string& key, const boost::optional<T>& defaultValue =
             boost::optional<T>()) const {
         Values::const_iterator it = values_.find(key);
         if (it == values_.end()) {
             return defaultValue;
         }
         return boost::lexical_cast<T>(it->second);
+    }
+
+    utils::Sequence<Values::const_iterator> getValues(const std::string& key) const {
+        return values_.equal_range(key);
     }
 
     void set(const std::string& key, const std::string& value) {
