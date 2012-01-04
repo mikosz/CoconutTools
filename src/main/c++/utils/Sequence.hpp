@@ -22,6 +22,10 @@ public:
     }
 
     operator const std::pair<T, T>&() const {
+        return pair();
+    }
+
+    const std::pair<T, T>& pair() const {
         return pair_;
     }
 

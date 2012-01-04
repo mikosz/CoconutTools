@@ -46,15 +46,18 @@ BOOST_AUTO_TEST_CASE(setsAndUnsetsValues) {
     values.insert(std::make_pair("key", "value"));
     Configuration conf(values);
 
-    conf.set("key", "modified value");
+    conf.replace("key", "modified value");
     BOOST_CHECK_EQUAL(conf.getRequiredValue<std::string>("key"), "modified value");
 
-    conf.set("key2", "");
+    conf.insert("key2", "");
     BOOST_CHECK(conf.has("key2"));
 
-    conf.unset("key");
+    conf.insert("key2", "");
+    BOOST_CHECK_EQUAL(conf.count("key2"), 2);
+
+    conf.remove("key");
     BOOST_CHECK(!conf.has("key"));
-    conf.unset("key2");
+    conf.remove("key2");
     BOOST_CHECK(!conf.has("key2"));
 }
 
@@ -100,6 +103,16 @@ BOOST_AUTO_TEST_CASE(getsValuesRange) {
     BOOST_CHECK_EQUAL(range.current()->second, "value 3");
     range.next();
     BOOST_CHECK(range.atEnd());
+}
+
+BOOST_AUTO_TEST_CASE(throwsOnMultipleValuesWhereSingleValueExpected) {
+    Configuration::Values values;
+    values.insert(std::make_pair("key", ""));
+    values.insert(std::make_pair("key", ""));
+    Configuration conf(values);
+
+    BOOST_CHECK_THROW(conf.getRequiredValue<std::string>("key"), MultipleValuesWhereSingleValueRequired);
+    BOOST_CHECK_THROW(conf.getValue<std::string>("key"), MultipleValuesWhereSingleValueRequired);
 }
 
 BOOST_AUTO_TEST_SUITE_END();

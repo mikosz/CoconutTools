@@ -36,6 +36,29 @@ private:
 
 };
 
+class MultipleValuesWhereSingleValueRequired : public ConfigurationException {
+public:
+
+    MultipleValuesWhereSingleValueRequired(const std::string& theKey) :
+        ConfigurationException(constructMessage(theKey)),
+        key_(theKey) {
+    }
+
+    ~MultipleValuesWhereSingleValueRequired() throw() {
+    }
+
+    const std::string& key() const {
+        return key_;
+    }
+
+private:
+
+    std::string key_;
+
+    static std::string constructMessage(const std::string& key);
+
+};
+
 } // namespace configuration
 } // namespace coconut_tools
 

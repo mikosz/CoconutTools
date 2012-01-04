@@ -30,9 +30,14 @@ public:
 
     template<class T>
     T getRequiredValue(const std::string& key) const {
-        Values::const_iterator it = values_.find(key);
-        if (it == values_.end()) {
+        utils::Sequence<Values::const_iterator> range = getValues(key);
+        if (range.atEnd()) {
             throw MissingRequiredValue(key);
+        }
+        Values::const_iterator it = range.current();
+        range.next();
+        if (!range.atEnd()) {
+            throw MultipleValuesWhereSingleValueRequired(key);
         }
         return boost::lexical_cast<T>(it->second);
     }
@@ -40,9 +45,14 @@ public:
     template<class T>
     boost::optional<T> getValue(const std::string& key, const boost::optional<T>& defaultValue =
             boost::optional<T>()) const {
-        Values::const_iterator it = values_.find(key);
-        if (it == values_.end()) {
+        utils::Sequence<Values::const_iterator> range = getValues(key);
+        if (range.atEnd()) {
             return defaultValue;
+        }
+        Values::const_iterator it = range.current();
+        range.next();
+        if (!range.atEnd()) {
+            throw MultipleValuesWhereSingleValueRequired(key);
         }
         return boost::lexical_cast<T>(it->second);
     }
@@ -51,20 +61,24 @@ public:
         return values_.equal_range(key);
     }
 
-    void set(const std::string& key, const std::string& value) {
-        Values::iterator it = values_.find(key);
-        if (it == values_.end()) {
-            values_.insert(std::make_pair(key, value));
-        } else {
-            it->second = value;
-        }
+    void insert(const std::string& key, const std::string& value) {
+        values_.insert(std::make_pair(key, value));
     }
 
-    bool unset(const std::string& key) {
+    void replace(const std::string& key, const std::string& value) {
+        remove(key);
+        insert(key, value);
+    }
+
+    bool remove(const std::string& key) {
         return values_.erase(key);
     }
 
     bool has(const std::string& key) const {
+        return values_.count(key);
+    }
+
+    size_t count(const std::string& key) const {
         return values_.count(key);
     }
 
