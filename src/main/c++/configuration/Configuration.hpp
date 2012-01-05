@@ -82,6 +82,10 @@ public:
         return values_.count(key);
     }
 
+    const Values& values() const {
+        return values_;
+    }
+
 private:
 
     Values values_;

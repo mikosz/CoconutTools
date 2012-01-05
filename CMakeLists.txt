@@ -71,6 +71,7 @@ add_library(CoconutTools_Utils SHARED
 add_executable(unit-tests
     "${TEST_SOURCE_DIR}/unit-tests.cpp"
     "${TEST_SOURCE_DIR}/configuration/Configuration.cpp"
+    "${TEST_SOURCE_DIR}/configuration/ConfigurationUpdater.cpp"
     "${TEST_SOURCE_DIR}/configuration/parsers/PropertiesParser.cpp"
     "${TEST_SOURCE_DIR}/configuration/readers/BasicReader.cpp"
     "${TEST_SOURCE_DIR}/concurrent/Lockable.cpp"

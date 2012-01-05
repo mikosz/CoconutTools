@@ -15,3 +15,12 @@ std::string MultipleValuesWhereSingleValueRequired::constructMessage(const std::
     oss << "Multiple values found where single value was required for key \"" << key << "\"";
     return oss.str();
 }
+
+std::string ConfigurationValueNotUpdateable::constructMessage(const std::string& key,
+        const std::string& oldValue, const std::string& newValue) {
+    std::ostringstream oss;
+    oss << "Invalid configuration update for key \"" << key << "\" "
+            "from value \"" << oldValue << "\" "
+            "to value\"" << newValue << "\"";
+    return oss.str();
+}
