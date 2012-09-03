@@ -6,13 +6,14 @@
 #include <boost/function.hpp>
 #include <boost/unordered_map.hpp>
 
-#include "Configuration.hpp"
-
 namespace coconut_tools {
 namespace configuration {
 
+template <class ConfigurationType>
 class ConfigurationUpdater {
 public:
+
+    typedef ConfigurationType Configuration;
 
     typedef boost::function<void (const Configuration&)> VerifyFunc;
 

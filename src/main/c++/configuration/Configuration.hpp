@@ -1,94 +1,128 @@
 #ifndef COCONUT_TOOLS_CONFIGURATION_CONFIGURATION_HPP_
 #define COCONUT_TOOLS_CONFIGURATION_CONFIGURATION_HPP_
 
-#include <string>
+#include <vector>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/call_traits.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/ref.hpp>
+#include <boost/unordered_set.hpp>
 #include <boost/optional.hpp>
-#include <boost/unordered_map.hpp>
 
-#include "utils/Sequence.hpp"
 #include "configuration-exceptions.hpp"
-#include "Reader.hpp"
 
 namespace coconut_tools {
 namespace configuration {
 
+/**
+ * Generic configuration interface. Design to support both simple key-value configurations as well as
+ * structured configurations, such as ones created by xml documents.
+ */
+template <class KeyType, class ValueType>
 class Configuration {
 public:
 
-    typedef boost::unordered_multimap<std::string, std::string> Values;
+    typedef KeyType Key;
 
-    Configuration(const Values& values) :
-        values_(values) {
+    typedef ValueType Value;
+
+    typedef typename boost::call_traits<Key>::param_type KeyParam;
+
+    typedef typename boost::call_traits<Value>::param_type ValueParam;
+
+    typedef boost::shared_ptr<Configuration<Key, Value> > Ptr;
+
+    typedef boost::shared_ptr<const Configuration<Key, Value> > ConstPtr;
+
+    virtual ~Configuration() {
     }
 
-    Configuration(const Reader& reader) {
-        reader.read(values_);
+    /**
+     * Clear the configuration.
+     *
+     * Postconditions: empty() == true
+     */
+    virtual void clear() = 0;
+
+    /**
+     * Inform whether the configuration is empty.
+     *
+     * @return bool - true iff for all keys k count(k) == 0.
+     */
+    virtual bool empty() const = 0;
+
+    /**
+     * Returns the number of occurences of the provided key in the configuration.
+     *
+     * @param key - the key to look for in the configuration
+     * @return size_t - the number of occurences of key in the configuration
+     */
+    virtual size_t count(const KeyParam key) const = 0;
+
+    /**
+     * Returns a single value specified for the provided key. If none or multiple values are specified,
+     * throws a relevant exception.
+     *
+     * @param key - the key to look for in the configuration
+     * @return const Value& - the value specified for key
+     * @throws MissingRequiredValue - iff count(key) == 0
+     * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
+     */
+    virtual const Value& get(const KeyParam key) const = 0;
+
+    /**
+     * Returns all values specified for the provided key. Does not clear values beforehand.
+     *
+     * @param key - the key to look for in the configuration
+     * @param values[out] - references to all the values specified for key
+     */
+    virtual void getAll(const KeyParam key,
+            std::vector<boost::reference_wrapper<const Value> >* values) const = 0;
+
+    /**
+     * Sets the value for the provided key, overwriting the existing values.
+     *
+     * Postcondition: get(key) == value
+     */
+    virtual void set(const KeyParam key, const ValueParam value) = 0;
+
+    /**
+     * Adds another value for the provided key.
+     *
+     * Precondition: count(key) == n
+     * Postcondition: count(key) == n + 1 and getAll(key) contains value
+     */
+    virtual void add(const KeyParam key, const ValueParam value) = 0;
+
+    /**
+     * Remove all occurences of the provided key.
+     *
+     * Postcondition: count(key) == 0
+     *
+     * @param key - the key to look for in the configuration
+     */
+    virtual void erase(const KeyParam key) = 0;
+
+    /**
+     * Returns all the keys existing in the current configuration. Does not clear k beforehand.
+     *
+     * @param k[out] - a set of references to all keys in the current configuration
+     */
+    virtual void keys(boost::unordered_set<boost::reference_wrapper<const Key> >* k) const = 0;
+
+    /**
+     * Returns the value specified for the given key or defaultValue if no value is specified.
+     *
+     * @param key - the key to look for in the configuration
+     * @param defaultValue - the defaultValue which will be returned if count(key) == 0
+     * @return boost::optional<const Value&> - the value specified for key, or defaultValue if count(key) == 0
+     * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
+     */
+    boost::optional<const Value&> getOptional(const KeyParam key, boost::optional<const Value&> defaultValue =
+            boost::optional<const Value&>()) {
+        return count(key) ? get(key) : defaultValue;
     }
-
-    template<class T>
-    T getRequiredValue(const std::string& key) const {
-        utils::Sequence<Values::const_iterator> range = getValues(key);
-        if (range.atEnd()) {
-            throw MissingRequiredValue(key);
-        }
-        Values::const_iterator it = range.current();
-        range.next();
-        if (!range.atEnd()) {
-            throw MultipleValuesWhereSingleValueRequired(key);
-        }
-        return boost::lexical_cast<T>(it->second);
-    }
-
-    template<class T>
-    boost::optional<T> getValue(const std::string& key, const boost::optional<T>& defaultValue =
-            boost::optional<T>()) const {
-        utils::Sequence<Values::const_iterator> range = getValues(key);
-        if (range.atEnd()) {
-            return defaultValue;
-        }
-        Values::const_iterator it = range.current();
-        range.next();
-        if (!range.atEnd()) {
-            throw MultipleValuesWhereSingleValueRequired(key);
-        }
-        return boost::lexical_cast<T>(it->second);
-    }
-
-    utils::Sequence<Values::const_iterator> getValues(const std::string& key) const {
-        return values_.equal_range(key);
-    }
-
-    void insert(const std::string& key, const std::string& value) {
-        values_.insert(std::make_pair(key, value));
-    }
-
-    void replace(const std::string& key, const std::string& value) {
-        remove(key);
-        insert(key, value);
-    }
-
-    bool remove(const std::string& key) {
-        return values_.erase(key);
-    }
-
-    bool has(const std::string& key) const {
-        return values_.count(key);
-    }
-
-    size_t count(const std::string& key) const {
-        return values_.count(key);
-    }
-
-    const Values& values() const {
-        return values_;
-    }
-
-private:
-
-    Values values_;
 
 };
 

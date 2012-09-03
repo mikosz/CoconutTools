@@ -101,6 +101,50 @@ private:
 
 };
 
+class BadValueType : public ConfigurationException {
+public:
+
+    template <class T>
+    BadValueType(const std::string& key, const std::string& value, T*) :
+        ConfigurationException(constructMessage<T>(key, value)),
+        key_(key),
+        value_(value),
+        type_(typeid(T).name()) {
+    }
+
+    ~BadValueType() throw() {
+    }
+
+    const std::string& key() const {
+        return key_;
+    }
+
+    const std::string& value() const {
+        return value_;
+    }
+
+    const std::string& type() const {
+        return type_;
+    }
+
+private:
+
+    template <class T>
+    static std::string constructMessage(const std::string& key, const std::string& value) {
+        std::ostringstream oss;
+        oss << "Value \"" << value << "\" specified for key \"" << key
+                << "\" is incompatible with requested type \"" << typeid(T).name() << "\"";
+        return oss.str();
+    }
+
+    std::string key_;
+
+    std::string value_;
+
+    std::string type_;
+
+};
+
 } // namespace configuration
 } // namespace coconut_tools
 
