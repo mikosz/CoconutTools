@@ -9,16 +9,20 @@ namespace configuration {
 
 template <class StringType>
 class StringConfiguration : public Configuration<StringType, StringType> {
+private:
+
+    typedef Configuration<StringType, StringType> Super;
+
 public:
 
     template <class T>
-    T getAs(const KeyParam key) const {
+    T getAs(const typename Super::KeyParam key) const {
         return as<T>(key, get(key));
     }
 
     template <class C>
-    void getAllAs(C* values, const KeyParam key) const {
-        std::vector<boost::reference_wrapper<const Value> > sourceValues;
+    void getAllAs(C* values, const typename Super::KeyParam key) const {
+        std::vector<boost::reference_wrapper<const typename Super::Value> > sourceValues;
         getAll(&sourceValues, key);
         std::transform(sourceValues.begin(), sourceValues.end(), std::inserter(*values, values->end()),
                 boost::bind(&as<typename C::value_type>, key, _1));
@@ -27,7 +31,7 @@ public:
 private:
 
     template <class T>
-    static T as(const KeyParam key, const ValueParam value) {
+    static T as(const typename Super::KeyParam key, const typename Super::ValueParam value) {
         try {
             return boost::lexical_cast<T>(value);
         } catch (const boost::bad_lexical_cast&) {

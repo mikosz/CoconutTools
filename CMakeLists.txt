@@ -8,18 +8,17 @@ set(SOURCE_DIR "src/main/c++")
 set(TEST_SOURCE_DIR "src/test/c++")
 set(TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
 
+set(CMAKE_CXX_FLAGS "-ggdb -O0")
+
 configure_file("src/main/cmake/version.h.in" "${TARGET_DIR}/include/version.h")
 
 # Includes
 
 include_directories("/usr/include" "${SOURCE_DIR}" "${TEST_SOURCE_DIR}" "${TARGET_DIR}/include")
+include_directories("~/tools/gmock/")
 include_directories("~/tools/gmock/include/")
+include_directories("~/tools/gmock/gtest/")
 include_directories("~/tools/gmock/gtest/include/")
-
-# Libraries
-
-link_directories("~/tools/gmock/lib/")
-link_directories("~/tools/gmock/gtest/lib/")
 
 # Boost
 
@@ -81,6 +80,8 @@ add_executable(unit-tests
     "${TEST_SOURCE_DIR}/system/tmp-file.cpp"
     "${TEST_SOURCE_DIR}/utils/Formatter.cpp"
     "${TEST_SOURCE_DIR}/utils/raii-helper.cpp"
+    "~/tools/gmock/src/gmock-all.cc"
+    "~/tools/gmock/gtest/src/gtest-all.cc"
     )
 
 target_link_libraries(unit-tests CoconutTools_Exceptions)
@@ -88,7 +89,5 @@ target_link_libraries(unit-tests CoconutTools_Configuration)
 target_link_libraries(unit-tests CoconutTools_System)
 target_link_libraries(unit-tests CoconutTools_Utils)
 target_link_libraries(unit-tests ${Boost_LIBRARIES})
-target_link_libraries(unit-tests gmock)
-target_link_libraries(unit-tests gtest)
 
 add_custom_target(test ALL ./unit-tests DEPENDS unit-tests)

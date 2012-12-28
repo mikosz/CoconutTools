@@ -8,10 +8,13 @@
 namespace coconut_tools {
 namespace configuration {
 
+template <class ConfigurationType>
 class Configurable {
 protected:
 
-    Configurable(ConfigurationUpdater& configurationUpdater) :
+    typedef ConfigurationType Configuration;
+
+    Configurable(ConfigurationUpdater<Configuration>& configurationUpdater) :
         configurationUpdater_(configurationUpdater) {
         configurationUpdater_.registerListener(
                 this,
@@ -29,7 +32,7 @@ protected:
 
 private:
 
-    ConfigurationUpdater& configurationUpdater_;
+    ConfigurationUpdater<Configuration>& configurationUpdater_;
 
 };
 

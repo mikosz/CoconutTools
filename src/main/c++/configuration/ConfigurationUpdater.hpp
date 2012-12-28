@@ -25,6 +25,7 @@ public:
         if (!listeners_.empty()) {
             // This is a serious logic error which would cause a segmentation fault.
             // Not throwing an exception as this is a destructor.
+            // XXX: Log error here!
             std::abort();
         }
     }
@@ -37,15 +38,7 @@ public:
         listeners_.erase(listener);
     }
 
-    void update(const Configuration& configuration) {
-        Listeners::iterator it, end = listeners_.end();
-        for (it = listeners_.begin(); it != end; ++it) {
-            it->second.verify(configuration);
-        }
-        for (it = listeners_.begin(); it != end; ++it) {
-            it->second.update(configuration);
-        }
-    }
+    void update(const Configuration& configuration);
 
 private:
 
@@ -67,6 +60,17 @@ private:
     Listeners listeners_;
 
 };
+
+template<class ConfigurationType>
+void ConfigurationUpdater<ConfigurationType>::update(const Configuration& configuration) {
+    typename Listeners::iterator it, end = listeners_.end();
+    for (it = listeners_.begin(); it != end; ++it) {
+        it->second.verify(configuration);
+    }
+    for (it = listeners_.begin(); it != end; ++it) {
+        it->second.update(configuration);
+    }
+}
 
 }  // namespace configuration
 }  // namespace coconut_tools

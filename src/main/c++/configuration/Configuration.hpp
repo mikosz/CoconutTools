@@ -21,6 +21,23 @@ namespace configuration {
  */
 template <class KeyType, class ValueType>
 class Configuration {
+private:
+
+    struct ReferenceHash {
+        size_t operator() (const boost::reference_wrapper<const KeyType> keyReference) const {
+            return boost::hash_value(keyReference.get());
+        }
+    };
+
+    struct ReferenceEqual {
+        bool operator() (
+                const boost::reference_wrapper<const KeyType> lhs,
+                const boost::reference_wrapper<const KeyType> rhs
+                ) const {
+            return std::equal_to<KeyType>()(lhs.get(), rhs.get());
+        }
+    };
+
 public:
 
     typedef KeyType Key;
@@ -30,6 +47,10 @@ public:
     typedef typename boost::call_traits<Key>::param_type KeyParam;
 
     typedef typename boost::call_traits<Value>::param_type ValueParam;
+
+    typedef boost::unordered_set<boost::reference_wrapper<const Key>, ReferenceHash, ReferenceEqual> KeyRefs;
+
+    typedef std::vector<boost::reference_wrapper<const Value> > ValueRefs;
 
     typedef boost::shared_ptr<Configuration<Key, Value> > Ptr;
 
@@ -77,8 +98,7 @@ public:
      * @param key - the key to look for in the configuration
      * @param values[out] - references to all the values specified for key
      */
-    virtual void getAll(const KeyParam key,
-            std::vector<boost::reference_wrapper<const Value> >* values) const = 0;
+    virtual void getAll(const KeyParam key, ValueRefs* values) const = 0;
 
     /**
      * Sets the value for the provided key, overwriting the existing values.
@@ -109,7 +129,7 @@ public:
      *
      * @param k[out] - a set of references to all keys in the current configuration
      */
-    virtual void keys(boost::unordered_set<boost::reference_wrapper<const Key> >* k) const = 0;
+    virtual void keys(KeyRefs* k) const = 0;
 
     /**
      * Returns the value specified for the given key or defaultValue if no value is specified.

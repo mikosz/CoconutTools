@@ -18,7 +18,7 @@ namespace {
 bool createDir(const boost::filesystem::path& path) {
     try {
         return boost::filesystem::create_directories(path);
-    } catch (const boost::filesystem::basic_filesystem_error<boost::filesystem::path>&) {
+    } catch (const boost::filesystem::filesystem_error&) {
         if (boost::filesystem::exists(path) && !boost::filesystem::is_directory(path)) {
             return false;
         } else {

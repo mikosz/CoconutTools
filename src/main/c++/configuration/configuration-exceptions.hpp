@@ -1,6 +1,8 @@
 #ifndef COCONUT_TOOLS_CONFIGURATION_CONFIGURATION_EXCEPTIONS_HPP_
 #define COCONUT_TOOLS_CONFIGURATION_CONFIGURATION_EXCEPTIONS_HPP_
 
+#include <typeinfo>
+
 #include <boost/call_traits.hpp>
 
 #include "exceptions/RuntimeError.hpp"

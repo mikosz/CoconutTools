@@ -5,9 +5,11 @@
 #include <iterator>
 
 #include <boost/unordered_map.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "StringConfiguration.hpp"
 #include "Reader.hpp"
+#include "utils/Sequence.hpp"
 
 namespace coconut_tools {
 namespace configuration {
@@ -18,9 +20,16 @@ namespace configuration {
  */
 template<class KeyType, class ValueType>
 class FlatConfiguration: public detail::StringConfigurationSuperclassTraits<KeyType, ValueType>::Super {
+private:
+
+    typedef typename detail::StringConfigurationSuperclassTraits<KeyType, ValueType>::Super Super;
+
 public:
 
-    typedef boost::unordered_multimap<Key, Value> Values;
+    typedef boost::unordered_multimap<typename Super::Key, typename Super::Value> Values;
+
+    FlatConfiguration() {
+    }
 
     FlatConfiguration(const Values& values) :
         values_(values) {
@@ -38,51 +47,61 @@ public:
         return values_.empty();
     }
 
-    size_t count(const KeyParam key) const {
+    size_t count(const typename Super::KeyParam key) const {
         return values_.count(key);
     }
 
-    const Value& get(const KeyParam key) const {
-        utils::Sequence<Values::const_iterator> range = getValues(key);
+    const typename Super::Value& get(const typename Super::KeyParam key) const {
+        utils::Sequence<typename Values::const_iterator> range = values_.equal_range(key);
         if (range.atEnd()) {
-            throw MissingRequiredValue(key);
+            throw MissingRequiredValue(boost::lexical_cast<std::string>(key));
         }
-        Values::const_iterator it = range.current();
+        typename Values::const_iterator it = range.current();
         range.next();
         if (!range.atEnd()) {
-            throw MultipleValuesWhereSingleValueRequired(key);
+            throw MultipleValuesWhereSingleValueRequired(boost::lexical_cast<std::string>(key));
         }
         return it->second;
     }
 
-    void getAll(const KeyParam key, std::vector<boost::reference_wrapper<const Value> >* values) const {
-        std::pair<Values::const_iterator, Values::const_iterator> range = values_.equal_range(key);
-        std::transform(range.first, range.second, std::back_inserter(*values), &boost::ref<const Value>);
+    void getAll(
+            const typename Super::KeyParam key,
+            typename Super::ValueRefs* values
+            ) const {
+        utils::Sequence<typename Values::const_iterator> range = values_.equal_range(key);
+        std::transform(range.pair().first, range.pair().second, std::back_inserter(*values),
+                &valueCRef);
     }
 
-    void set(const KeyParam key, const ValueParam value) {
+    void set(const typename Super::KeyParam key, const typename Super::ValueParam value) {
         erase(key);
         add(key, value);
     }
 
-    void add(const KeyParam key, const ValueParam value) {
+    void add(const typename Super::KeyParam key, const typename Super::ValueParam value) {
         values_.insert(std::make_pair(key, value));
     }
 
-    bool erase(const KeyParam key) {
-        return values_.erase(key);
+    void erase(const typename Super::KeyParam key) {
+        values_.erase(key);
     }
 
-    void keys(boost::unordered_set<boost::reference_wrapper<const Key> >* k) const {
-        std::transform(values_.begin(), values_.end(), std::back_inserter(*k), &keyCRef);
+    void keys(typename Super::KeyRefs* k) const {
+        std::transform(values_.begin(), values_.end(), std::inserter(*k, k->end()), &keyCRef);
     }
 
 private:
 
     Values values_;
 
-    static boost::reference_wrapper<const Key> keyCRef(const Values::value_type& value) {
+    static boost::reference_wrapper<const typename Super::Key> keyCRef(
+            const typename Values::value_type& value) {
         return boost::ref(value.first);
+    }
+
+    static boost::reference_wrapper<const typename Super::Value> valueCRef(
+            const typename Values::value_type& value) {
+        return boost::ref(value.second);
     }
 
 };
