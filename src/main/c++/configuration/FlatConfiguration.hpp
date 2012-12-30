@@ -6,10 +6,13 @@
 
 #include <boost/unordered_map.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/bind.hpp>
 
 #include "StringConfiguration.hpp"
 #include "Reader.hpp"
 #include "utils/Sequence.hpp"
+#include "utils/pointee.hpp"
+#include "utils/Extractor.hpp"
 
 namespace coconut_tools {
 namespace configuration {
@@ -26,12 +29,12 @@ private:
 
 public:
 
-    typedef boost::unordered_multimap<typename Super::Key, typename Super::Value> Values;
+    typedef boost::unordered_multimap<typename Super::Key, typename Super::Value> Storage;
 
     FlatConfiguration() {
     }
 
-    FlatConfiguration(const Values& values) :
+    FlatConfiguration(const Storage& values) :
         values_(values) {
     }
 
@@ -51,12 +54,12 @@ public:
         return values_.count(key);
     }
 
-    const typename Super::Value& get(const typename Super::KeyParam key) const {
-        utils::Sequence<typename Values::const_iterator> range = values_.equal_range(key);
+    typename Super::Value get(const typename Super::KeyParam key) const {
+        utils::Sequence<typename Storage::const_iterator> range = values_.equal_range(key);
         if (range.atEnd()) {
             throw MissingRequiredValue(boost::lexical_cast<std::string>(key));
         }
-        typename Values::const_iterator it = range.current();
+        typename Storage::const_iterator it = range.current();
         range.next();
         if (!range.atEnd()) {
             throw MultipleValuesWhereSingleValueRequired(boost::lexical_cast<std::string>(key));
@@ -66,11 +69,16 @@ public:
 
     void getAll(
             const typename Super::KeyParam key,
-            typename Super::ValueRefs* values
+            typename Super::Values* valuesParam
             ) const {
-        utils::Sequence<typename Values::const_iterator> range = values_.equal_range(key);
-        std::transform(range.pair().first, range.pair().second, std::back_inserter(*values),
-                &valueCRef);
+        typename Super::Values& values = *valuesParam;
+        utils::Sequence<typename Storage::const_iterator> range = values_.equal_range(key);
+        std::transform(
+                range.pair().first,
+                range.pair().second,
+                std::back_inserter(values),
+                boost::bind(utils::makeExtractor(&Storage::value_type::second), _1)
+        );
     }
 
     void set(const typename Super::KeyParam key, const typename Super::ValueParam value) {
@@ -86,23 +94,19 @@ public:
         values_.erase(key);
     }
 
-    void keys(typename Super::KeyRefs* k) const {
-        std::transform(values_.begin(), values_.end(), std::inserter(*k, k->end()), &keyCRef);
+    void keys(typename Super::Keys* keysParam) const {
+        typename Super::Keys& k = utils::pointee(keysParam);
+        std::transform(
+                values_.begin(),
+                values_.end(),
+                std::inserter(k, k.end()),
+                boost::bind(utils::makeExtractor(&Storage::value_type::first), _1)
+        );
     }
 
 private:
 
-    Values values_;
-
-    static boost::reference_wrapper<const typename Super::Key> keyCRef(
-            const typename Values::value_type& value) {
-        return boost::ref(value.first);
-    }
-
-    static boost::reference_wrapper<const typename Super::Value> valueCRef(
-            const typename Values::value_type& value) {
-        return boost::ref(value.second);
-    }
+    Storage values_;
 
 };
 

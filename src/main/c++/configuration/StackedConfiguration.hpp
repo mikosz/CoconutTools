@@ -39,7 +39,7 @@ public:
     }
 
     void flatten(typename Super::Ptr target) {
-        boost::unordered_set<boost::reference_wrapper<const typename Super::Key> > k;
+        typename Super::Keys k;
         keys(&k);
         std::for_each(k.begin(), k.end(), boost::bind(&copyAll, this, _1, target));
         stack_.clear();
@@ -48,14 +48,14 @@ public:
 
     void clear() {
         Layer& top = stack_.back();
-        typename Super::KeyRefs k;
+        typename Super::Keys k;
         top.configuration_->keys(&k);
         std::copy(k.begin(), k.end(), std::inserter(top.removed_, top.removed_.end()));
         top.configuration_->clear();
     }
 
     bool empty() const {
-        typename Super::KeyRefs k;
+        typename Super::Keys k;
         keys(&k);
         return k.empty();
     }
@@ -68,8 +68,8 @@ public:
         );
     }
 
-    const typename Super::Value& get(const typename Super::KeyParam key) const {
-        std::vector<boost::reference_wrapper<const typename Super::Value> > values;
+    typename Super::Value get(const typename Super::KeyParam key) const {
+        typename Super::Values values;
         getAll(key, &values);
         if (values.empty()) {
             throw MissingRequiredValue(boost::lexical_cast<std::string>(key));
@@ -82,7 +82,7 @@ public:
 
     void getAll(
             const typename Super::KeyParam key,
-            typename Super::ValueRefs* values
+            typename Super::Values* values
             ) const {
         firstWith(
                 key,
@@ -113,14 +113,14 @@ public:
         stack_.back().removed_.insert(key);
     }
 
-    void keys(typename Super::KeyRefs* keysPtr) const {
-        typename Super::KeyRefs& keys = utils::pointee(keysPtr);
+    void keys(typename Super::Keys* keysPtr) const {
+        typename Super::Keys& keys = utils::pointee(keysPtr);
 
         typename Stack::const_iterator it, end = stack_.end();
         for (it = stack_.begin(); it != end; ++it) {
             typename Layer::Removed::const_iterator removedIt, removedEnd = it->removed_.end();
             for (removedIt = it->removed_.begin(); removedIt != removedEnd; ++removedIt) {
-                keys.erase(boost::ref(*removedIt));
+                keys.erase(*removedIt);
             }
             it->configuration_->keys(&keys);
         }
@@ -180,7 +180,7 @@ private:
     }
 
     void copyAll(typename Super::Key key, typename Super::Ptr target) {
-        std::vector<boost::reference_wrapper<const typename Super::Value> > values;
+        typename Super::Values values;
         getAll(key, &values);
         std::for_each(
                 values.begin(),

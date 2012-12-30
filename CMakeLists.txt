@@ -34,6 +34,8 @@ endif(Boost_FOUND)
 
 add_library(CoconutTools_Configuration SHARED
     "${SOURCE_DIR}/configuration/configuration-exceptions.cpp"
+    "${SOURCE_DIR}/configuration/HierarchicalConfiguration.cpp"
+    "${SOURCE_DIR}/configuration/hierarchical/NodeSpecifier.cpp"
     "${SOURCE_DIR}/configuration/parsers/PropertiesParser.cpp"
     "${SOURCE_DIR}/configuration/readers/BasicReader.cpp"
     )

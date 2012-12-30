@@ -8,6 +8,7 @@
 #include "configuration/Configuration.hpp"
 #include "configuration/FlatConfiguration.hpp"
 #include "configuration/StackedConfiguration.hpp"
+#include "configuration/HierarchicalConfiguration.hpp"
 #include "utils/pointee.hpp"
 
 using namespace coconut_tools;
@@ -19,7 +20,8 @@ typedef boost::mpl::list<
         FlatConfiguration<int, int>,
         StackedConfiguration<int, int>,
         FlatConfiguration<std::string, std::string>,
-        StackedConfiguration<std::string, std::string>
+        StackedConfiguration<std::string, std::string>,
+        HierarchicalConfiguration
         >
         ConfigurationImpls;
 
@@ -69,6 +71,10 @@ public:
         return multipleEntries_;
     }
 
+    void checkValuesEqual(int lhs, int rhs) const {
+        BOOST_CHECK_EQUAL(lhs, rhs);
+    }
+
 private:
 
     std::pair<int, int> singleEntry_;
@@ -83,7 +89,12 @@ template<>
 class ConfigurationTestSetup<FlatConfiguration<int, int> > : public IntIntConfigurationTestSetup {
 public:
 
-    void init(FlatConfiguration<int, int>* configurationPtr) {
+    typedef FlatConfiguration<int, int> ConfigurationImpl;
+
+    typedef boost::shared_ptr<ConfigurationImpl> Ptr;
+
+    Ptr create() {
+        return Ptr(new ConfigurationImpl);
     }
 
 };
@@ -92,10 +103,78 @@ template <>
 class ConfigurationTestSetup<StackedConfiguration<int, int> > : public IntIntConfigurationTestSetup {
 public:
 
-    void init(StackedConfiguration<int, int>* configurationPtr) {
-        StackedConfiguration<int, int>& configuration = utils::pointee(configurationPtr);
-        configuration.push(Configuration<int, int>::Ptr(new FlatConfiguration<int, int>));
+    typedef StackedConfiguration<int, int> ConfigurationImpl;
+
+    typedef boost::shared_ptr<ConfigurationImpl> Ptr;
+
+    Ptr create() {
+        Ptr result(new ConfigurationImpl);
+        result->push(Configuration<int, int>::Ptr(new FlatConfiguration<int, int>));
+        return result;
     }
+
+};
+
+template <>
+class ConfigurationTestSetup<HierarchicalConfiguration> {
+public:
+
+    typedef boost::shared_ptr<HierarchicalConfiguration> Ptr;
+
+    typedef hierarchical::NodeSpecifier Key;
+
+    typedef boost::shared_ptr<HierarchicalConfiguration> Value;
+
+    ConfigurationTestSetup() :
+        singleEntry_(Key("single"), HierarchicalConfiguration::create("value")),
+        multipleEntriesKey_(Key("multiple")) {
+        multipleEntries_.push_back(HierarchicalConfiguration::create("value 1"));
+        multipleEntries_.push_back(HierarchicalConfiguration::create("value 2"));
+        multipleEntries_.push_back(HierarchicalConfiguration::create("value 3"));
+    }
+
+    Ptr create() {
+        return HierarchicalConfiguration::create();
+    }
+
+    void setSingle(Configuration<Key, Value>* configurationParam) const {
+        Configuration<Key, Value>& configuration = utils::pointee(configurationParam);
+        configuration.set(singleEntry_.first, singleEntry_.second);
+    }
+
+    void addMultiple(Configuration<Key, Value>* configurationParam) const {
+        Configuration<Key, Value>& configuration = utils::pointee(configurationParam);
+        std::for_each(
+                multipleEntries_.begin(),
+                multipleEntries_.end(),
+                boost::bind(
+                        &Configuration<Key, Value>::add, boost::ref(configuration), multipleEntriesKey(), _1)
+        );
+    }
+
+    const std::pair<Key, Value>& singleEntry() const {
+        return singleEntry_;
+    }
+
+    Key multipleEntriesKey() const {
+        return multipleEntriesKey_;
+    }
+
+    const std::vector<Value>& multipleEntries() const {
+        return multipleEntries_;
+    }
+
+    void checkValuesEqual(Value lhs, Value rhs) const {
+        BOOST_CHECK_EQUAL(*lhs, *rhs);
+    }
+
+private:
+
+    std::pair<Key, Value> singleEntry_;
+
+    Key multipleEntriesKey_;
+
+    std::vector<Value> multipleEntries_;
 
 };
 
@@ -145,6 +224,10 @@ public:
         return multipleEntries_;
     }
 
+    void checkValuesEqual(const std::string& lhs, const std::string& rhs) const {
+        BOOST_CHECK_EQUAL(lhs, rhs);
+    }
+
 private:
 
     std::pair<std::string, std::string> singleEntry_;
@@ -160,7 +243,12 @@ class ConfigurationTestSetup<FlatConfiguration<std::string, std::string> > :
         public StringStringConfigurationTestSetup {
 public:
 
-    void init(FlatConfiguration<std::string, std::string>* configurationPtr) {
+    typedef FlatConfiguration<std::string, std::string> ConfigurationImpl;
+
+    typedef boost::shared_ptr<ConfigurationImpl> Ptr;
+
+    Ptr create() {
+        return Ptr(new ConfigurationImpl);
     }
 
 };
@@ -170,11 +258,17 @@ class ConfigurationTestSetup<StackedConfiguration<std::string, std::string> > :
             public StringStringConfigurationTestSetup {
 public:
 
-    void init(StackedConfiguration<std::string, std::string>* configurationPtr) {
-        StackedConfiguration<std::string, std::string>& configuration = utils::pointee(configurationPtr);
-        configuration.push(
-                Configuration<std::string, std::string>::Ptr(new FlatConfiguration<std::string, std::string>)
-                );
+    typedef StackedConfiguration<std::string, std::string> ConfigurationImpl;
+
+    typedef boost::shared_ptr<ConfigurationImpl> Ptr;
+
+    Ptr create() {
+        Ptr result(new ConfigurationImpl);
+        result->push(
+                Configuration<std::string, std::string>::Ptr(
+                        new FlatConfiguration<std::string, std::string>)
+                        );
+        return result;
     }
 
 };
@@ -186,172 +280,172 @@ public:
 BOOST_AUTO_TEST_SUITE(ConfigurationTestSuite);
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ClearYieldsEmptyConfiguration, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.setSingle(&configuration);
-    setup.addMultiple(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    configuration.clear();
-    BOOST_CHECK(configuration.empty());
+    setup.setSingle(configuration.get());
+    setup.addMultiple(configuration.get());
+
+    configuration->clear();
+    BOOST_CHECK(configuration->empty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ClearWorksForEmptyConfiguration, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    configuration.clear();
-    BOOST_CHECK(configuration.empty());
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    configuration->clear();
+    BOOST_CHECK(configuration->empty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(EmptyYieldsTrueForEmptyConfiguration, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    BOOST_CHECK(configuration.empty());
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    BOOST_CHECK(configuration->empty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(EmptyYieldsFalseForNonEmptyConfiguration, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.setSingle(&configuration);
-    BOOST_CHECK(!configuration.empty());
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.setSingle(configuration.get());
+    BOOST_CHECK(!configuration->empty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CountReturns0WhenKeyIsNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    BOOST_CHECK_EQUAL(configuration.count(setup.singleEntry().first), 0);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    BOOST_CHECK_EQUAL(configuration->count(setup.singleEntry().first), 0);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CountReturnsNumberOfOccurences, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.addMultiple(&configuration);
-    BOOST_CHECK_EQUAL(configuration.count(setup.multipleEntriesKey()), setup.multipleEntries().size());
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.addMultiple(configuration.get());
+    BOOST_CHECK_EQUAL(configuration->count(setup.multipleEntriesKey()), setup.multipleEntries().size());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetReturnsStoredElement, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.setSingle(&configuration);
-    BOOST_CHECK_EQUAL(configuration.get(setup.singleEntry().first), setup.singleEntry().second);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.setSingle(configuration.get());
+    setup.checkValuesEqual(configuration->get(setup.singleEntry().first), setup.singleEntry().second);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetThrowsWhenKeyNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    BOOST_CHECK_THROW(configuration.get(setup.singleEntry().first), MissingRequiredValue);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    BOOST_CHECK_THROW(configuration->get(setup.singleEntry().first), MissingRequiredValue);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetThrowsWhenMultipleKeysPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.addMultiple(&configuration);
-    BOOST_CHECK_THROW(configuration.get(setup.multipleEntriesKey()), MultipleValuesWhereSingleValueRequired);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.addMultiple(configuration.get());
+    BOOST_CHECK_THROW(configuration->get(setup.multipleEntriesKey()), MultipleValuesWhereSingleValueRequired);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetAllYieldsAllOccurences, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.addMultiple(&configuration);
-    typename ConfigurationImpl::ValueRefs values;
-    configuration.getAll(setup.multipleEntriesKey(), &values);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.addMultiple(configuration.get());
+    typename ConfigurationImpl::Values values;
+    configuration->getAll(setup.multipleEntriesKey(), &values);
 
     BOOST_REQUIRE_EQUAL(values.size(), setup.multipleEntries().size());
     for (size_t i = 0; i < values.size(); ++i) {
-        BOOST_CHECK_EQUAL(values[i].get(), setup.multipleEntries()[i]);
+        setup.checkValuesEqual(values[i], setup.multipleEntries()[i]);
     }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetAllYieldsEmptyVectorWhenKeyNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    typename ConfigurationImpl::ValueRefs values;
-    configuration.getAll(setup.multipleEntriesKey(), &values);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    typename ConfigurationImpl::Values values;
+    configuration->getAll(setup.multipleEntriesKey(), &values);
     BOOST_CHECK(values.empty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(SetAddsKeyWhenNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    configuration.set(setup.singleEntry().first, setup.singleEntry().second);
-    BOOST_CHECK_EQUAL(configuration.get(setup.singleEntry().first), setup.singleEntry().second);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    configuration->set(setup.singleEntry().first, setup.singleEntry().second);
+    setup.checkValuesEqual(configuration->get(setup.singleEntry().first), setup.singleEntry().second);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(SetReplacesAllOccurencesWithSingleInstance, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.addMultiple(&configuration);
-    configuration.set(setup.multipleEntriesKey(), setup.singleEntry().second);
-    BOOST_CHECK_EQUAL(configuration.get(setup.multipleEntriesKey()), setup.singleEntry().second);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.addMultiple(configuration.get());
+    configuration->set(setup.multipleEntriesKey(), setup.singleEntry().second);
+    setup.checkValuesEqual(configuration->get(setup.multipleEntriesKey()), setup.singleEntry().second);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AddAddsKeyWhenNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    configuration.add(setup.singleEntry().first, setup.singleEntry().second);
-    BOOST_CHECK_EQUAL(configuration.get(setup.singleEntry().first), setup.singleEntry().second);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    configuration->add(setup.singleEntry().first, setup.singleEntry().second);
+    setup.checkValuesEqual(configuration->get(setup.singleEntry().first), setup.singleEntry().second);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AddAddsANewInstanceOfKey, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    configuration.add(setup.multipleEntriesKey(), setup.multipleEntries()[0]);
-    configuration.add(setup.multipleEntriesKey(), setup.multipleEntries()[1]);
-    BOOST_CHECK_EQUAL(configuration.count(setup.multipleEntriesKey()), 2);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    typename ConfigurationImpl::ValueRefs values;
-    configuration.getAll(setup.multipleEntriesKey(), &values);
+    configuration->add(setup.multipleEntriesKey(), setup.multipleEntries()[0]);
+    configuration->add(setup.multipleEntriesKey(), setup.multipleEntries()[1]);
+    BOOST_CHECK_EQUAL(configuration->count(setup.multipleEntriesKey()), 2);
+
+    typename ConfigurationImpl::Values values;
+    configuration->getAll(setup.multipleEntriesKey(), &values);
     BOOST_REQUIRE_EQUAL(values.size(), 2);
-    BOOST_CHECK_EQUAL(values[0].get(), setup.multipleEntries()[0]);
-    BOOST_CHECK_EQUAL(values[1].get(), setup.multipleEntries()[1]);
+    setup.checkValuesEqual(values[0], setup.multipleEntries()[0]);
+    setup.checkValuesEqual(values[1], setup.multipleEntries()[1]);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(EraseRemovesAllKeyOccurences, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.setSingle(&configuration);
-    setup.addMultiple(&configuration);
-    configuration.erase(setup.multipleEntriesKey());
-    BOOST_CHECK_EQUAL(configuration.count(setup.multipleEntriesKey()), 0);
-    BOOST_CHECK_EQUAL(configuration.count(setup.singleEntry().first), 1);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.setSingle(configuration.get());
+    setup.addMultiple(configuration.get());
+    configuration->erase(setup.multipleEntriesKey());
+    BOOST_CHECK_EQUAL(configuration->count(setup.multipleEntriesKey()), 0);
+    BOOST_CHECK_EQUAL(configuration->count(setup.singleEntry().first), 1);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(EraseIsVoidWhenKeyNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.addMultiple(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    configuration.erase(setup.singleEntry().first);
+    setup.addMultiple(configuration.get());
 
-    BOOST_CHECK_EQUAL(configuration.count(setup.singleEntry().first), 0);
-    BOOST_CHECK_EQUAL(configuration.count(setup.multipleEntriesKey()), setup.multipleEntries().size());
+    configuration->erase(setup.singleEntry().first);
+
+    BOOST_CHECK_EQUAL(configuration->count(setup.singleEntry().first), 0);
+    BOOST_CHECK_EQUAL(configuration->count(setup.multipleEntriesKey()), setup.multipleEntries().size());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(KeysReturnsAllKeys, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.setSingle(&configuration);
-    setup.addMultiple(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    typename ConfigurationImpl::KeyRefs keys;
-    configuration.keys(&keys);
+    setup.setSingle(configuration.get());
+    setup.addMultiple(configuration.get());
+
+    typename ConfigurationImpl::Keys keys;
+    configuration->keys(&keys);
 
     BOOST_REQUIRE_EQUAL(keys.size(), 2);
     BOOST_CHECK_EQUAL(keys.count(boost::cref(setup.singleEntry().first)), 1);
@@ -359,41 +453,43 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(KeysReturnsAllKeys, ConfigurationImpl, Configurati
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(KeysYieldsEmptyWhenConfigurationEmpty, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    typename ConfigurationImpl::KeyRefs keys;
-    configuration.keys(&keys);
+    typename ConfigurationImpl::Keys keys;
+    configuration->keys(&keys);
 
     BOOST_CHECK(keys.empty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetOptionalYieldsNullWhenKeyNotPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    BOOST_CHECK(!configuration.getOptional(setup.singleEntry().first));
+
+    BOOST_CHECK(!configuration->getOptional(setup.singleEntry().first));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetOptionalYieldsValueWhenKeyPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.setSingle(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
-    BOOST_CHECK_EQUAL(*configuration.getOptional(setup.singleEntry().first), setup.singleEntry().second);
+    setup.setSingle(configuration.get());
+
+    setup.checkValuesEqual(
+            *configuration->getOptional(setup.singleEntry().first),
+            setup.singleEntry().second
+            );
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetOptionalThowsWhenMultipleKeysPresent, ConfigurationImpl, ConfigurationImpls) {
-    ConfigurationImpl configuration;
     ConfigurationTestSetup<ConfigurationImpl> setup;
-    setup.init(&configuration);
-    setup.addMultiple(&configuration);
+    boost::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+    setup.addMultiple(configuration.get());
 
     BOOST_CHECK_THROW(
-            configuration.getOptional(setup.multipleEntriesKey()),
+            configuration->getOptional(setup.multipleEntriesKey()),
             MultipleValuesWhereSingleValueRequired
             );
 }

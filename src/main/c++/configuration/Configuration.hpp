@@ -21,23 +21,6 @@ namespace configuration {
  */
 template <class KeyType, class ValueType>
 class Configuration {
-private:
-
-    struct ReferenceHash {
-        size_t operator() (const boost::reference_wrapper<const KeyType> keyReference) const {
-            return boost::hash_value(keyReference.get());
-        }
-    };
-
-    struct ReferenceEqual {
-        bool operator() (
-                const boost::reference_wrapper<const KeyType> lhs,
-                const boost::reference_wrapper<const KeyType> rhs
-                ) const {
-            return std::equal_to<KeyType>()(lhs.get(), rhs.get());
-        }
-    };
-
 public:
 
     typedef KeyType Key;
@@ -48,9 +31,9 @@ public:
 
     typedef typename boost::call_traits<Value>::param_type ValueParam;
 
-    typedef boost::unordered_set<boost::reference_wrapper<const Key>, ReferenceHash, ReferenceEqual> KeyRefs;
+    typedef boost::unordered_set<Key> Keys;
 
-    typedef std::vector<boost::reference_wrapper<const Value> > ValueRefs;
+    typedef std::vector<Value> Values;
 
     typedef boost::shared_ptr<Configuration<Key, Value> > Ptr;
 
@@ -86,19 +69,19 @@ public:
      * throws a relevant exception.
      *
      * @param key - the key to look for in the configuration
-     * @return const Value& - the value specified for key
+     * @return Value - the value specified for key
      * @throws MissingRequiredValue - iff count(key) == 0
      * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
      */
-    virtual const Value& get(const KeyParam key) const = 0;
+    virtual Value get(const KeyParam key) const = 0;
 
     /**
      * Returns all values specified for the provided key. Does not clear values beforehand.
      *
      * @param key - the key to look for in the configuration
-     * @param values[out] - references to all the values specified for key
+     * @param values[out] - all values specified for key
      */
-    virtual void getAll(const KeyParam key, ValueRefs* values) const = 0;
+    virtual void getAll(const KeyParam key, Values* values) const = 0;
 
     /**
      * Sets the value for the provided key, overwriting the existing values.
@@ -127,20 +110,22 @@ public:
     /**
      * Returns all the keys existing in the current configuration. Does not clear k beforehand.
      *
-     * @param k[out] - a set of references to all keys in the current configuration
+     * @param k[out] - all keys in the current configuration
      */
-    virtual void keys(KeyRefs* k) const = 0;
+    virtual void keys(Keys* k) const = 0;
 
     /**
      * Returns the value specified for the given key or defaultValue if no value is specified.
      *
      * @param key - the key to look for in the configuration
      * @param defaultValue - the defaultValue which will be returned if count(key) == 0
-     * @return boost::optional<const Value&> - the value specified for key, or defaultValue if count(key) == 0
+     * @return boost::optional<Value> - the value specified for key, or defaultValue if count(key) == 0
      * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
      */
-    boost::optional<const Value&> getOptional(const KeyParam key, boost::optional<const Value&> defaultValue =
-            boost::optional<const Value&>()) {
+    boost::optional<Value> getOptional(
+            const KeyParam key,
+            boost::optional<Value> defaultValue = boost::optional<Value>()
+            ) {
         return count(key) ? get(key) : defaultValue;
     }
 
