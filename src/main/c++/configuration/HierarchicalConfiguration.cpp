@@ -89,8 +89,8 @@ HierarchicalConfiguration::Value HierarchicalConfiguration::get(
     }
 }
 
-void HierarchicalConfiguration::getAll(const hierarchical::NodeSpecifier& key, Values* valuesParam) const {
-    Values& values = utils::pointee(valuesParam);
+void HierarchicalConfiguration::getAll(const hierarchical::NodeSpecifier& key, Nodes* valuesParam) const {
+    Nodes& values = utils::pointee(valuesParam);
     find_(key, &values);
 }
 

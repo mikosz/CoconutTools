@@ -20,6 +20,10 @@ class HierarchicalConfiguration :
 {
 public:
 
+    typedef boost::shared_ptr<HierarchicalConfiguration> Node;
+
+    typedef std::vector<Node> Nodes;
+
     static boost::shared_ptr<HierarchicalConfiguration> create(const std::string& text = std::string());
 
     HierarchicalConfiguration(const HierarchicalConfiguration& other);
@@ -38,7 +42,7 @@ public:
 
     Value get(const hierarchical::NodeSpecifier& key) const;
 
-    void getAll(const hierarchical::NodeSpecifier& key, Values* values) const;
+    void getAll(const hierarchical::NodeSpecifier& key, Nodes* values) const;
 
     void set(const hierarchical::NodeSpecifier& key, const ValueParam value);
 
@@ -50,11 +54,11 @@ public:
 
     bool is(const std::string& name) const;
 
+    const std::string& text() const {
+        return text_;
+    }
+
 private:
-
-    typedef boost::shared_ptr<HierarchicalConfiguration> Node;
-
-    typedef std::vector<Node> Nodes;
 
     std::string name_;
 
@@ -90,6 +94,8 @@ private:
     }
 
 };
+
+typedef boost::shared_ptr<HierarchicalConfiguration> HierarchicalConfigurationPtr;
 
 } // namespace configuration
 } // namespace coconut_tools
