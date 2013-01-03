@@ -1,7 +1,10 @@
 #include "NodeSpecifier.hpp"
 
 #include <algorithm>
+#include <iterator>
+#include <sstream>
 
+#include <boost/bind.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -17,9 +20,23 @@ namespace {
 void parse(const std::string& string, std::deque<std::string>* pathParam) {
     std::deque<std::string>& path = utils::pointee(pathParam);
     boost::split(path, string, boost::is_any_of(std::string() + NodeSpecifier::SEPARATOR));
+    path.erase(std::remove_if(path.begin(), path.end(), boost::bind(&std::string::empty, _1)), path.end());
 }
 
 } // anonymous namespace
+
+NonEmptyNodeSpecifierExpected::NonEmptyNodeSpecifierExpected(const std::string& operation) :
+    ConfigurationException(constructMessage(operation)),
+    operation_(operation)
+    {
+}
+
+std::string NonEmptyNodeSpecifierExpected::constructMessage(const std::string& operation) {
+    std::ostringstream oss;
+    oss << "Empty node specifier provided where a non-empty specifier expected while calling \""
+            << operation << "\"";
+    return oss.str();
+}
 
 NodeSpecifier::NodeSpecifier() {
 }
@@ -41,36 +58,36 @@ NodeSpecifier& NodeSpecifier::operator/=(const NodeSpecifier& other) {
     return *this;
 }
 
-const std::string& NodeSpecifier::front() const {
+const std::string& NodeSpecifier::root() const {
+    if (path_.empty()) {
+        throw NonEmptyNodeSpecifierExpected("root");
+    }
     return path_.front();
 }
 
-void NodeSpecifier::popFront() {
-    path_.pop_front();
-}
-
-const std::string& NodeSpecifier::back() const {
-    return path_.back();
-}
-
-void NodeSpecifier::popBack() {
-    path_.pop_back();
-}
-
-void NodeSpecifier::pushBack(const std::string& name) {
-    path_.push_back(name);
-}
-
-NodeSpecifier NodeSpecifier::parent() const {
+NodeSpecifier NodeSpecifier::parentPath() const {
+    if (path_.empty()) {
+        throw NonEmptyNodeSpecifierExpected("parentPath");
+    }
     NodeSpecifier p(*this);
-    p.popBack();
+    p.path_.pop_back();
     return p;
 }
 
-NodeSpecifier NodeSpecifier::child(const std::string& name) const {
+NodeSpecifier NodeSpecifier::childPath() const {
+    if (path_.empty()) {
+        throw NonEmptyNodeSpecifierExpected("childPath");
+    }
     NodeSpecifier c(*this);
-    c.pushBack(name);
+    c.path_.pop_front();
     return c;
+}
+
+const std::string& NodeSpecifier::child() const {
+    if (path_.empty()) {
+        throw NonEmptyNodeSpecifierExpected("child");
+    }
+    return path_.back();
 }
 
 bool NodeSpecifier::empty() const {

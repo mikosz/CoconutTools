@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE(CantAddANodeWithNonUniqueParent) {
 BOOST_AUTO_TEST_CASE(CantAddANodeWithEmptyPath) {
     HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
-            configuration->set("", HierarchicalConfiguration::create()),
-            MultipleValuesWhereSingleValueRequired
+            configuration->add("", HierarchicalConfiguration::create()),
+            hierarchical::NonEmptyNodeSpecifierExpected
             );
 }
 
@@ -97,6 +97,19 @@ BOOST_AUTO_TEST_CASE(CantSetNodeWithNonUniqueParent) {
     HierarchicalConfiguration::Nodes sons;
     configuration->getAll("grandfather/parent/child", &sons);
     BOOST_CHECK_EQUAL(sons.size(), 2);
+}
+
+BOOST_AUTO_TEST_CASE(CantSetNodeWithEmptyPath) {
+    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    BOOST_CHECK_THROW(
+            configuration->set("", HierarchicalConfiguration::create()),
+            hierarchical::NonEmptyNodeSpecifierExpected
+            );
+}
+
+BOOST_AUTO_TEST_CASE(CantEraseNodeWithEmptyPath) {
+    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    BOOST_CHECK_THROW(configuration->erase(""), hierarchical::NonEmptyNodeSpecifierExpected);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* HierachicalConfigurationTestSuite */);

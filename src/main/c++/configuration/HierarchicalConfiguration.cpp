@@ -95,22 +95,22 @@ void HierarchicalConfiguration::getAll(const hierarchical::NodeSpecifier& key, N
 }
 
 void HierarchicalConfiguration::set(const hierarchical::NodeSpecifier& key, const ValueParam value) {
-    hierarchical::NodeSpecifier parent = key.parent();
+    hierarchical::NodeSpecifier parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
-    erase_(parentNode, key.back());
-    add_(parentNode, key.back(), value);
+    erase_(parentNode, key.child());
+    add_(parentNode, key.child(), value);
 }
 
 void HierarchicalConfiguration::add(const hierarchical::NodeSpecifier& key, const ValueParam value) {
-    hierarchical::NodeSpecifier parent = key.parent();
+    hierarchical::NodeSpecifier parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
-    add_(parentNode, key.back(), value);
+    add_(parentNode, key.child(), value);
 }
 
 void HierarchicalConfiguration::erase(const hierarchical::NodeSpecifier& key) {
-    hierarchical::NodeSpecifier parent = key.parent();
+    hierarchical::NodeSpecifier parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
-    erase_(parentNode, key.back());
+    erase_(parentNode, key.child());
 }
 
 void HierarchicalConfiguration::keys(Keys* keysParam) const {
@@ -151,9 +151,8 @@ void HierarchicalConfiguration::find_(
         // to shared_ptr, so we either have to reimplement it or use const_cast...
         nodes.push_back(const_cast<HierarchicalConfiguration&>(*this).shared_from_this());
     } else {
-        std::string head = key.front();
-        hierarchical::NodeSpecifier tail(key);
-        tail.popFront();
+        std::string head = key.root();
+        hierarchical::NodeSpecifier tail = key.childPath();
 
         Nodes::const_iterator it, end = children_.end();
         for (it = children_.begin(); it != end; ++it) {
@@ -173,9 +172,8 @@ HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(
         // to shared_ptr, so we either have to reimplement it or use const_cast...
         return const_cast<HierarchicalConfiguration&>(*this).shared_from_this();
     } else {
-        std::string head = key.front();
-        hierarchical::NodeSpecifier tail(key);
-        tail.popFront();
+        std::string head = key.root();
+        hierarchical::NodeSpecifier tail = key.childPath();
 
         Node result;
         Nodes::const_iterator it, end = children_.end();
@@ -215,7 +213,7 @@ void HierarchicalConfiguration::erase_(Node parent, const std::string& childName
 void HierarchicalConfiguration::keys_(const hierarchical::NodeSpecifier& parent, Keys* keysParam) const {
     Keys& k = utils::pointee(keysParam);
 
-    hierarchical::NodeSpecifier node = parent.child(name_);
+    hierarchical::NodeSpecifier node = parent / name_;
     k.insert(node);
 
     std::for_each(

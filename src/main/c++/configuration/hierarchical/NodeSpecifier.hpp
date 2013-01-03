@@ -7,9 +7,31 @@
 #include <boost/functional/hash.hpp>
 #include <boost/operators.hpp>
 
+#include "configuration/configuration-exceptions.hpp"
+
 namespace coconut_tools {
 namespace configuration {
 namespace hierarchical {
+
+class NonEmptyNodeSpecifierExpected : public ConfigurationException {
+public:
+
+    NonEmptyNodeSpecifierExpected(const std::string& operation);
+
+    ~NonEmptyNodeSpecifierExpected() throw () {
+    }
+
+    const std::string& operation() const {
+        return operation_;
+    }
+
+private:
+
+    static std::string constructMessage(const std::string& operation);
+
+    std::string operation_;
+
+};
 
 class NodeSpecifier :
     public boost::dividable<NodeSpecifier>,
@@ -29,19 +51,13 @@ public:
 
     NodeSpecifier& operator/=(const NodeSpecifier& other);
 
-    const std::string& front() const;
+    const std::string& root() const;
 
-    void popFront();
+    NodeSpecifier parentPath() const;
 
-    const std::string& back() const;
+    NodeSpecifier childPath() const;
 
-    void popBack();
-
-    void pushBack(const std::string& name);
-
-    NodeSpecifier parent() const;
-
-    NodeSpecifier child(const std::string& name) const;
+    const std::string& child() const;
 
     bool empty() const;
 
