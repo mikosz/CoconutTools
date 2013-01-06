@@ -32,13 +32,8 @@ endif(Boost_FOUND)
 
 # Configuration
 
-add_library(CoconutTools_Configuration SHARED
-    "${SOURCE_DIR}/configuration/configuration-exceptions.cpp"
-    "${SOURCE_DIR}/configuration/HierarchicalConfiguration.cpp"
-    "${SOURCE_DIR}/configuration/hierarchical/NodeSpecifier.cpp"
-    "${SOURCE_DIR}/configuration/parsers/PropertiesParser.cpp"
-    "${SOURCE_DIR}/configuration/readers/BasicReader.cpp"
-    )
+file(GLOB_RECURSE CONFIGURATION_SRC "${SOURCE_DIR}/configuration/*.cpp")
+add_library(CoconutTools_Configuration SHARED ${CONFIGURATION_SRC})
 
 # Exceptions
 
@@ -69,21 +64,10 @@ add_library(CoconutTools_Utils SHARED
 
 # Tests
 
+file(GLOB_RECURSE TEST_SRC "${TEST_SOURCE_DIR}/*.cpp")
+
 add_executable(unit-tests
-    "${TEST_SOURCE_DIR}/unit-tests.cpp"
-    "${TEST_SOURCE_DIR}/configuration/Configuration.cpp"
-    "${TEST_SOURCE_DIR}/configuration/ConfigurationUpdater.cpp"
-    "${TEST_SOURCE_DIR}/configuration/HierarchicalConfiguration.cpp"
-    "${TEST_SOURCE_DIR}/configuration/hierarchical/NodeSpecifier.cpp"
-    "${TEST_SOURCE_DIR}/configuration/parsers/PropertiesParser.cpp"
-    "${TEST_SOURCE_DIR}/configuration/readers/BasicReader.cpp"
-    "${TEST_SOURCE_DIR}/concurrent/Lockable.cpp"
-    "${TEST_SOURCE_DIR}/concurrent/LockingPtr.cpp"
-    "${TEST_SOURCE_DIR}/design-pattern/Factory.cpp"
-    "${TEST_SOURCE_DIR}/logger/Logger.cpp"
-    "${TEST_SOURCE_DIR}/system/tmp-file.cpp"
-    "${TEST_SOURCE_DIR}/utils/Formatter.cpp"
-    "${TEST_SOURCE_DIR}/utils/raii-helper.cpp"
+    ${TEST_SRC}
     "~/tools/gmock/src/gmock-all.cc"
     "~/tools/gmock/gtest/src/gtest-all.cc"
     )

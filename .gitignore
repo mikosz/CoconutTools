@@ -6,6 +6,7 @@ Debug/
 Release/
 
 # build artifacts
+build/
 *.so
 *.o
 *.a

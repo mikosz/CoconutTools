@@ -9,7 +9,6 @@
 #include <boost/bind.hpp>
 
 #include "StringConfiguration.hpp"
-#include "Reader.hpp"
 #include "utils/Sequence.hpp"
 #include "utils/pointee.hpp"
 #include "utils/Extractor.hpp"
@@ -36,10 +35,6 @@ public:
 
     FlatConfiguration(const Storage& values) :
         values_(values) {
-    }
-
-    FlatConfiguration(const Reader& reader) {
-        reader.read(values_);
     }
 
     void clear() {
