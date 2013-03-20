@@ -1,0 +1,2 @@
+set(GMOCK_ROOT "/home/mikosz/tools/gmock/lib/.libs/")
+set(GTEST_ROOT "/home/mikosz/tools/gmock/gtest/lib/.libs/")

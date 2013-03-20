@@ -1,0 +1,18 @@
+#ifndef COCONUT_TOOLS_VERSION_HPP_
+#define COCONUT_TOOLS_VERSION_HPP_
+
+#include <string>
+
+namespace CoconutTools {
+namespace version {
+
+const size_t VERSION_MAJOR = @CoconutTools_VERSION_MAJOR@;
+const size_t VERSION_MINOR = @CoconutTools_VERSION_MINOR@;
+const size_t VERSION_BUGFIX = @CoconutTools_VERSION_BUGFIX@;
+const std::string VERSION_EXTRA(@CoconutTools_VERSION_EXTRA@);
+const std::string VERSION("@CoconutTools_VERSION_MAJOR@.@CoconutTools_VERSION_MINOR@.@CoconutTools_VERSION_BUGFIX@@CoconutTools_VERSION_EXTRA@");
+
+} // namespace version
+} // namespace CoconutTools
+
+#endif

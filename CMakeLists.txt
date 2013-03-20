@@ -1,81 +1,38 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(CoconutTools)
-set(CoconutTools_VERSION_MAJOR 0)
-set(CoconutTools_VERSION_MINOR 1)
 
-set(SOURCE_DIR "src/main/c++")
-set(TEST_SOURCE_DIR "src/test/c++")
-set(TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+include("cmake.cfg")
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include("library-module")
+
+set(CoconutTools_VERSION_MAJOR 1)
+set(CoconutTools_VERSION_MINOR 0)
+set(CoconutTools_VERSION_BUGFIX 0)
+set(CoconutTools_VERSION_EXTRA "-SNAPSHOT")
+set("${CoconutTools_VERSION_MAJOR}.${CoconutTools_VERSION_MINOR}.${CoconutTools_VERSION_BUGFIX}${CoconutTools_VERSION_EXTRA}")
+
+enable_testing()
 
 set(CMAKE_CXX_FLAGS "-ggdb -O0")
 
-configure_file("src/main/cmake/version.h.in" "${TARGET_DIR}/include/version.h")
-
-# Includes
-
-include_directories("/usr/include" "${SOURCE_DIR}" "${TEST_SOURCE_DIR}" "${TARGET_DIR}/include")
-include_directories("~/tools/gmock/")
-include_directories("~/tools/gmock/include/")
-include_directories("~/tools/gmock/gtest/")
-include_directories("~/tools/gmock/gtest/include/")
-
-# Boost
-
-set(Boost_USE_STATIC_LIBS OFF)
+# find boost
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.46 COMPONENTS thread regex filesystem system test_exec_monitor)
-if(Boost_FOUND)
-  include_directories(${BOOST_INCLUDE_DIRS})
-endif(Boost_FOUND)
+find_package(Boost COMPONENTS system thread test_exec_monitor filesystem regex REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
-# Configuration
+find_package(GMock REQUIRED)
+find_package(GTest REQUIRED)
+find_package(Threads REQUIRED)
 
-file(GLOB_RECURSE CONFIGURATION_SRC "${SOURCE_DIR}/configuration/*.cpp")
-add_library(CoconutTools_Configuration SHARED ${CONFIGURATION_SRC})
-
-# Exceptions
-
-add_library(CoconutTools_Exceptions SHARED
-    "${SOURCE_DIR}/exceptions/Backtrace.cpp"
-    "${SOURCE_DIR}/exceptions/gcc/Backtrace.cpp"
+set(MODULES
+    "coconut-tools-concurrent"
+    "coconut-tools-configuration"
+    "coconut-tools-exceptions"
+    "coconut-tools-system"
+    "coconut-tools-test-utils"
+    "coconut-tools-utils"
     )
 
-# Logger
-
-add_library(CoconutTools_Logger SHARED
-    "${SOURCE_DIR}/logger/Logger.cpp"
-    )
-
-# System
-
-add_library(CoconutTools_System SHARED
-    "${SOURCE_DIR}/system/SystemError.cpp"
-    "${SOURCE_DIR}/system/tmp-file.cpp"
-    )
-
-# Utils
-
-add_library(CoconutTools_Utils SHARED
-    "${SOURCE_DIR}/utils/Formatter.cpp"
-    "${SOURCE_DIR}/utils/Null.cpp"
-    )
-
-# Tests
-
-file(GLOB_RECURSE TEST_SRC "${TEST_SOURCE_DIR}/*.cpp")
-
-add_executable(unit-tests
-    ${TEST_SRC}
-    "~/tools/gmock/src/gmock-all.cc"
-    "~/tools/gmock/gtest/src/gtest-all.cc"
-    )
-
-target_link_libraries(unit-tests CoconutTools_Exceptions)
-target_link_libraries(unit-tests CoconutTools_Configuration)
-target_link_libraries(unit-tests CoconutTools_System)
-target_link_libraries(unit-tests CoconutTools_Utils)
-target_link_libraries(unit-tests ${Boost_LIBRARIES})
-
-add_custom_target(test ALL ./unit-tests DEPENDS unit-tests)
+add_modules("${MODULES}")
