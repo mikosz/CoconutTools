@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(CreatesTmpDirectoryWhenFileExists) {
         BOOST_FAIL("For this test to succeed it is required that neither prefix0suffix nor prefix1suffix exist");
     }
 
-    coconut_tools::test::writeToFile(PATH1, "");
+    coconut_tools::test_utils::writeToFile(PATH1, "");
     BOOST_CHECK_EQUAL(createTmpDir("prefix", "suffix"), boost::filesystem::path(PATH2));
     BOOST_CHECK(boost::filesystem::is_directory(PATH2));
     boost::filesystem::remove(PATH1);

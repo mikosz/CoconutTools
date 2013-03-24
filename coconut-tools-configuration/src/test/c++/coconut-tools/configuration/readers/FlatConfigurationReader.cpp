@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 
-#include "coconut-tools/configuration/readers/SimpleConfigurationReader.hpp"
+#include "coconut-tools/configuration/readers/FlatConfigurationReader.hpp"
 #include "coconut-tools/configuration/parsers/PropertiesParser.hpp"
 #include "coconut-tools/test-utils/test-utils.hpp"
 #include "coconut-tools/test-utils/GMockFixture.hpp"
@@ -37,7 +37,7 @@ public:
 
 };
 
-BOOST_FIXTURE_TEST_SUITE(SimpleConfigurationReaderTestSuite, test::GMockFixture);
+BOOST_FIXTURE_TEST_SUITE(SimpleConfigurationReaderTestSuite, test_utils::GMockFixture);
 
 BOOST_AUTO_TEST_CASE(AddsKeyValuePairsParsedFromStream) {
     const std::string CONFIGURATION_CONTENTS =
@@ -50,23 +50,23 @@ BOOST_AUTO_TEST_CASE(AddsKeyValuePairsParsedFromStream) {
     EXPECT_CALL(configuration, add(42, 3.14f)).Times(1);
     EXPECT_CALL(configuration, add(0, 0.001f)).Times(1);
 
-    SimpleConfigurationReader<int, float> reader;
+    FlatConfigurationReader<int, float> reader;
     reader.read(parsers::PropertiesParser(), configurationStream, &configuration);
 }
 
-BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test::ResourcesDirFixture) {
+BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test_utils::ResourcesDirFixture) {
     const std::string CONFIGURATION_CONTENTS =
             "42 = 3.14\n"
             "0 = 0.001\n"
             ;
-    const boost::filesystem::path CONFIGURATION_PATH(CONFIGURATION_CONTENTS);
-    test::writeToFile(CONFIGURATION_PATH, CONFIGURATION_CONTENTS);
+    const boost::filesystem::path CONFIGURATION_PATH(resourcesDir() / "configuration.properties");
+    test_utils::writeToFile(CONFIGURATION_PATH, CONFIGURATION_CONTENTS);
 
     testing::StrictMock<MockIntFloatConfiguration> configuration;
     EXPECT_CALL(configuration, add(42, 3.14f)).Times(1);
     EXPECT_CALL(configuration, add(0, 0.001f)).Times(1);
 
-    SimpleConfigurationReader<int, float> reader;
+    FlatConfigurationReader<int, float> reader;
     reader.read(parsers::PropertiesParser(), CONFIGURATION_PATH, &configuration);
 }
 

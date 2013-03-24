@@ -139,12 +139,12 @@ BOOST_AUTO_TEST_CASE(ThrowsWithEmptyPathOnInvalidStream) {
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(ThrowsWithPathOnInvalidFile, test::ResourcesDirFixture) {
+BOOST_FIXTURE_TEST_CASE(ThrowsWithPathOnInvalidFile, test_utils::ResourcesDirFixture) {
     const std::string CONFIGURATION_CONTENTS =
             "this is bad"
             ;
     const boost::filesystem::path CONFIGURATION_PATH(resourcesDir() / "conf");
-    test::writeToFile(CONFIGURATION_PATH, CONFIGURATION_CONTENTS);
+    test_utils::writeToFile(CONFIGURATION_PATH, CONFIGURATION_CONTENTS);
 
     ParsedConfiguration parsed;
 

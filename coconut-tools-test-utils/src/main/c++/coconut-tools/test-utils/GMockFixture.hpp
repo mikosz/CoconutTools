@@ -1,12 +1,12 @@
-#ifndef COCONUT_TOOLS_TEST_GMOCKFIXTURE_HPP_
-#define COCONUT_TOOLS_TEST_GMOCKFIXTURE_HPP_
+#ifndef COCONUT_TOOLS_TEST_UTILS_GMOCKFIXTURE_HPP_
+#define COCONUT_TOOLS_TEST_UTILS_GMOCKFIXTURE_HPP_
 
 #include <boost/test/unit_test.hpp>
 
 #include <gmock/gmock.h>
 
 namespace coconut_tools {
-namespace test {
+namespace test_utils {
 
 class GMockFixture {
 
@@ -44,7 +44,7 @@ public:
 
 };
 
-} // namespace test
+} // namespace test_utils
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_TEST_GMOCKFIXTURE_HPP_ */
+#endif /* COCONUT_TOOLS_TEST_UTILS_GMOCKFIXTURE_HPP_ */

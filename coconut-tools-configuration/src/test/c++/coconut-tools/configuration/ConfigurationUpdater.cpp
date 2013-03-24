@@ -43,7 +43,7 @@ public:
 
 };
 
-BOOST_FIXTURE_TEST_SUITE(ConfigurationUpdaterTestSuite, test::GMockFixture);
+BOOST_FIXTURE_TEST_SUITE(ConfigurationUpdaterTestSuite, test_utils::GMockFixture);
 
 BOOST_AUTO_TEST_CASE(UpdatesRegisteredConfigurables) {
     FlatConfiguration<std::string, std::string> conf;

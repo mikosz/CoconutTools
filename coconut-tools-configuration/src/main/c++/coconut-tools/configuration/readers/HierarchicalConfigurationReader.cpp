@@ -49,6 +49,9 @@ void childrenEnd(Roots* rootsPtr) {
     Roots& roots = utils::pointee(rootsPtr);
     RootsEntry child = roots.top();
     roots.pop();
+    if (roots.empty()) {
+        throw UnpairedParserBeginEnds();
+    }
     roots.top().subtree->add(child.node, child.subtree);
 }
 
@@ -57,9 +60,12 @@ void childrenEnd(Roots* rootsPtr) {
 void HierarchicalConfigurationReader::read(
         const parsers::HierarchicalParser& parser,
         std::istream& is,
-        HierarchicalConfiguration* configurationParam
+        HierarchicalConfiguration* configurationPtr
         ) const {
+    HierarchicalConfiguration& configuration = utils::pointee(configurationPtr);
+
     Roots roots;
+    roots.push(RootsEntry(std::string(), configuration.shared_from_this()));
 
     parser.parse(
             is,
@@ -67,17 +73,22 @@ void HierarchicalConfigurationReader::read(
             boost::bind(&childrenEnd, &roots)
             );
 
-    if (!roots.empty()) {
+    if (!roots.size() == 1) {
         throw UnpairedParserBeginEnds();
     }
+
+    roots.pop();
 }
 
 void HierarchicalConfigurationReader::read(
         const parsers::HierarchicalParser& parser,
         const boost::filesystem::path& path,
-        HierarchicalConfiguration* configurationParam
+        HierarchicalConfiguration* configurationPtr
         ) const {
+    HierarchicalConfiguration& configuration = utils::pointee(configurationPtr);
+
     Roots roots;
+    roots.push(RootsEntry(std::string(), configuration.shared_from_this()));
 
     parser.parse(
             path,
@@ -85,7 +96,9 @@ void HierarchicalConfigurationReader::read(
             boost::bind(&childrenEnd, &roots)
             );
 
-    if (!roots.empty()) {
+    if (!roots.size() == 1) {
         throw UnpairedParserBeginEnds();
     }
+
+    roots.pop();
 }

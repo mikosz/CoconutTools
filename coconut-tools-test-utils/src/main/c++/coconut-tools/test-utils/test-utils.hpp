@@ -9,7 +9,7 @@
 #include "coconut-tools/system/tmp-file.hpp"
 
 namespace coconut_tools {
-namespace test {
+namespace test_utils {
 
 inline void writeToFile(const boost::filesystem::path& path, const std::string& s) {
     std::ofstream ofs(path.string().c_str());
@@ -38,7 +38,7 @@ private:
 
 };
 
-}  // namespace test
+}  // namespace test_utils
 }  // namespace coconut_tools
 
 #endif /* COCONUT_TOOLS_TEST_TEST_UTILS_HPP_ */

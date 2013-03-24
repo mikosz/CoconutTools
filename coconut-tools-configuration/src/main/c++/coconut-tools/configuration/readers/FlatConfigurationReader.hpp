@@ -14,7 +14,7 @@ namespace configuration {
 namespace readers {
 
 template <class Key, class Value>
-class SimpleConfigurationReader {
+class FlatConfigurationReader {
 public:
 
     void read(

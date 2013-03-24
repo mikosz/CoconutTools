@@ -16,13 +16,13 @@ public:
     void read(
             const parsers::HierarchicalParser& parser,
             std::istream& is,
-            HierarchicalConfiguration* configurationParam
+            HierarchicalConfiguration* configuration
             ) const;
 
     void read(
             const parsers::HierarchicalParser& parser,
             const boost::filesystem::path& path,
-            HierarchicalConfiguration* configurationParam
+            HierarchicalConfiguration* configuration
             ) const;
 
 };
