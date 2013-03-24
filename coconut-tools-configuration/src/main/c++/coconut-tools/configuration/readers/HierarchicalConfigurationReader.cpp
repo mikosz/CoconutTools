@@ -24,18 +24,32 @@ public:
 
 };
 
-typedef std::stack<HierarchicalConfigurationPtr> Roots;
+struct RootsEntry {
 
-void newChild(Roots* rootsPtr, const std::string& name) {
+    std::string node;
+
+    HierarchicalConfigurationPtr subtree;
+
+    RootsEntry(const std::string& node, HierarchicalConfigurationPtr subtree) :
+        node(node),
+        subtree(subtree)
+    {
+    }
+
+};
+
+typedef std::stack<RootsEntry> Roots;
+
+void newChild(Roots* rootsPtr, const std::string& node, const std::string& text) {
     Roots& roots = utils::pointee(rootsPtr);
-    roots.push(HierarchicalConfiguration::create(name));
+    roots.push(RootsEntry(node, HierarchicalConfiguration::create(text)));
 }
 
 void childrenEnd(Roots* rootsPtr) {
     Roots& roots = utils::pointee(rootsPtr);
-    HierarchicalConfigurationPtr child = roots.top();
+    RootsEntry child = roots.top();
     roots.pop();
-    roots.top()->add(child->text(), child);
+    roots.top().subtree->add(child.node, child.subtree);
 }
 
 } // anonymous namespace
@@ -49,7 +63,7 @@ void HierarchicalConfigurationReader::read(
 
     parser.parse(
             is,
-            boost::bind(&newChild, &roots, _1),
+            boost::bind(&newChild, &roots, _1, _2),
             boost::bind(&childrenEnd, &roots)
             );
 
@@ -67,7 +81,7 @@ void HierarchicalConfigurationReader::read(
 
     parser.parse(
             path,
-            boost::bind(&newChild, &roots, _1),
+            boost::bind(&newChild, &roots, _1, _2),
             boost::bind(&childrenEnd, &roots)
             );
 

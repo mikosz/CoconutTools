@@ -1,24 +1,31 @@
 #include "PropertyTreeParser.hpp"
 
 #include <boost/bind.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 using namespace coconut_tools::configuration::parsers;
 
 namespace {
 
 void addTreeNodes(
+        const std::string& node,
         boost::property_tree::ptree tree,
         PropertyTreeParser::NewChildCallback newChildCallback,
         PropertyTreeParser::ChildrenEndCallback childrenEndCallback
         ) {
-    newChildCallback(tree.data());
+    if (!node.empty()) {
+        std::string trimmedData = boost::trim_copy(tree.data());
+        newChildCallback(node, trimmedData);
+    }
 
     boost::property_tree::ptree::const_iterator it, end = tree.end();
     for (it = tree.begin(); it != end; ++it) {
-        addTreeNodes(it->second, newChildCallback, childrenEndCallback);
+        addTreeNodes(it->first, it->second, newChildCallback, childrenEndCallback);
     }
 
-    childrenEndCallback();
+    if (!node.empty()) {
+        childrenEndCallback();
+    }
 }
 
 } // anonymous namespace
@@ -29,5 +36,5 @@ void PropertyTreeParser::parse(std::istream& is, NewChildCallback newChildCallba
 
     doParse(is, &tree);
 
-    addTreeNodes(tree, newChildCallback, childrenEndCallback);
+    addTreeNodes(std::string(), tree, newChildCallback, childrenEndCallback);
 }

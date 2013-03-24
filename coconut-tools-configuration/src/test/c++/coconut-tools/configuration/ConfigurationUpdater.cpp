@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <gmock/gmock.h>
-
 #include "coconut-tools/configuration/ConfigurationUpdater.hpp"
 #include "coconut-tools/configuration/Configurable.hpp"
 #include "coconut-tools/configuration/FlatConfiguration.hpp"

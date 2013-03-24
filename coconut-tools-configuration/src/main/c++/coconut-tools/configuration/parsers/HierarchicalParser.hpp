@@ -11,7 +11,7 @@ namespace parsers {
 class HierarchicalParser {
 public:
 
-	typedef boost::function<void (const std::string&)> NewChildCallback;
+	typedef boost::function<void (const std::string&, const std::string&)> NewChildCallback;
 
 	typedef boost::function<void ()> ChildrenEndCallback;
 
