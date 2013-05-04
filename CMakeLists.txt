@@ -4,7 +4,7 @@ project(CoconutTools)
 
 include("cmake.cfg")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include("library-module")
 
 set(CoconutTools_VERSION_MAJOR 1)
@@ -36,6 +36,7 @@ find_package(Threads REQUIRED)
 set(MODULES
     "coconut-tools-concurrent"
     "coconut-tools-configuration"
+    "coconut-tools-design-pattern"
     "coconut-tools-exceptions"
     "coconut-tools-system"
     "coconut-tools-test-utils"

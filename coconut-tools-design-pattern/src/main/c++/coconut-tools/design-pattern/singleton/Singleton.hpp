@@ -7,6 +7,7 @@
 
 namespace coconut_tools {
 namespace design_pattern {
+namespace singleton {
 
 template <class T, class LockingPolicy>
 class Singleton : boost::noncopyable {
@@ -48,6 +49,7 @@ typename LockingPolicy::Mutex* Singleton::mutex_ = new typename LockingPolicy::M
 template <class T, class LockingPolicy>
 T* Singleton::instance_ = 0;
 
+} // namespace singleton
 } // namespace design_pattern
 } // namespace coconut_tools
 

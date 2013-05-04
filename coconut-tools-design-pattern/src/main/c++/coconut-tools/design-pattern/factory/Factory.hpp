@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_HPP_
+#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_FACTORY_HPP_
+#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_FACTORY_HPP_
 
 #include <map>
 
@@ -7,6 +7,7 @@
 
 namespace coconut_tools {
 namespace design_pattern {
+namespace factory {
 
 class ExceptionThrowingErrorPolicy {
 public:
@@ -25,7 +26,14 @@ public:
 
 };
 
-template <class IdentifierType, class InstanceType, class CreatorType, class ErrorPolicy>
+template <
+    class IdentifierType,
+    class InstanceType,
+    template<class, class, class > class StorageType,
+    class CreatorType,
+    class LockingPolicyType,
+    class ErrorPolicy
+    >
 class Factory {
 public:
 
@@ -42,7 +50,7 @@ public:
         if (it == creators_.end()) {
             ErrorPolicy::noSuchType(id);
         }
-        return (it->second)();
+        return it->second.create();
     }
 
     void registerCreator(const IdentifierParam id, Creator creator) {
@@ -61,13 +69,22 @@ public:
 
 private:
 
+    typedef LockingPolicyType LockingPolicy;
+
+    typedef StorageType<Identifier, Instance, LockingPolicy> Storage;
+
     typedef std::map<Identifier, Creator> Creators;
+
+    LockingPolicy lockingPolicy_;
+
+    Storage storage_;
 
     Creators creators_;
 
 };
 
+} // namespace factory
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_HPP_ */
+#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_FACTORY_HPP_ */
