@@ -6,14 +6,12 @@
 #include <boost/call_traits.hpp>
 #include <boost/unordered_map.hpp>
 
-#include "coconut-tools/utils/pointee.hpp"
-
 namespace coconut_tools {
 namespace design_pattern {
 namespace factory {
 namespace storage {
 
-template <class IdentifierType, class StoredType, class PermanentType, class LockingPolicy>
+template <class IdentifierType, class StoredType, class PermanentType>
 class MappingStorage {
 public:
 
@@ -29,10 +27,6 @@ public:
 
     typedef PermanentType Permanent;
 
-    MappingStorage(LockingPolicy* lockingPolicyPtr) :
-        lockingPolicy_(utils::pointee(lockingPolicyPtr)) {
-    }
-
     Permanent get(const IdentifierParam identifier) const {
         typename Storage::const_iterator it = storage_.find(identifier);
         if (it == storage_.end()) {
@@ -42,16 +36,8 @@ public:
         }
     }
 
-    Permanent get(const IdentifierParam identifier) const volatile {
-        return lockingPolicy_.lock(this)->get(identifier);
-    }
-
     bool isStored(const IdentifierParam identifier) const {
         return storage_.count(identifier);
-    }
-
-    bool isStored(const IdentifierParam identifier) const volatile {
-        return lockingPolicy_.lock(this)->isStored(identifier);
     }
 
     Permanent store(const IdentifierParam identifier, InstanceParam instance) {
@@ -63,16 +49,8 @@ public:
         return permanent;
     }
 
-    Permanent store(const IdentifierParam identifier, InstanceParam instance) volatile {
-        return lockingPolicy_.lock(this)->store(identifier, instance);
-    }
-
     void erase(const IdentifierParam identifier) {
         storage_.erase(identifier);
-    }
-
-    void erase(const IdentifierParam identifier) volatile {
-        lockingPolicy_.lock(this)->erase(identifier);
     }
 
 protected:
@@ -86,19 +64,9 @@ protected:
         }
     }
 
-    Stored getStored(const IdentifierParam identifier) const volatile {
-        return lockingPolicy_.lock(this)->get(identifier);
-    }
-
-    volatile LockingPolicy& lockingPolicy() const volatile {
-        return lockingPolicy_;
-    }
-
 private:
 
     typedef boost::unordered_map<Identifier, Stored> Storage;
-
-    mutable LockingPolicy& lockingPolicy_;
 
     boost::unordered_map<Identifier, Stored> storage_;
 

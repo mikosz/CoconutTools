@@ -29,48 +29,31 @@ public:
 template <
     class IdentifierType,
     class InstanceType,
-    template<class, class, class > class StorageType,
-    class CreatorType,
+    template<class /* IdentifierType */, class /* InstanceType */> class StorageType,
+    template<class /* InstanceType */> class CreatorType,
     class LockingPolicyType,
     class ErrorPolicy
     >
 class Factory {
 public:
 
-    typedef CreatorType Creator;
-
-    typedef InstanceType Instance;
-
     typedef IdentifierType Identifier;
 
     typedef typename boost::call_traits<Identifier>::param_type IdentifierParam;
 
+    typedef InstanceType Instance;
+
+    typedef CreatorType<Instance> Creator;
+
     typedef LockingPolicyType LockingPolicy;
 
-    typedef StorageType<Identifier, Instance, LockingPolicy> Storage;
+    typedef StorageType<Identifier, Instance> Storage;
 
     typedef typename Storage::Permanent StoredInstance;
 
-    Factory() :
-        storage_(&lockingPolicy_) {
-    }
-
     StoredInstance create(const IdentifierParam id) {
         typename Storage::Permanent stored = storage_.get(id);
-        if (stored) {
-            return stored;
-        } else {
-            typename Creators::iterator it = creators_.find(id);
-            if (it == creators_.end()) {
-                ErrorPolicy::noSuchType(id);
-            }
-            return storage_.store(id, it->second.create());
-        }
-    }
-
-    StoredInstance create(const IdentifierParam id) volatile {
-        typename Storage::Permanent stored = storage_.get(id);
-        if (stored) {
+        if (stored.get()) {
             return stored;
         } else {
             typename Creators::iterator it = creators_.find(id);

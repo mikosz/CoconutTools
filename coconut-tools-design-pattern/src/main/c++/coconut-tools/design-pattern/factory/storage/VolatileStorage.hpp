@@ -10,13 +10,12 @@ namespace design_pattern {
 namespace factory {
 namespace storage {
 
-template <class IdentifierType, class InstanceType, class LockingPolicy>
+template <class IdentifierType, class InstanceType>
 class VolatileStorage :
     public MappingStorage<
         IdentifierType,
         boost::weak_ptr<InstanceType>,
-        boost::shared_ptr<InstanceType>,
-        LockingPolicy
+        boost::shared_ptr<InstanceType>
         >
 {
 private:
@@ -24,8 +23,7 @@ private:
     typedef MappingStorage<
                 IdentifierType,
                 boost::weak_ptr<InstanceType>,
-                boost::shared_ptr<InstanceType>,
-                LockingPolicy
+                boost::shared_ptr<InstanceType>
                 >
             Super;
 
@@ -41,17 +39,9 @@ public:
 
     typedef typename Super::Stored Stored;
 
-    VolatileStorage(LockingPolicy* lockingPolicyPtr) :
-        Super(lockingPolicyPtr) {
-    }
-
     Permanent get(const IdentifierParam identifier) const {
         Stored stored = Super::getStored(identifier);
         return stored.lock();
-    }
-
-    Permanent get(const IdentifierParam identifier) const volatile {
-        return this->lockingPolicy().lock(this)->get(identifier);
     }
 
 };

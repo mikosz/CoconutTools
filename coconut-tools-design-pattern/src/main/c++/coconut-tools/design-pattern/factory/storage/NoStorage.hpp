@@ -10,7 +10,7 @@ namespace design_pattern {
 namespace factory {
 namespace storage {
 
-template <class IdentifierType, class InstanceType, class LockingPolicy>
+template <class IdentifierType, class InstanceType>
 class NoStorage {
 public:
 
@@ -24,14 +24,7 @@ public:
 
     typedef std::auto_ptr<Instance> Permanent;
 
-    NoStorage(LockingPolicy*) {
-    }
-
     Permanent get(const IdentifierParam) const {
-        return Permanent();
-    }
-
-    Permanent get(const IdentifierParam) const volatile {
         return Permanent();
     }
 
@@ -39,22 +32,11 @@ public:
         return false;
     }
 
-    bool isStored(const IdentifierParam) const volatile {
-        return false;
-    }
-
     Permanent store(const IdentifierParam, InstanceParam instance) {
         return instance;
     }
 
-    Permanent store(const IdentifierParam, InstanceParam instance) volatile {
-        return instance;
-    }
-
     void erase(const IdentifierParam) {
-    }
-
-    void erase(const IdentifierParam) volatile {
     }
 
 };
