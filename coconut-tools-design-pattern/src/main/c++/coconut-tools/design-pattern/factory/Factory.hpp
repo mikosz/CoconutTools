@@ -45,12 +45,40 @@ public:
 
     typedef typename boost::call_traits<Identifier>::param_type IdentifierParam;
 
-    Instance create(const IdentifierParam id) {
-        typename Creators::iterator it = creators_.find(id);
-        if (it == creators_.end()) {
-            ErrorPolicy::noSuchType(id);
+    typedef LockingPolicyType LockingPolicy;
+
+    typedef StorageType<Identifier, Instance, LockingPolicy> Storage;
+
+    typedef typename Storage::Permanent StoredInstance;
+
+    Factory() :
+        storage_(&lockingPolicy_) {
+    }
+
+    StoredInstance create(const IdentifierParam id) {
+        typename Storage::Permanent stored = storage_.get(id);
+        if (stored) {
+            return stored;
+        } else {
+            typename Creators::iterator it = creators_.find(id);
+            if (it == creators_.end()) {
+                ErrorPolicy::noSuchType(id);
+            }
+            return storage_.store(id, it->second.create());
         }
-        return it->second.create();
+    }
+
+    StoredInstance create(const IdentifierParam id) volatile {
+        typename Storage::Permanent stored = storage_.get(id);
+        if (stored) {
+            return stored;
+        } else {
+            typename Creators::iterator it = creators_.find(id);
+            if (it == creators_.end()) {
+                ErrorPolicy::noSuchType(id);
+            }
+            return storage_.store(id, it->second.create());
+        }
     }
 
     void registerCreator(const IdentifierParam id, Creator creator) {
@@ -68,10 +96,6 @@ public:
     }
 
 private:
-
-    typedef LockingPolicyType LockingPolicy;
-
-    typedef StorageType<Identifier, Instance, LockingPolicy> Storage;
 
     typedef std::map<Identifier, Creator> Creators;
 

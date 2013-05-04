@@ -22,39 +22,39 @@ public:
 
     typedef std::auto_ptr<Instance> InstanceParam;
 
-    typedef std::auto_ptr<Instance> Stored;
+    typedef std::auto_ptr<Instance> Permanent;
 
     NoStorage(LockingPolicy*) {
     }
 
-    Stored get(const IdentifierParam) const {
-        return Stored();
+    Permanent get(const IdentifierParam) const {
+        return Permanent();
     }
 
-    Stored get(const IdentifierParam, LockingPolicy*) const volatile {
-        return Stored();
+    Permanent get(const IdentifierParam) const volatile {
+        return Permanent();
     }
 
     bool isStored(const IdentifierParam) const {
         return false;
     }
 
-    bool isStored(const IdentifierParam, LockingPolicy*) const volatile {
+    bool isStored(const IdentifierParam) const volatile {
         return false;
     }
 
-    Stored store(const IdentifierParam, InstanceParam instance) {
+    Permanent store(const IdentifierParam, InstanceParam instance) {
         return instance;
     }
 
-    Stored store(const IdentifierParam, InstanceParam instance, LockingPolicy*) volatile {
+    Permanent store(const IdentifierParam, InstanceParam instance) volatile {
         return instance;
     }
 
     void erase(const IdentifierParam) {
     }
 
-    void erase(const IdentifierParam, LockingPolicy*) volatile {
+    void erase(const IdentifierParam) volatile {
     }
 
 };
