@@ -9,6 +9,7 @@
 #include "coconut-tools/design-pattern/factory/Factory.hpp"
 #include "coconut-tools/design-pattern/factory/storage.hpp"
 #include "coconut-tools/design-pattern/factory/locking-policy.hpp"
+#include "coconut-tools/design-pattern/factory/error-policy.hpp"
 #include "coconut-tools/test-utils/GMockFixture.hpp"
 
 namespace {
@@ -17,11 +18,10 @@ using namespace coconut_tools;
 using namespace coconut_tools::design_pattern;
 using namespace coconut_tools::design_pattern::factory;
 
-template <class>
 class MockCreator {
 public:
 
-    MOCK_METHOD0(create, int());
+    MOCK_METHOD0(create, int ());
 
 };
 
@@ -29,7 +29,7 @@ template <class>
 class CopyableMockCreatorAdapter {
 public:
 
-    typedef testing::StrictMock<MockCreator<int> > Delegate;
+    typedef testing::StrictMock<MockCreator> Delegate;
 
     CopyableMockCreatorAdapter() :
         delegate_(new Delegate) {
@@ -49,17 +49,16 @@ private:
 
 };
 
-template <class, class>
 class MockStorage {
 public:
 
-    MOCK_CONST_METHOD1(get, int(const std::string&));
+    MOCK_CONST_METHOD1(get, int (const std::string&));
 
-    MOCK_CONST_METHOD1(isStored, bool(const std::string&));
+    MOCK_CONST_METHOD1(isStored, bool (const std::string&));
 
-    MOCK_METHOD2(store, int(const std::string&, int));
+    MOCK_METHOD2(store, int (const std::string&, int));
 
-    MOCK_METHOD1(erase, void(const std::string&));
+    MOCK_METHOD1(erase, void (const std::string&));
 
 };
 
@@ -67,9 +66,13 @@ template <class, class>
 class SingletonMockStorageAdapter {
 public:
 
-    typedef testing::StrictMock<MockStorage<std::string, int> > Delegate;
+    typedef testing::StrictMock<MockStorage> Delegate;
 
     typedef std::auto_ptr<int> Permanent;
+
+    ~SingletonMockStorageAdapter() {
+        reset();
+    }
 
     static void reset() {
         delegate_.reset();
@@ -112,8 +115,51 @@ private:
 template<>
 boost::shared_ptr<SingletonMockStorageAdapter<std::string, int>::Delegate> SingletonMockStorageAdapter<std::string, int>::delegate_;
 
+class MockErrorPolicy {
+public:
+
+    MOCK_METHOD1(alreadyRegistered, void (const std::string&));
+
+    MOCK_METHOD1(noSuchType, void (const std::string&));
+
+};
+
+template <class, class>
+class StaticFunctionMockErrorPolicyAdapter {
+public:
+
+    typedef testing::StrictMock<MockErrorPolicy> Delegate;
+
+    static void reset() {
+        delegate_.reset();
+    }
+
+    static boost::shared_ptr<Delegate> delegate() {
+        if (!delegate_) {
+            delegate_.reset(new Delegate);
+        }
+        return delegate_;
+    }
+
+    static void alreadyRegistered(const std::string& id) {
+        delegate_->alreadyRegistered(id);
+    }
+
+    static void noSuchType(const std::string& id) {
+        delegate_->noSuchType(id);
+    }
+
+private:
+
+    static boost::shared_ptr<Delegate> delegate_;
+
+};
+
+template<>
+boost::shared_ptr<StaticFunctionMockErrorPolicyAdapter<std::string, int>::Delegate> StaticFunctionMockErrorPolicyAdapter<std::string, int>::delegate_;
+
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
-BOOST_AUTO_TEST_SUITE(FactoryTestSuite);
+BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
 
 BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
     Factory<
@@ -178,8 +224,72 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
     BOOST_CHECK_EQUAL(*f.create("1"), 1);
     BOOST_CHECK_EQUAL(*f.create("2"), 2);
     BOOST_CHECK_EQUAL(*f.create("2"), 2);
+}
 
-    Storage::reset();
+BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+
+    ErrorPolicy::reset();
+
+    Factory<
+        std::string,
+        int,
+        NoStorage,
+        CopyableMockCreatorAdapter,
+        UniqueMutexLockingPolicy,
+        StaticFunctionMockErrorPolicyAdapter
+        > f;
+
+    EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
+
+    f.create("1");
+
+    ErrorPolicy::reset();
+}
+
+BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+
+    ErrorPolicy::reset();
+
+    Factory<
+        std::string,
+        int,
+        NoStorage,
+        CopyableMockCreatorAdapter,
+        UniqueMutexLockingPolicy,
+        StaticFunctionMockErrorPolicyAdapter
+        > f;
+
+    EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
+
+    f.unregisterCreator("1");
+
+    ErrorPolicy::reset();
+}
+
+BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+
+    ErrorPolicy::reset();
+
+    Factory<
+        std::string,
+        int,
+        NoStorage,
+        CopyableMockCreatorAdapter,
+        UniqueMutexLockingPolicy,
+        StaticFunctionMockErrorPolicyAdapter
+        > f;
+
+    EXPECT_CALL(*ErrorPolicy::delegate(), alreadyRegistered(std::string("1")));
+
+    CopyableMockCreatorAdapter<int> creator;
+
+    f.registerCreator("1", creator);
+    f.registerCreator("1", creator);
+
+    ErrorPolicy::reset();
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* FactoryTestSuite */);

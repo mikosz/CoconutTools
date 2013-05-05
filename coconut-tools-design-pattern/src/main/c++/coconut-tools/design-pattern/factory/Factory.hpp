@@ -9,30 +9,13 @@ namespace coconut_tools {
 namespace design_pattern {
 namespace factory {
 
-class ExceptionThrowingErrorPolicy {
-public:
-
-    template <class T>
-    static void alreadyRegistered(const T& id) {
-        // xxx: !!!
-        throw "abc";
-    }
-
-    template <class T>
-    static void noSuchType(const T& id) {
-        // xxx: !!!
-        throw "abc";
-    }
-
-};
-
 template <
     class IdentifierType,
     class InstanceType,
     template<class /* IdentifierType */, class /* InstanceType */> class StorageType,
     template<class /* InstanceType */> class CreatorType,
     class LockingPolicyType,
-    class ErrorPolicy
+    template<class /* IdentifierType */, class /* InstanceType */> class ErrorPolicyType
     >
 class Factory {
 public:
@@ -51,6 +34,8 @@ public:
 
     typedef typename Storage::Permanent StoredInstance;
 
+    typedef ErrorPolicyType<Identifier, Instance> ErrorPolicy;
+
     StoredInstance create(const IdentifierParam id) {
         typename Storage::Permanent stored = storage_.get(id);
         if (stored.get()) {
@@ -59,6 +44,7 @@ public:
             typename Creators::iterator it = creators_.find(id);
             if (it == creators_.end()) {
                 ErrorPolicy::noSuchType(id);
+                return StoredInstance();
             }
             return storage_.store(id, it->second.create());
         }
@@ -68,8 +54,9 @@ public:
         typename Creators::iterator it = creators_.lower_bound(id);
         if (it != creators_.end() && it->first == id) {
             ErrorPolicy::alreadyRegistered(id);
+        } else {
+            creators_.insert(it, std::make_pair(id, creator));
         }
-        creators_.insert(it, std::make_pair(id, creator));
     }
 
     void unregisterCreator(const IdentifierParam id) {
