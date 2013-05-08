@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <boost/shared_ptr.hpp>
+
 namespace coconut_tools {
 namespace design_pattern {
 namespace factory {
@@ -14,11 +16,48 @@ public:
 
     typedef InstanceType Instance;
 
+    template <class ConcreteType>
+    static NewCreator makeCreator();
+
     std::auto_ptr<Instance> create() {
-        return std::auto_ptr<Instance>(new Instance);
+    	return delegate_->create();
     }
 
+private:
+
+    class AbstractDelegate {
+    public:
+
+    	virtual ~AbstractDelegate() {
+    	}
+
+    	virtual std::auto_ptr<Instance> create() = 0;
+
+    };
+
+    template <class ConcreteType>
+    class ConcreteDelegate : public AbstractDelegate {
+    public:
+
+    	std::auto_ptr<Instance> create() {
+    		return std::auto_ptr<Instance>(new ConcreteType);
+    	}
+
+    };
+
+    NewCreator(boost::shared_ptr<AbstractDelegate> delegate) :
+    	delegate_(delegate) {
+    }
+
+    boost::shared_ptr<AbstractDelegate> delegate_;
+
 };
+
+template <class InstanceType>
+template <class ConcreteType>
+NewCreator<InstanceType> NewCreator<InstanceType>::makeCreator() {
+	return NewCreator<InstanceType>(boost::shared_ptr<AbstractDelegate>(new ConcreteDelegate<ConcreteType>));
+}
 
 } // namespace creator
 } // namespace factory
