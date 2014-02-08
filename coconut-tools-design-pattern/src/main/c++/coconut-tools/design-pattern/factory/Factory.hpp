@@ -50,6 +50,10 @@ public:
         }
     }
 
+    StoredInstance create(const IdentifierParam id) volatile {
+    	return lockingPolicy_.lock(this)->create(id);
+    }
+
     void registerCreator(const IdentifierParam id, Creator creator) {
         typename Creators::iterator it = creators_.lower_bound(id);
         if (it != creators_.end() && it->first == id) {
@@ -59,10 +63,18 @@ public:
         }
     }
 
+    void registerCreator(const IdentifierParam id, Creator creator) volatile {
+    	lockingPolicy_.lock(this)->registerCreator(id, creator);
+    }
+
     void unregisterCreator(const IdentifierParam id) {
         if (!creators_.erase(id)) {
             ErrorPolicy::noSuchType(id);
         }
+    }
+
+    void unregisterCreator(const IdentifierParam id) volatile {
+    	lockingPolicy_.lock(this)->unregisterCreator(id);
     }
 
 private:

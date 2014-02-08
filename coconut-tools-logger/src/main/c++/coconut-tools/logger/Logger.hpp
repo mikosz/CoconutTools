@@ -2,13 +2,14 @@
 #define COCONUTTOOLS_LOGGER_LOGGER_HPP_
 
 #include <sstream>
-// tmp
-#include <iostream>
 #include <cassert>
+#include <vector>
 
 #include <boost/call_traits.hpp>
+#include <boost/bind.hpp>
 
-#include "concurrent/Lockable.hpp"
+#include "coconut-tools/concurrent/Lockable.hpp"
+#include "appender/Appender.hpp"
 #include "Level.hpp"
 #include "Context.hpp"
 
@@ -32,25 +33,38 @@ private:
         void flush() {
             assert(context_);
 
-            std::cerr << oss_.str() << '\n';
+            std::for_each(
+            		appenders_.begin(),
+            		appenders_.end(),
+            		boost::bind(&appender::Appender::append, _1, level_, *context_, oss_.str())
+            );
+
             oss_.rdbuf()->str("");
         }
 
-        void reset(const Context& context) {
+        void reset(Level level, const Context& context) {
+        	level_ = level;
             context_ = &context;
         }
 
     private:
 
+        friend class Logger;
+
+        typedef std::vector<appender::AppenderPtr> Appenders;
+
         Stream() :
+        	level_(Level::INFO),
             context_(0) {
         }
 
         std::ostringstream oss_;
 
+        Level level_;
+
         const Context* context_;
 
-        friend class Logger;
+        Appenders appenders_;
 
     };
 
@@ -64,10 +78,11 @@ public:
             loggerLock_(new WriteLock) {
         }
 
-        StreamRef(Stream& stream, const Context& context) :
+        StreamRef(Stream& stream, Level level, const Context& context) :
             stream_(&stream),
-            loggerLock_(new WriteLock) {
-            stream_->reset(context);
+            loggerLock_(new WriteLock)
+        {
+            stream_->reset(level, context);
         }
 
         ~StreamRef() {
@@ -97,22 +112,95 @@ public:
     };
 
     Logger(Level level) :
-        level_(level) {
+    	level_(level)
+    {
     }
 
-    StreamRef log(const Context& context) {
-        if (level_ > context.level) {
+    StreamRef log(Level level, const Context& context = Context::DEFAULT) {
+        if (level_ > level) {
             return StreamRef();
         } else {
-            return StreamRef(stream_, context);
+            return StreamRef(stream_, level, context);
         }
     }
 
-    StreamRef log(const Context& context) volatile {
+    StreamRef log(Level level, const Context& context = Context::DEFAULT) volatile {
         WriteLocked self = lock();
-        StreamRef result = self->log(context);
+        StreamRef result = self->log(level, context);
         result.loggerLock().swap(self.lock());
         return result;
+    }
+
+    StreamRef trace(const Context& context = Context::DEFAULT) {
+    	return log(Level::TRACE, context);
+    }
+
+    StreamRef trace(const Context& context = Context::DEFAULT) volatile {
+    	return log(Level::TRACE, context);
+    }
+
+    StreamRef debug(const Context& context = Context::DEFAULT) {
+    	return log(Level::DEBUG, context);
+    }
+
+    StreamRef debug(const Context& context = Context::DEFAULT) volatile {
+    	return log(Level::DEBUG, context);
+    }
+
+    StreamRef info(const Context& context = Context::DEFAULT) {
+    	return log(Level::INFO, context);
+    }
+
+    StreamRef info(const Context& context = Context::DEFAULT) volatile {
+    	return log(Level::INFO, context);
+    }
+
+    StreamRef warning(const Context& context = Context::DEFAULT) {
+    	return log(Level::WARNING, context);
+    }
+
+    StreamRef warning(const Context& context = Context::DEFAULT) volatile {
+    	return log(Level::WARNING, context);
+    }
+
+    StreamRef error(const Context& context = Context::DEFAULT) {
+    	return log(Level::ERROR, context);
+    }
+
+    StreamRef error(const Context& context = Context::DEFAULT) volatile {
+    	return log(Level::ERROR, context);
+    }
+
+    StreamRef critical(const Context& context = Context::DEFAULT) {
+    	return log(Level::CRITICAL, context);
+    }
+
+    StreamRef critical(const Context& context = Context::DEFAULT) volatile {
+    	return log(Level::CRITICAL, context);
+    }
+
+    void addAppender(appender::AppenderPtr appender) {
+    	stream_.appenders_.push_back(appender);
+    }
+
+    void addAppender(appender::AppenderPtr appender) volatile {
+    	lock()->addAppender(appender);
+    }
+
+    Level getLevel() const {
+    	return level_;
+    }
+
+    Level getLevel() const volatile {
+    	return lock()->getLevel();
+    }
+
+    void setLevel(Level level) {
+    	level_ = level;
+    }
+
+    void setLevel(Level level) volatile {
+    	lock()->setLevel(level);
     }
 
 private:

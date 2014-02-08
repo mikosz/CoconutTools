@@ -10,18 +10,19 @@ namespace logger {
 
 struct Context {
 
-    Context(Level level) :
-        level(level) {
+	static const Context DEFAULT;
+
+    Context() :
+        line(0)
+    {
     }
 
-    Context(Level level, const std::string& file, size_t line, const std::string& function) :
-        level(level),
+    Context(const std::string& file, size_t line, const std::string& function) :
         file(file),
         line(line),
-        function(function) {
+        function(function)
+    {
     }
-
-    Level level;
 
     std::string file;
 
@@ -32,6 +33,9 @@ struct Context {
 };
 
 }  // namespace logger
-}  // namespace CoconutTools
+}  // namespace coconut_tools
+
+#warning Change pretty function into something portable
+#define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 #endif /* COCONUTTOOLS_LOGGER_CONTEXT_HPP_ */

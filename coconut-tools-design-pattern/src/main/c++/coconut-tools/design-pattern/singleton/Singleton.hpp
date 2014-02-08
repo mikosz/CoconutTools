@@ -24,6 +24,17 @@ public:
         return *instance_;
     }
 
+    static void setInstance(T* instance) {
+    	typename LockingPolicy::Lock lock(*mutex_);
+    	if (instance_) {
+    		delete instance_;
+    		instance_ = 0;
+    	} else {
+    		std::atexit(&Singleton::destroy);
+    	}
+    	instance_ = instance;
+    }
+
 private:
 
     static typename LockingPolicy::Mutex* mutex_;
@@ -44,10 +55,10 @@ private:
 
 // Yes, it's a memory leak. Without it, the code cannot be thread safe (imo).
 template <class T, class LockingPolicy>
-typename LockingPolicy::Mutex* Singleton::mutex_ = new typename LockingPolicy::Mutex;
+typename LockingPolicy::Mutex* Singleton<T, LockingPolicy>::mutex_ = new typename LockingPolicy::Mutex;
 
 template <class T, class LockingPolicy>
-T* Singleton::instance_ = 0;
+T* volatile Singleton<T, LockingPolicy>::instance_ = 0;
 
 } // namespace singleton
 } // namespace design_pattern

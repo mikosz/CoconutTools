@@ -2,6 +2,7 @@
 #define COCONUT_TOOLS_TEST_TEST_UTILS_HPP_
 
 #include <string>
+#include <sstream>
 #include <fstream>
 
 #include <boost/filesystem.hpp>
@@ -15,6 +16,13 @@ inline void writeToFile(const boost::filesystem::path& path, const std::string& 
     std::ofstream ofs(path.string().c_str());
     ofs << s;
     ofs.close();
+}
+
+inline std::string readFile(const boost::filesystem::path& path) {
+	std::ifstream ifs(path.string().c_str());
+	std::ostringstream oss;
+	oss << ifs.rdbuf();
+	return oss.str();
 }
 
 class ResourcesDirFixture {

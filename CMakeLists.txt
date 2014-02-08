@@ -38,6 +38,7 @@ set(MODULES
     "coconut-tools-configuration"
     "coconut-tools-design-pattern"
     "coconut-tools-exceptions"
+    "coconut-tools-logger"
     "coconut-tools-system"
     "coconut-tools-test-utils"
     "coconut-tools-utils"

@@ -3,6 +3,8 @@
 
 #include <sstream>
 
+#include <boost/call_traits.hpp>
+
 #include "coconut-tools/exceptions/RuntimeError.hpp"
 
 namespace coconut_tools {

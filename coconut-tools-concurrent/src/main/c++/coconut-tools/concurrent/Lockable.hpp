@@ -21,7 +21,7 @@ public:
 
     typedef typename LockTraits<Mutex>::UniqueLock WriteLock;
 
-    typedef LockingPtr<T, Mutex, ReadLock> ReadLocked;
+    typedef LockingPtr<const T, Mutex, ReadLock> ReadLocked;
 
     typedef LockingPtr<T, Mutex, WriteLock> WriteLocked;
 

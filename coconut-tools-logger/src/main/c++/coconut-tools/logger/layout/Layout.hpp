@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include "../Context.hpp"
 
 namespace coconut_tools {
@@ -15,9 +17,11 @@ public:
     virtual ~Layout() {
     }
 
-    virtual std::string format(const Context& context, const std::string& message) = 0;
+    virtual std::string format(Level level, const Context& context, const std::string& message) = 0;
 
 };
+
+typedef boost::shared_ptr<Layout> LayoutPtr;
 
 } // namespace layout
 } // namespace logger

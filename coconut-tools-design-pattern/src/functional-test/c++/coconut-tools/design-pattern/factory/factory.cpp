@@ -141,6 +141,32 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 	BOOST_CHECK(one.get() != two.get());
 }
 
+BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
+	typedef volatile Factory<
+				int,
+				int,
+				PermanentStorage,
+				FunctorCreator,
+				UniqueMutexLockingPolicy,
+				ExceptionThrowingErrorPolicy
+			> Factory;
+
+	Factory f;
+
+	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
+	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+
+	boost::shared_ptr<int> one = f.create(1);
+	boost::shared_ptr<int> two = f.create(2);
+
+	boost::shared_ptr<int> oneCopy = f.create(1);
+	boost::shared_ptr<int> twoCopy = f.create(2);
+
+	BOOST_CHECK_EQUAL(one.get(), oneCopy.get());
+	BOOST_CHECK_EQUAL(two.get(), twoCopy.get());
+	BOOST_CHECK(one.get() != two.get());
+}
+
 BOOST_AUTO_TEST_SUITE_END(/* FactoryFunctionalTestSuite */);
 BOOST_AUTO_TEST_SUITE_END(/* DesignPatternTestSuite */);
 
