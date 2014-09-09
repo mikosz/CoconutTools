@@ -1,8 +1,6 @@
 set(TEST_LIBRARIES
     coconut-tools-exceptions
     coconut-tools-system
-    ${GMOCK_LIBRARIES}
-    ${GTEST_LIBRARIES}
     ${Boost_REGEX_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_TEST_EXEC_MONITOR_LIBRARY}
@@ -10,4 +8,4 @@ set(TEST_LIBRARIES
     ${CMAKE_THREAD_LIBS_INIT}
     )
 
-library_module(coconut-tools-configuration "${TEST_LIBRARIES}")
+library_module(coconut-tools-configuration "${TEST_LIBRARIES}" USE_GMOCK)

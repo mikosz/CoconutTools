@@ -27,10 +27,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 find_package(GMock REQUIRED)
 include_directories(${GMOCK_INCLUDE_DIR})
 
-# find gtest
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIR})
-
 find_package(Threads REQUIRED)
 
 set(MODULES

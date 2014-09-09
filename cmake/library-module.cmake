@@ -1,5 +1,11 @@
 function(library_module MODULE_NAME TEST_LIBRARIES)
 
+  foreach(ARG ${ARGV})
+    if (${ARG} STREQUAL "USE_GMOCK")
+      set(USE_GMOCK 1)
+    endif()
+  endforeach()
+
   set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/c++")
   file(GLOB_RECURSE SRCS "${SOURCE_DIR}/*.cpp")
   include_directories(${SOURCE_DIR})
@@ -22,6 +28,14 @@ function(library_module MODULE_NAME TEST_LIBRARIES)
 
   if(TEST_SRCS)
     set(TEST_NAME ${MODULE_NAME}_unit-test)
+    
+    if(${USE_GMOCK})
+      set(TEST_SRCS ${TEST_SRCS} ${GMOCK_CODE_FILES})
+      foreach(GMOCK_INCLUDE ${GMOCK_INCLUDES})
+        include_directories(${GMOCK_INCLUDE})
+      endforeach(GMOCK_INCLUDE)
+    endif(${USE_GMOCK})
+    
     add_executable(${TEST_NAME} ${TEST_SRCS})
     target_link_libraries(${TEST_NAME} ${TEST_LIBRARIES})
     add_test(${MODULE_NAME} ${TEST_NAME})
