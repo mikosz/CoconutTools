@@ -18,10 +18,11 @@ enable_testing()
 set(CMAKE_CXX_FLAGS "-ggdb -O0")
 
 # find boost
-set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS system thread test_exec_monitor filesystem regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 # find gmock
 find_package(GMock REQUIRED)

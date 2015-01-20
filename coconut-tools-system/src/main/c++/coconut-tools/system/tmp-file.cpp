@@ -1,19 +1,17 @@
 #include "tmp-file.hpp"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
 #include <sstream>
 
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
 
+#include "create-new-file.hpp"
 #include "SystemError.hpp"
 
+using namespace coconut_tools;
 using namespace coconut_tools::system;
 
-namespace {
+namespace /* anonymous */ {
 
 bool createDir(const boost::filesystem::path& path) {
     try {
@@ -24,19 +22,6 @@ bool createDir(const boost::filesystem::path& path) {
         } else {
             throw;
         }
-    }
-}
-
-#warning createFile is non-portable
-bool createFile(const boost::filesystem::path& path) {
-    if (open(path.string().c_str(), O_CREAT | O_EXCL, S_IRUSR | S_IWUSR) == -1) {
-        if (errno == EEXIST) {
-            return false;
-        } else {
-            throw SystemError("Failed to create file " + path.string());
-        }
-    } else {
-        return true;
     }
 }
 
@@ -57,7 +42,7 @@ boost::filesystem::path uniqueCreate(const std::string& prefix, const std::strin
 
 boost::filesystem::path coconut_tools::system::createTmpFile(const std::string& prefix,
         const std::string& suffix) {
-    return uniqueCreate(prefix, suffix, &createFile);
+    return uniqueCreate(prefix, suffix, &createNewFile);
 }
 
 boost::filesystem::path coconut_tools::system::createTmpDir(const std::string& prefix,

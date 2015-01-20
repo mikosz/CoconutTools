@@ -35,7 +35,12 @@ struct Context {
 }  // namespace logger
 }  // namespace coconut_tools
 
-#warning Change pretty function into something portable
-#define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#if defined(__linux)
+#	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#elif defined(_WIN32)
+#	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#else
+#	error "Unknown platform"
+#endif
 
 #endif /* COCONUTTOOLS_LOGGER_CONTEXT_HPP_ */

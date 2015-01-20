@@ -1,3 +1,7 @@
+#include "coconut-tools/system/platform.hpp"
+
+#if defined(COMPILER_GCC)
+
 #include "Backtrace.hpp"
 
 #include <execinfo.h>
@@ -94,3 +98,5 @@ std::ostream& Backtrace::print(std::ostream& os) const {
             boost::bind(&printFrame, _1, boost::ref(index)));
     return os << oss.str();
 }
+
+#endif /* COMPILER_GCC */

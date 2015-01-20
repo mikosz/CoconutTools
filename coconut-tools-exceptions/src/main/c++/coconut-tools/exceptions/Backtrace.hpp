@@ -3,15 +3,14 @@
 
 #include <iosfwd>
 
+#include "coconut-tools/system/platform.hpp"
 
-#if defined(__GNUC__) && !defined(NO_BACKTRACE)
-#include "gcc/Backtrace.hpp"
-#define BACKTRACE_H_FOUND
+#if defined(COMPILER_GCC) && !defined(NO_BACKTRACE)
+#	include "gcc/Backtrace.hpp"
 namespace coconut_tools { namespace exceptions { using gcc::Backtrace; } }
-#endif
-
-#ifndef BACKTRACE_H_FOUND
-#include "no-backtrace/Backtrace.hpp"
+#else
+#	include "no-backtrace/Backtrace.hpp"
+namespace coconut_tools { namespace exceptions { using no_backtrace::Backtrace; } }
 #endif
 
 namespace coconut_tools {

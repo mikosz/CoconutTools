@@ -8,12 +8,12 @@
 #  GMOCK_LIBRARY, where to find the GMock library.
 
 if(DEFINED GMOCK_ROOT)
-  set(GMOCK_ALL_HINT ${GMOCK_ROOT})
+  set(GMOCK_ALL_HINT ${GMOCK_ROOT}/src)
   set(GMOCK_INCLUDE_HINT ${GMOCK_ROOT}/include)
 endif()
 
 if(DEFINED GTEST_ROOT)
-  set(GTEST_ALL_HINT ${GTEST_ROOT})
+  set(GTEST_ALL_HINT ${GTEST_ROOT}/src)
   set(GTEST_INCLUDE_HINT ${GTEST_ROOT}/include)
 endif()
 
