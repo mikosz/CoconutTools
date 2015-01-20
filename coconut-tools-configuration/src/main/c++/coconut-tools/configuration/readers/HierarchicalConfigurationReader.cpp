@@ -73,7 +73,7 @@ void HierarchicalConfigurationReader::read(
             boost::bind(&childrenEnd, &roots)
             );
 
-    if (!roots.size() == 1) {
+    if (roots.size() != 1) {
         throw UnpairedParserBeginEnds();
     }
 
@@ -96,7 +96,7 @@ void HierarchicalConfigurationReader::read(
             boost::bind(&childrenEnd, &roots)
             );
 
-    if (!roots.size() == 1) {
+    if (roots.size() != 1) {
         throw UnpairedParserBeginEnds();
     }
 

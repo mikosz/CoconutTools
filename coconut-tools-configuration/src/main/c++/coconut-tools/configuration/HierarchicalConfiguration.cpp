@@ -94,14 +94,14 @@ void HierarchicalConfiguration::getAll(const hierarchical::NodeSpecifier& key, N
     find_(key, &values);
 }
 
-void HierarchicalConfiguration::set(const hierarchical::NodeSpecifier& key, const ValueParam value) {
+void HierarchicalConfiguration::set(const hierarchical::NodeSpecifier& key, ValueParam value) {
     hierarchical::NodeSpecifier parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
     erase_(parentNode, key.child());
     add_(parentNode, key.child(), value);
 }
 
-void HierarchicalConfiguration::add(const hierarchical::NodeSpecifier& key, const ValueParam value) {
+void HierarchicalConfiguration::add(const hierarchical::NodeSpecifier& key, ValueParam value) {
     hierarchical::NodeSpecifier parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
     add_(parentNode, key.child(), value);
@@ -195,7 +195,7 @@ HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(
     }
 }
 
-void HierarchicalConfiguration::add_(Node parent, const std::string& childName, const ValueParam value) {
+void HierarchicalConfiguration::add_(Node parent, const std::string& childName, ValueParam value) {
     Node child(new HierarchicalConfiguration(*value));
     child->name_ = childName;
     parent->children_.push_back(child);

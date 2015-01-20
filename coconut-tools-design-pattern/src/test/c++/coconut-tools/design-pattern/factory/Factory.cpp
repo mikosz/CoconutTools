@@ -39,8 +39,8 @@ public:
         return delegate_;
     }
 
-    std::auto_ptr<int> create() {
-        return std::auto_ptr<int>(new int(delegate_->create()));
+    std::unique_ptr<int> create() {
+        return std::unique_ptr<int>(new int(delegate_->create()));
     }
 
 private:
@@ -68,7 +68,7 @@ public:
 
     typedef testing::StrictMock<MockStorage> Delegate;
 
-    typedef std::auto_ptr<int> Permanent;
+    typedef std::unique_ptr<int> Permanent;
 
     ~SingletonMockStorageAdapter() {
         reset();
@@ -85,21 +85,21 @@ public:
         return delegate_;
     }
 
-    std::auto_ptr<int> get(const std::string& id) {
+    std::unique_ptr<int> get(const std::string& id) {
         int value = delegate_->get(id);
         if (value) {
-            return std::auto_ptr<int>(new int(value));
+            return std::unique_ptr<int>(new int(value));
         } else {
-            return std::auto_ptr<int>();
+            return std::unique_ptr<int>();
         }
     }
 
-    std::auto_ptr<int> isStored(const std::string& id) {
-        return std::auto_ptr<int>(new int(delegate_->isStored(id)));
+    std::unique_ptr<int> isStored(const std::string& id) {
+        return std::unique_ptr<int>(new int(delegate_->isStored(id)));
     }
 
-    std::auto_ptr<int> store(const std::string& id, std::auto_ptr<int> instance) {
-        return std::auto_ptr<int>(new int(delegate_->store(id, *instance)));
+    std::unique_ptr<int> store(const std::string& id, std::unique_ptr<int> instance) {
+        return std::unique_ptr<int>(new int(delegate_->store(id, *instance)));
     }
 
     void erase(const std::string& id) {
@@ -112,8 +112,8 @@ private:
 
 };
 
-template<>
-boost::shared_ptr<SingletonMockStorageAdapter<std::string, int>::Delegate> SingletonMockStorageAdapter<std::string, int>::delegate_;
+template<class T1, class T2>
+boost::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
 
 class MockErrorPolicy {
 public:
@@ -155,8 +155,8 @@ private:
 
 };
 
-template<>
-boost::shared_ptr<StaticFunctionMockErrorPolicyAdapter<std::string, int>::Delegate> StaticFunctionMockErrorPolicyAdapter<std::string, int>::delegate_;
+template<class T1, class T2>
+boost::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T1, T2>::Delegate> StaticFunctionMockErrorPolicyAdapter<T1, T2>::delegate_;
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);

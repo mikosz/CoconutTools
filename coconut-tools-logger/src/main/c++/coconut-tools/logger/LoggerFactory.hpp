@@ -12,13 +12,13 @@ class LoggerFactory {
 public:
 
 	Logger& getSystemLogger() const {
-		static bool inited = false;
+		static bool initialised = false;
 		static Logger logger(Level::INFO);
 		static layout::LayoutPtr layout(new layout::EmptyLayout());
 		static appender::AppenderPtr appender(new appender::ConsoleAppender(layout));
-		if (!inited) {
+		if (!initialised) {
 			logger.addAppender(appender);
-			inited = true;
+			initialised = true;
 		}
 
 		return logger;

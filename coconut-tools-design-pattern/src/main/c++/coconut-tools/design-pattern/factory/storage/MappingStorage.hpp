@@ -21,7 +21,7 @@ public:
 
     typedef typename StoredType::element_type Instance;
 
-    typedef typename std::auto_ptr<Instance> InstanceParam;
+    typedef typename std::unique_ptr<Instance> InstanceParam;
 
     typedef StoredType Stored;
 

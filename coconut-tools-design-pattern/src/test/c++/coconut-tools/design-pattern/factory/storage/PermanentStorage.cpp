@@ -20,8 +20,8 @@ BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
     int* instance = new int;
     int* newInstance = new int;
 
-    PermanentStorage::Permanent stored = storage.store("instance", std::auto_ptr<int>(instance));
-    PermanentStorage::Permanent newStored = storage.store("instance", std::auto_ptr<int>(newInstance));
+    PermanentStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
+    PermanentStorage::Permanent newStored = storage.store("instance", std::unique_ptr<int>(newInstance));
 
     BOOST_CHECK_EQUAL(stored.get(), instance);
     BOOST_CHECK_EQUAL(newStored.get(), newInstance);
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
 
     int* instance = new int;
 
-    PermanentStorage::Permanent stored = storage.store("instance", std::auto_ptr<int>(instance));
+    PermanentStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
 
     BOOST_CHECK_EQUAL(stored.get(), instance);
     BOOST_CHECK_EQUAL(storage.get("instance").get(), instance);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(RetainsInstanceWhenUnused) {
 
     int* instance = new int;
 
-    storage.store("instance", std::auto_ptr<int>(instance));
+    storage.store("instance", std::unique_ptr<int>(instance));
 
     BOOST_CHECK(storage.get("instance"));
     BOOST_CHECK_EQUAL(storage.get("instance").get(), instance);
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
 
     int* instance = new int;
 
-    storage.store("instance", std::auto_ptr<int>(instance));
+    storage.store("instance", std::unique_ptr<int>(instance));
     storage.erase("instance");
 
     BOOST_CHECK(!storage.get("instance"));
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
 
     int* instance = new int;
 
-    storage.store("instance", std::auto_ptr<int>(instance));
+    storage.store("instance", std::unique_ptr<int>(instance));
 
     BOOST_CHECK(storage.isStored("instance"));
 }
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstanceRemoved) {
 
     int* instance = new int;
 
-    storage.store("instance", std::auto_ptr<int>(instance));
+    storage.store("instance", std::unique_ptr<int>(instance));
     storage.erase("instance");
 
     BOOST_CHECK(!storage.isStored("instance"));

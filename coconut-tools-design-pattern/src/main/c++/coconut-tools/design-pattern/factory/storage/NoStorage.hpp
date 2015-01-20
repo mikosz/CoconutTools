@@ -20,9 +20,9 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef std::auto_ptr<Instance> InstanceParam;
+    typedef std::unique_ptr<Instance> InstanceParam;
 
-    typedef std::auto_ptr<Instance> Permanent;
+    typedef std::unique_ptr<Instance> Permanent;
 
     Permanent get(const IdentifierParam) const {
         return Permanent();

@@ -12,4 +12,6 @@ std::string SystemError::constructMessage(const std::string& message) {
         oss << "System error.";
     }
     oss << '\n' << "Errno: " << errno << "\nError: " << std::strerror(errno);
+
+    return oss.str();
 }

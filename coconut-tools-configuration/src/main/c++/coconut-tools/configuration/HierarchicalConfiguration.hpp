@@ -44,9 +44,9 @@ public:
 
     void getAll(const hierarchical::NodeSpecifier& key, Nodes* values) const;
 
-    void set(const hierarchical::NodeSpecifier& key, const ValueParam value);
+    void set(const hierarchical::NodeSpecifier& key, ValueParam value);
 
-    void add(const hierarchical::NodeSpecifier& key, const ValueParam value);
+    void add(const hierarchical::NodeSpecifier& key, ValueParam value);
 
     void erase(const hierarchical::NodeSpecifier& key);
 
@@ -81,7 +81,7 @@ private:
             const hierarchical::NodeSpecifier& originalKey
             ) const;
 
-    void add_(Node parent, const std::string& childName, const ValueParam value);
+    void add_(Node parent, const std::string& childName, ValueParam value);
 
     void erase_(Node parent, const std::string& childName);
 

@@ -19,7 +19,7 @@ public:
     template <class ConcreteType>
     static NewCreator makeCreator();
 
-    std::auto_ptr<Instance> create() {
+    std::unique_ptr<Instance> create() {
     	return delegate_->create();
     }
 
@@ -31,7 +31,7 @@ private:
     	virtual ~AbstractDelegate() {
     	}
 
-    	virtual std::auto_ptr<Instance> create() = 0;
+    	virtual std::unique_ptr<Instance> create() = 0;
 
     };
 
@@ -39,8 +39,8 @@ private:
     class ConcreteDelegate : public AbstractDelegate {
     public:
 
-    	std::auto_ptr<Instance> create() {
-    		return std::auto_ptr<Instance>(new ConcreteType);
+    	std::unique_ptr<Instance> create() {
+    		return std::unique_ptr<Instance>(new ConcreteType);
     	}
 
     };

@@ -16,13 +16,13 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef boost::function<std::auto_ptr<Instance>()> Creator;
+    typedef boost::function<std::unique_ptr<Instance>()> Creator;
 
     FunctorCreator(Creator creator) :
         creator_(creator) {
     }
 
-    std::auto_ptr<Instance> create() {
+    std::unique_ptr<Instance> create() {
         return creator_();
     }
 

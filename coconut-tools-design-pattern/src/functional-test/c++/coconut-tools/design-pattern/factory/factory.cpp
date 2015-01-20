@@ -44,8 +44,8 @@ public:
 
 const std::string ConcreteClass2::ID("ConcreteClass2");
 
-std::auto_ptr<int> createInt(int value) {
-	return std::auto_ptr<int>(new int(value));
+std::unique_ptr<int> createInt(int value) {
+	return std::unique_ptr<int>(new int(value));
 }
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 			f.registerCreator(ConcreteClass2::ID, NewCreator<AbstractClass>::makeCreator<ConcreteClass2>()),
 			CreatorAlreadyRegistered<std::string>);
 
-	std::auto_ptr<AbstractClass> instance1 = f.create(ConcreteClass1::ID);
-	std::auto_ptr<AbstractClass> instance2 = f.create(ConcreteClass2::ID);
+	std::unique_ptr<AbstractClass> instance1 = f.create(ConcreteClass1::ID);
+	std::unique_ptr<AbstractClass> instance2 = f.create(ConcreteClass2::ID);
 
 	BOOST_CHECK_EQUAL(instance1->id(), ConcreteClass1::ID);
 	BOOST_CHECK_EQUAL(instance2->id(), ConcreteClass2::ID);
