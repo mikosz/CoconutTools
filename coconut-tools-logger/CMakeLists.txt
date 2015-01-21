@@ -1,11 +1,13 @@
-set(TEST_LIBRARIES
-    coconut-tools-logger
+set(DEPENDENCY_LIBRARIES
     coconut-tools-system
     coconut-tools-exceptions
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
-    ${Boost_TEST_EXEC_MONITOR_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
     )
 
-library_module(coconut-tools-logger "${TEST_LIBRARIES}" USE_GMOCK)
+set(TEST_LIBRARIES
+    ${Boost_TEST_EXEC_MONITOR_LIBRARY}
+	)
+
+library_module(coconut-tools-logger "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" USE_GMOCK)

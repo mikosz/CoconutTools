@@ -1,8 +1,11 @@
-set(TEST_LIBRARIES
+set(DEPENDENCY_LIBRARIES
     coconut-tools-exceptions
     ${Boost_SYSTEM_LIBRARY}
-    ${Boost_TEST_EXEC_MONITOR_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
     )
 
-library_module(coconut-tools-design-pattern "${TEST_LIBRARIES}" USE_GMOCK)
+set(TEST_LIBRARIES
+	${Boost_TEST_EXEC_MONITOR_LIBRARY}
+	)
+
+library_module(coconut-tools-design-pattern "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" USE_GMOCK)

@@ -14,14 +14,15 @@ using namespace coconut_tools;
 using namespace coconut_tools::system;
 using namespace coconut_tools::system::windows;
 
-bool coconut_tools::system::linux::createNewFile(const boost::filesystem::path& path) {
+bool coconut_tools::system::windows::createNewFile(const boost::filesystem::path& path) {
 	HANDLE h = CreateFile(path.string().c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, 0);
 	if (SUCCEEDED(h)) {
 		return true;
 	} else if (GetLastError() == ERROR_ALREADY_EXISTS) {
 		return false;
 	} else {
-		throw SystemError("Failed to create file " + path.string());
+		throw SystemError("Failed to create file " + path.string(),
+			std::error_code(::GetLastError(), std::system_category()));
 	}
 }
 

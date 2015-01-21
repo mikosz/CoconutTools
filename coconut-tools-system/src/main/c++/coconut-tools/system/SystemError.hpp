@@ -1,9 +1,7 @@
 #ifndef COCONUT_TOOLS_SYSTEM_SYSTEMERROR_HPP_
 #define COCONUT_TOOLS_SYSTEM_SYSTEMERROR_HPP_
 
-#include <cerrno>
-#include <cstring>
-#include <string>
+#include <system_error>
 
 #include "coconut-tools/exceptions/RuntimeError.hpp"
 
@@ -13,37 +11,29 @@ namespace system {
 class SystemError : public exceptions::RuntimeError {
 public:
 
-    SystemError() :
-        exceptions::RuntimeError(constructMessage(std::string())),
-        errno_(errno),
-        errorString_(std::strerror(errno)) {
-
+    SystemError(const std::error_code& theErrorCode) :
+        exceptions::RuntimeError(constructMessage(std::string(), theErrorCode)),
+		errorCode_(theErrorCode)
+	{
     }
 
-    SystemError(const std::string& theMessage) :
-        exceptions::RuntimeError(constructMessage(theMessage)),
-        errno_(errno),
-        errorString_(std::strerror(errno)) {
+    SystemError(const std::string& theMessage, const std::error_code& theErrorCode) :
+        exceptions::RuntimeError(constructMessage(theMessage, theErrorCode))
+	{
     }
 
     ~SystemError() throw() {
     }
 
-    int errNo() const {
-        return errno_;
-    }
-
-    const std::string& errorString() const {
-        return errorString_;
-    }
+	const std::error_code& errorCode() {
+		return errorCode_;
+	}
 
 private:
 
-    int errno_;
+	std::error_code errorCode_;
 
-    std::string errorString_;
-
-    static std::string constructMessage(const std::string& message);
+    static std::string constructMessage(const std::string& message, const std::error_code& theErrorCode);
 
 };
 

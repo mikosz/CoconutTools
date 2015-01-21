@@ -19,7 +19,8 @@ bool coconut_tools::system::linux::createNewFile(const boost::filesystem::path& 
 		if (errno == EEXIST) {
 			return false;
 		} else {
-			throw SystemError("Failed to create file " + path.string());
+			throw SystemError("Failed to create file " + path.string(),
+				std::error_code(errno, std::system_category()));
 		}
 	} else {
 		return true;

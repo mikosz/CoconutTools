@@ -1,3 +1,9 @@
-set(TEST_LIBRARIES coconut-tools-exceptions ${Boost_TEST_EXEC_MONITOR_LIBRARY})
+set(DEPENDENCY_LIBRARIES
+    coconut-tools-exceptions
+    )
 
-library_module(coconut-tools-utils "${TEST_LIBRARIES}")
+set(TEST_LIBRARIES
+	${Boost_TEST_EXEC_MONITOR_LIBRARY}
+	)
+
+library_module(coconut-tools-utils "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}")
