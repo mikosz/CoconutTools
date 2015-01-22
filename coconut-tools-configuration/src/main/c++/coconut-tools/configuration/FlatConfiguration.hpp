@@ -3,8 +3,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <unordered_map>
 
-#include <boost/unordered_map.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
@@ -28,7 +28,7 @@ private:
 
 public:
 
-    typedef boost::unordered_multimap<typename Super::Key, typename Super::Value> Storage;
+    typedef std::unordered_multimap<typename Super::Key, typename Super::Value> Storage;
 
     FlatConfiguration() {
     }

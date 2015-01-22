@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "coconut-tools/system/platform.hpp"
+
 #include "Level.hpp"
 
 namespace coconut_tools {
@@ -35,12 +37,12 @@ struct Context {
 }  // namespace logger
 }  // namespace coconut_tools
 
-#if defined(__linux)
+#if defined(COMPILER_GCC)
 #	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
-#elif defined(_WIN32)
-#	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#elif defined(COMPILER_VISUAL_CXX)
+#	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __FUNCSIG__)
 #else
-#	error "Unknown platform"
+#	error "Unsupported compiler"
 #endif
 
 #endif /* COCONUTTOOLS_LOGGER_CONTEXT_HPP_ */

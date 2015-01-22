@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(exceptionTest) {
         utils::RaiiHelper helper(boost::bind(&reset, boost::ref(b), true));
         BOOST_CHECK_EQUAL(b, false);
         throw DummyException();
-    } catch (const DummyException& e) {
+    } catch (const DummyException&) {
         BOOST_CHECK_EQUAL(b, true);
     }
 }

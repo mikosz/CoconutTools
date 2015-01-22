@@ -2,9 +2,9 @@
 #define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_MAPPINGSTORAGE_HPP_
 
 #include <memory>
+#include <unordered_map>
 
 #include <boost/call_traits.hpp>
-#include <boost/unordered_map.hpp>
 
 namespace coconut_tools {
 namespace design_pattern {
@@ -37,7 +37,7 @@ public:
     }
 
     bool isStored(const IdentifierParam identifier) const {
-        return storage_.count(identifier);
+        return storage_.count(identifier) != 0;
     }
 
     Permanent store(const IdentifierParam identifier, InstanceParam instance) {
@@ -66,9 +66,9 @@ protected:
 
 private:
 
-    typedef boost::unordered_map<Identifier, Stored> Storage;
+    typedef std::unordered_map<Identifier, Stored> Storage;
 
-    boost::unordered_map<Identifier, Stored> storage_;
+    Storage storage_;
 
 };
 

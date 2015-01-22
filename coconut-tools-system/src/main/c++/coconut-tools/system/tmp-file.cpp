@@ -1,9 +1,9 @@
 #include "tmp-file.hpp"
 
 #include <sstream>
+#include <functional>
 
 #include <boost/filesystem.hpp>
-#include <boost/function.hpp>
 
 #include "create-new-file.hpp"
 #include "SystemError.hpp"
@@ -26,7 +26,7 @@ bool createDir(const boost::filesystem::path& path) {
 }
 
 boost::filesystem::path uniqueCreate(const std::string& prefix, const std::string& suffix,
-        boost::function<bool(const boost::filesystem::path&)> creator) {
+        std::function<bool(const boost::filesystem::path&)> creator) {
     size_t idx = 0;
     while (true) {
         std::ostringstream oss;
