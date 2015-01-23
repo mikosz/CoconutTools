@@ -2,12 +2,12 @@
 #define COCONUT_TOOLS_CONFIGURATION_CONFIGURATION_HPP_
 
 #include <vector>
+#include <memory>
+#include <unordered_set>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/call_traits.hpp>
-#include <memory>
 #include <boost/ref.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/optional.hpp>
 
 #include "configuration-exceptions.hpp"
@@ -31,7 +31,7 @@ public:
 
     typedef typename boost::call_traits<Value>::param_type ValueParam;
 
-    typedef boost::unordered_set<Key> Keys;
+    typedef std::unordered_set<Key> Keys;
 
     typedef std::vector<Value> Values;
 

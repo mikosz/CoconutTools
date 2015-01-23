@@ -17,6 +17,7 @@ set(CoconutTools_VERSION
 
 option(COMPILER_IS_DEBUG_BUILD "Is debug build" ON)
 option(COMPILER_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
+option(COMPILER_BOOST_USE_STATIC_LIBS "Use static boost libs" OFF)
 
 if(${COMPILER_IS_DEBUG_BUILD})
 	set(CMAKE_BUILD_TYPE "Debug")
@@ -41,7 +42,7 @@ endif()
 enable_testing()
 
 # find boost
-set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS ${COMPILER_BOOST_USE_STATIC_LIBS})
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS system thread test_exec_monitor filesystem regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})

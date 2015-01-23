@@ -4,7 +4,6 @@
 #include <string>
 #include <deque>
 
-#include <boost/functional/hash.hpp>
 #include <boost/operators.hpp>
 
 #include "coconut-tools/configuration/configuration-exceptions.hpp"
@@ -69,10 +68,21 @@ private:
 
 };
 
-size_t hash_value(const NodeSpecifier& nodeSpecifier);
-
 } // namespace hierarchical
 } // namespace configuration
 } // namespace coconut_tools
+
+namespace std {
+
+template <>
+struct hash<coconut_tools::configuration::hierarchical::NodeSpecifier> {
+
+	size_t operator()(const coconut_tools::configuration::hierarchical::NodeSpecifier& nodeSpecifier) const {
+		return std::hash<std::string>()(nodeSpecifier.string());
+	}
+
+};
+
+} // namespace std
 
 #endif /* COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESPECIFIER_HPP_ */

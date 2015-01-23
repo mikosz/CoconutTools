@@ -97,7 +97,3 @@ bool NodeSpecifier::empty() const {
 std::string NodeSpecifier::string() const {
     return boost::join(path_, std::string() + NodeSpecifier::SEPARATOR);
 }
-
-size_t coconut_tools::configuration::hierarchical::hash_value(const NodeSpecifier& nodeSpecifier) {
-    return boost::hash_value(nodeSpecifier.string());
-}
