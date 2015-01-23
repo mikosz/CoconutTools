@@ -5,7 +5,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/call_traits.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/ref.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/optional.hpp>
@@ -35,9 +35,9 @@ public:
 
     typedef std::vector<Value> Values;
 
-    typedef boost::shared_ptr<Configuration<Key, Value> > Ptr;
+    typedef std::shared_ptr<Configuration<Key, Value> > Ptr;
 
-    typedef boost::shared_ptr<const Configuration<Key, Value> > ConstPtr;
+    typedef std::shared_ptr<const Configuration<Key, Value> > ConstPtr;
 
     virtual ~Configuration() {
     }

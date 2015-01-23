@@ -1,6 +1,6 @@
 #include <boost/test/auto_unit_test.hpp>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/design-pattern/factory.hpp"
 
@@ -98,11 +98,11 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1)));
+	f.registerCreator(2, FunctorCreator<int>(std::bind(&createInt, 2)));
 
 	BOOST_CHECK_THROW(
-			f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1))),
+			f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1))),
 			CreatorAlreadyRegistered<int>);
 
 	BOOST_CHECK_EQUAL(*f.create(1), 1);
@@ -127,14 +127,14 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1)));
+	f.registerCreator(2, FunctorCreator<int>(std::bind(&createInt, 2)));
 
-	boost::shared_ptr<int> one = f.create(1);
-	boost::shared_ptr<int> two = f.create(2);
+	std::shared_ptr<int> one = f.create(1);
+	std::shared_ptr<int> two = f.create(2);
 
-	boost::shared_ptr<int> oneCopy = f.create(1);
-	boost::shared_ptr<int> twoCopy = f.create(2);
+	std::shared_ptr<int> oneCopy = f.create(1);
+	std::shared_ptr<int> twoCopy = f.create(2);
 
 	BOOST_CHECK_EQUAL(one.get(), oneCopy.get());
 	BOOST_CHECK_EQUAL(two.get(), twoCopy.get());
@@ -153,14 +153,14 @@ BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1)));
+	f.registerCreator(2, FunctorCreator<int>(std::bind(&createInt, 2)));
 
-	boost::shared_ptr<int> one = f.create(1);
-	boost::shared_ptr<int> two = f.create(2);
+	std::shared_ptr<int> one = f.create(1);
+	std::shared_ptr<int> two = f.create(2);
 
-	boost::shared_ptr<int> oneCopy = f.create(1);
-	boost::shared_ptr<int> twoCopy = f.create(2);
+	std::shared_ptr<int> oneCopy = f.create(1);
+	std::shared_ptr<int> twoCopy = f.create(2);
 
 	BOOST_CHECK_EQUAL(one.get(), oneCopy.get());
 	BOOST_CHECK_EQUAL(two.get(), twoCopy.get());

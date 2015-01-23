@@ -3,8 +3,7 @@
 
 #include <iosfwd>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "../layout/Layout.hpp"
 #include "../Context.hpp"
@@ -38,7 +37,7 @@ private:
 
 };
 
-typedef boost::shared_ptr<Appender> AppenderPtr;
+typedef std::shared_ptr<Appender> AppenderPtr;
 
 } // namespace appender
 } // namespace logger

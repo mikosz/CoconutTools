@@ -2,8 +2,8 @@
 
 #include <sstream>
 #include <iostream>
+#include <functional>
 
-#include <boost/bind.hpp>
 #include <boost/mpl/list.hpp>
 
 #include "coconut-tools/logger/Logger.hpp"
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
 
     {
         utils::RaiiHelper clogReset(
-                boost::bind(&std::ostream::rdbuf, boost::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
+                std::bind(&std::ostream::rdbuf, std::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
 
         L logger(logger::Level::INFO);
 

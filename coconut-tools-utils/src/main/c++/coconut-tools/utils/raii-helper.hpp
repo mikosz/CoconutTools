@@ -1,7 +1,7 @@
 #ifndef COCONUT_TOOLS_UTILS_RAII_HELPER_HPP_
 #define COCONUT_TOOLS_UTILS_RAII_HELPER_HPP_
 
-#include <boost/function.hpp>
+#include <functional>
 
 namespace coconut_tools {
 namespace utils {
@@ -9,7 +9,7 @@ namespace utils {
 class RaiiHelper {
 public:
 
-    RaiiHelper(boost::function<void ()> f) :
+    RaiiHelper(std::function<void ()> f) :
         f_(f) {
     }
 
@@ -25,7 +25,7 @@ public:
 
 private:
 
-    boost::function<void ()> f_;
+    std::function<void ()> f_;
 
 };
 

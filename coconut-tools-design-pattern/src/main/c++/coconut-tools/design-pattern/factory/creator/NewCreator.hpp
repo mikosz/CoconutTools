@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include <boost/shared_ptr.hpp>
-
 namespace coconut_tools {
 namespace design_pattern {
 namespace factory {
@@ -45,18 +43,18 @@ private:
 
     };
 
-    NewCreator(boost::shared_ptr<AbstractDelegate> delegate) :
+    NewCreator(std::shared_ptr<AbstractDelegate> delegate) :
     	delegate_(delegate) {
     }
 
-    boost::shared_ptr<AbstractDelegate> delegate_;
+    std::shared_ptr<AbstractDelegate> delegate_;
 
 };
 
 template <class InstanceType>
 template <class ConcreteType>
 NewCreator<InstanceType> NewCreator<InstanceType>::makeCreator() {
-	return NewCreator<InstanceType>(boost::shared_ptr<AbstractDelegate>(new ConcreteDelegate<ConcreteType>));
+	return NewCreator<InstanceType>(std::shared_ptr<AbstractDelegate>(new ConcreteDelegate<ConcreteType>));
 }
 
 } // namespace creator

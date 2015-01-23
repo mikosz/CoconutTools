@@ -1,8 +1,9 @@
 #ifndef COCONUT_TOOLS_CONFIGURATION_PARSERS_HIERARCHICALPARSER_HPP_
 #define COCONUT_TOOLS_CONFIGURATION_PARSERS_HIERARCHICALPARSER_HPP_
 
+#include <functional>
+
 #include <boost/filesystem/path.hpp>
-#include <boost/function.hpp>
 
 namespace coconut_tools {
 namespace configuration {
@@ -11,9 +12,9 @@ namespace parsers {
 class HierarchicalParser {
 public:
 
-	typedef boost::function<void (const std::string&, const std::string&)> NewChildCallback;
+	typedef std::function<void (const std::string&, const std::string&)> NewChildCallback;
 
-	typedef boost::function<void ()> ChildrenEndCallback;
+	typedef std::function<void ()> ChildrenEndCallback;
 
 	virtual ~HierarchicalParser() {
 	}

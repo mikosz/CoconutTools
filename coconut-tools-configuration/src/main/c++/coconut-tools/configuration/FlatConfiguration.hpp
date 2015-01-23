@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
+#include <functional>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
 
 #include "StringConfiguration.hpp"
 #include "coconut-tools/utils/Sequence.hpp"
@@ -72,7 +72,7 @@ public:
                 range.pair().first,
                 range.pair().second,
                 std::back_inserter(values),
-                boost::bind(utils::makeExtractor(&Storage::value_type::second), _1)
+                std::bind(utils::makeExtractor(&Storage::value_type::second), std::placeholders::_1)
         );
     }
 
@@ -95,7 +95,7 @@ public:
                 values_.begin(),
                 values_.end(),
                 std::inserter(k, k.end()),
-                boost::bind(utils::makeExtractor(&Storage::value_type::first), _1)
+                std::bind(utils::makeExtractor(&Storage::value_type::first), std::placeholders::_1)
         );
     }
 

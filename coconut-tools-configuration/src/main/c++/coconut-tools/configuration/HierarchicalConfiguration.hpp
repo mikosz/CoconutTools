@@ -2,8 +2,8 @@
 #define COCONUT_TOOLS_CONFIGURATION_HIERARCHICALCONFIGURATION_HPP_
 
 #include <iosfwd>
+#include <memory>
 
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/operators.hpp>
 
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
@@ -16,17 +16,17 @@ namespace coconut_tools {
 namespace configuration {
 
 class HierarchicalConfiguration :
-    public Configuration<hierarchical::NodeSpecifier, boost::shared_ptr<HierarchicalConfiguration> >,
-    public boost::enable_shared_from_this<HierarchicalConfiguration>,
+    public Configuration<hierarchical::NodeSpecifier, std::shared_ptr<HierarchicalConfiguration> >,
+    public std::enable_shared_from_this<HierarchicalConfiguration>,
     public boost::equality_comparable<HierarchicalConfiguration>
 {
 public:
 
-    typedef boost::shared_ptr<HierarchicalConfiguration> Node;
+    typedef std::shared_ptr<HierarchicalConfiguration> Node;
 
     typedef std::vector<Node> Nodes;
 
-    static boost::shared_ptr<HierarchicalConfiguration> create(const std::string& text = std::string());
+    static std::shared_ptr<HierarchicalConfiguration> create(const std::string& text = std::string());
 
     HierarchicalConfiguration(const HierarchicalConfiguration& other);
 

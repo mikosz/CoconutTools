@@ -2,8 +2,7 @@
 #define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_
 
 #include <memory>
-
-#include <boost/function.hpp>
+#include <functional>
 
 namespace coconut_tools {
 namespace design_pattern {
@@ -16,7 +15,7 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef boost::function<std::unique_ptr<Instance>()> Creator;
+    typedef std::function<std::unique_ptr<Instance>()> Creator;
 
     FunctorCreator(Creator creator) :
         creator_(creator) {

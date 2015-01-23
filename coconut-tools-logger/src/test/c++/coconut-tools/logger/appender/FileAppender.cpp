@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(WritesToFile) {
 	const std::string testString("test string");
 
 	layout::LayoutPtr layout(new layout::EmptyLayout);
-	log_file::LogFilePtr logFile(new MockLogFile);
+	log_file::LogFileSharedPtr logFile(new MockLogFile);
 	FileAppender appender(layout, logFile);
 
 	EXPECT_CALL(

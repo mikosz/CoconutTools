@@ -1,16 +1,14 @@
 #include "HierarchicalConfiguration.hpp"
 
 #include <algorithm>
-
-#include <boost/bind.hpp>
-#include <boost/functional.hpp>
+#include <functional>
 
 #include "coconut-tools/utils/pointee.hpp"
 #include "configuration-exceptions.hpp"
 
 using namespace coconut_tools::configuration;
 
-boost::shared_ptr<HierarchicalConfiguration> HierarchicalConfiguration::create(const std::string& text) {
+std::shared_ptr<HierarchicalConfiguration> HierarchicalConfiguration::create(const std::string& text) {
     return Node(new HierarchicalConfiguration(text));
 }
 
@@ -21,7 +19,7 @@ HierarchicalConfiguration::HierarchicalConfiguration(const HierarchicalConfigura
             other.children_.begin(),
             other.children_.end(),
             std::back_inserter(children_),
-            boost::bind(&HierarchicalConfiguration::copy_, _1)
+            std::bind(&HierarchicalConfiguration::copy_, std::placeholders::_1)
             );
 }
 
@@ -34,7 +32,7 @@ HierarchicalConfiguration& HierarchicalConfiguration::operator=(const Hierarchic
                 other.children_.begin(),
                 other.children_.end(),
                 std::back_inserter(children_),
-                boost::bind(&HierarchicalConfiguration::copy_, _1)
+                std::bind(&HierarchicalConfiguration::copy_, std::placeholders::_1)
                 );
     }
 
@@ -64,8 +62,8 @@ bool HierarchicalConfiguration::empty() const {
                 std::find_if(
                         children_.begin(),
                         children_.end(),
-                        !boost::bind(&HierarchicalConfiguration::empty, _1)
-        );
+						[](const Node& node) { return !node->empty(); }
+						);
     }
 }
 
@@ -118,7 +116,7 @@ void HierarchicalConfiguration::keys(Keys* keysParam) const {
     std::for_each(
             children_.begin(),
             children_.end(),
-            boost::bind(&HierarchicalConfiguration::keys_, _1, hierarchical::NodeSpecifier(), &k)
+            std::bind(&HierarchicalConfiguration::keys_, std::placeholders::_1, hierarchical::NodeSpecifier(), &k)
             );
 }
 
@@ -205,7 +203,7 @@ void HierarchicalConfiguration::erase_(Node parent, const std::string& childName
     Nodes::iterator end = std::remove_if(
             parent->children_.begin(),
             parent->children_.end(),
-            boost::bind(&HierarchicalConfiguration::is, _1, boost::cref(childName))
+            std::bind(&HierarchicalConfiguration::is, std::placeholders::_1, std::cref(childName))
             );
     parent->children_.erase(end, parent->children_.end());
 }
@@ -219,7 +217,7 @@ void HierarchicalConfiguration::keys_(const hierarchical::NodeSpecifier& parent,
     std::for_each(
             children_.begin(),
             children_.end(),
-            boost::bind(&HierarchicalConfiguration::keys_, _1, boost::cref(node), &k)
+            std::bind(&HierarchicalConfiguration::keys_, std::placeholders::_1, std::cref(node), &k)
     );
 }
 
@@ -233,7 +231,7 @@ std::ostream& HierarchicalConfiguration::print_(std::ostream& os, size_t indenta
     std::for_each(
             children_.begin(),
             children_.end(),
-            boost::bind(&HierarchicalConfiguration::print_, _1, boost::ref(os), indentation +  1)
+            std::bind(&HierarchicalConfiguration::print_, std::placeholders::_1, std::ref(os), indentation +  1)
             );
     return os;
 }

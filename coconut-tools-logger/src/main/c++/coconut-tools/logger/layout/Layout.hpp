@@ -2,8 +2,7 @@
 #define COCONUTTOOLS_LOGGER_LAYOUT_LAYOUT_HPP_
 
 #include <string>
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "../Context.hpp"
 
@@ -21,7 +20,7 @@ public:
 
 };
 
-typedef boost::shared_ptr<Layout> LayoutPtr;
+typedef std::shared_ptr<Layout> LayoutPtr;
 
 } // namespace layout
 } // namespace logger

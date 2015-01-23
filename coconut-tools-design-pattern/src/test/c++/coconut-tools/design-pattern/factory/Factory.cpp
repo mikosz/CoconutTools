@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <boost/function.hpp>
-
 #include <gmock/gmock.h>
 
 #include "coconut-tools/design-pattern/factory/Factory.hpp"
@@ -35,7 +33,7 @@ public:
         delegate_(new Delegate) {
     }
 
-    boost::shared_ptr<Delegate> delegate() const {
+    std::shared_ptr<Delegate> delegate() const {
         return delegate_;
     }
 
@@ -45,7 +43,7 @@ public:
 
 private:
 
-    boost::shared_ptr<Delegate> delegate_;
+    std::shared_ptr<Delegate> delegate_;
 
 };
 
@@ -78,7 +76,7 @@ public:
         delegate_.reset();
     }
 
-    static boost::shared_ptr<Delegate> delegate() {
+    static std::shared_ptr<Delegate> delegate() {
         if (!delegate_) {
             delegate_.reset(new Delegate);
         }
@@ -108,12 +106,12 @@ public:
 
 private:
 
-    static boost::shared_ptr<Delegate> delegate_;
+    static std::shared_ptr<Delegate> delegate_;
 
 };
 
 template<class T1, class T2>
-boost::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
+std::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
 
 class MockErrorPolicy {
 public:
@@ -134,7 +132,7 @@ public:
         delegate_.reset();
     }
 
-    static boost::shared_ptr<Delegate> delegate() {
+    static std::shared_ptr<Delegate> delegate() {
         if (!delegate_) {
             delegate_.reset(new Delegate);
         }
@@ -151,12 +149,12 @@ public:
 
 private:
 
-    static boost::shared_ptr<Delegate> delegate_;
+    static std::shared_ptr<Delegate> delegate_;
 
 };
 
 template<class T1, class T2>
-boost::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T1, T2>::Delegate> StaticFunctionMockErrorPolicyAdapter<T1, T2>::delegate_;
+std::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T1, T2>::Delegate> StaticFunctionMockErrorPolicyAdapter<T1, T2>::delegate_;
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);

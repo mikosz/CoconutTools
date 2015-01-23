@@ -1,7 +1,7 @@
 #ifndef COCONUT_TOOLS_CONFIGURATION_CONFIGURABLE_HPP_
 #define COCONUT_TOOLS_CONFIGURATION_CONFIGURABLE_HPP_
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "ConfigurationUpdater.hpp"
 
@@ -18,8 +18,8 @@ protected:
         configurationUpdater_(configurationUpdater) {
         configurationUpdater_.registerListener(
                 this,
-                boost::bind(&Configurable::verify, this, _1),
-                boost::bind(&Configurable::update, this, _1));
+                std::bind(&Configurable::verify, this, std::placeholders::_1),
+                std::bind(&Configurable::update, this, std::placeholders::_1));
     }
 
     virtual ~Configurable() {

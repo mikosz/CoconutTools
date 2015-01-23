@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
 
@@ -42,7 +41,7 @@ BOOST_AUTO_TEST_CASE(BuildsAConfigurationHierarchy) {
             children.begin(),
             children.end(),
             std::inserter(childrenGot, childrenGot.end()),
-            boost::bind(&HierarchicalConfiguration::text, _1)
+            std::bind(&HierarchicalConfiguration::text, std::placeholders::_1)
             );
     std::set<std::string> childrenExpected;
     childrenExpected.insert("son1-1");

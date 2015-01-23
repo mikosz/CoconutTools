@@ -2,8 +2,7 @@
 
 #include <fstream>
 #include <stack>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
 #include "coconut-tools/utils/pointee.hpp"
@@ -69,8 +68,8 @@ void HierarchicalConfigurationReader::read(
 
     parser.parse(
             is,
-            boost::bind(&newChild, &roots, _1, _2),
-            boost::bind(&childrenEnd, &roots)
+            std::bind(&newChild, &roots, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&childrenEnd, &roots)
             );
 
     if (roots.size() != 1) {
@@ -92,8 +91,8 @@ void HierarchicalConfigurationReader::read(
 
     parser.parse(
             path,
-            boost::bind(&newChild, &roots, _1, _2),
-            boost::bind(&childrenEnd, &roots)
+            std::bind(&newChild, &roots, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&childrenEnd, &roots)
             );
 
     if (roots.size() != 1) {

@@ -4,9 +4,9 @@
 #include <sstream>
 #include <cassert>
 #include <vector>
+#include <functional>
 
 #include <boost/call_traits.hpp>
-#include <boost/bind.hpp>
 
 #include "coconut-tools/concurrent/Lockable.hpp"
 #include "appender/Appender.hpp"
@@ -36,7 +36,7 @@ private:
             std::for_each(
             		appenders_.begin(),
             		appenders_.end(),
-            		boost::bind(&appender::Appender::append, _1, level_, *context_, oss_.str())
+            		std::bind(&appender::Appender::append, std::placeholders::_1, level_, *context_, oss_.str())
             );
 
             oss_.rdbuf()->str("");
@@ -107,7 +107,7 @@ public:
 
         Stream* stream_;
 
-        boost::shared_ptr<WriteLock> loggerLock_;
+        std::shared_ptr<WriteLock> loggerLock_;
 
     };
 

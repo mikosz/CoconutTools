@@ -20,7 +20,7 @@ private:
 
 	typedef design_pattern::Factory<
 		std::string,
-		LogFileSharedPtr,
+		LogFile,
 		design_pattern::PermanentStorage,
 		design_pattern::FunctorCreator,
 		design_pattern::NoLockingPolicy,

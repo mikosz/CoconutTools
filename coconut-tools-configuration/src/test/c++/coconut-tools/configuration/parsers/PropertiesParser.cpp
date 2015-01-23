@@ -2,8 +2,7 @@
 
 #include <sstream>
 #include <map>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/configuration/parsers/PropertiesParser.hpp"
 #include "coconut-tools/configuration/parsers/ParseError.hpp"
@@ -40,7 +39,7 @@ BOOST_AUTO_TEST_CASE(IgnoresEmptyLines) {
     ParsedConfiguration parsed;
 
     PropertiesParser parser;
-    parser.parse(configurationStream, boost::bind(&put, _1, _2, &parsed));
+    parser.parse(configurationStream, std::bind(&put, std::placeholders::_1, std::placeholders::_2, &parsed));
 
     BOOST_CHECK(parsed.empty());
 }
@@ -55,7 +54,7 @@ BOOST_AUTO_TEST_CASE(ReadsValues) {
     ParsedConfiguration parsed;
 
     PropertiesParser parser;
-    parser.parse(configurationStream, boost::bind(&put, _1, _2, &parsed));
+    parser.parse(configurationStream, std::bind(&put, std::placeholders::_1, std::placeholders::_2, &parsed));
 
     ParsedConfiguration::const_iterator it = parsed.begin();
     BOOST_REQUIRE(it != parsed.end());
@@ -82,7 +81,7 @@ BOOST_AUTO_TEST_CASE(PrependsCategory) {
     ParsedConfiguration parsed;
 
     PropertiesParser parser;
-    parser.parse(configurationStream, boost::bind(&put, _1, _2, &parsed));
+    parser.parse(configurationStream, std::bind(&put, std::placeholders::_1, std::placeholders::_2, &parsed));
 
     ParsedConfiguration::const_iterator it = parsed.begin();
     BOOST_REQUIRE(it != parsed.end());
@@ -111,7 +110,7 @@ BOOST_AUTO_TEST_CASE(TrimsKeysValuesAndCategories) {
     ParsedConfiguration parsed;
 
     PropertiesParser parser;
-    parser.parse(configurationStream, boost::bind(&put, _1, _2, &parsed));
+    parser.parse(configurationStream, std::bind(&put, std::placeholders::_1, std::placeholders::_2, &parsed));
 
     ParsedConfiguration::const_iterator it = parsed.begin();
     BOOST_REQUIRE(it != parsed.end());
@@ -131,7 +130,7 @@ BOOST_AUTO_TEST_CASE(ThrowsWithEmptyPathOnInvalidStream) {
 
     PropertiesParser parser;
     try {
-        parser.parse(configurationStream, boost::bind(&put, _1, _2, &parsed));
+        parser.parse(configurationStream, std::bind(&put, std::placeholders::_1, std::placeholders::_2, &parsed));
         BOOST_FAIL("ParseError expected ");
     } catch (const ParseError& e) {
         BOOST_CHECK(e.path().empty());
@@ -150,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE(ThrowsWithPathOnInvalidFile, test_utils::ResourcesDirFix
 
     PropertiesParser parser;
     try {
-        parser.parse(CONFIGURATION_PATH, boost::bind(&put, _1, _2, &parsed));
+        parser.parse(CONFIGURATION_PATH, std::bind(&put, std::placeholders::_1, std::placeholders::_2, &parsed));
         BOOST_FAIL("ParseError expected ");
     } catch (const ParseError& e) {
         BOOST_CHECK_EQUAL(e.path(), CONFIGURATION_PATH);

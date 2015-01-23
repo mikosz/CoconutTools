@@ -2,8 +2,7 @@
 
 #include <iostream>
 #include <sstream>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/utils/raii-helper.hpp"
 #include "coconut-tools/logger.hpp"
@@ -23,8 +22,10 @@ BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
 	std::ostringstream output;
 
 	{
+		auto clogBuf = std::clog.rdbuf(output.rdbuf());
 		utils::RaiiHelper clogReset(
-				boost::bind(&std::ostream::rdbuf, boost::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
+			[&]() { std::clog.rdbuf(clogBuf); }
+			);
 
 		// Example of API logging using the log function
 		logger.log(Level::TRACE) << "Trace level hidden";

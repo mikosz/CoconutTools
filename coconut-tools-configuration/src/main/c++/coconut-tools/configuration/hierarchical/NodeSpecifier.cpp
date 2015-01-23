@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <iterator>
 #include <sstream>
+#include <functional>
 
-#include <boost/bind.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -20,7 +20,7 @@ namespace {
 void parse(const std::string& string, std::deque<std::string>* pathParam) {
     std::deque<std::string>& path = utils::pointee(pathParam);
     boost::split(path, string, boost::is_any_of(std::string() + NodeSpecifier::SEPARATOR));
-    path.erase(std::remove_if(path.begin(), path.end(), boost::bind(&std::string::empty, _1)), path.end());
+    path.erase(std::remove_if(path.begin(), path.end(), std::bind(&std::string::empty, std::placeholders::_1)), path.end());
 }
 
 } // anonymous namespace

@@ -2,8 +2,8 @@
 #define COCONUT_TOOLS_CONFIGURATION_CONFIGURATIONUPDATER_HPP_
 
 #include <cstdlib>
+#include <functional>
 
-#include <boost/function.hpp>
 #include <boost/unordered_map.hpp>
 
 namespace coconut_tools {
@@ -15,9 +15,9 @@ public:
 
     typedef ConfigurationType Configuration;
 
-    typedef boost::function<void (const Configuration&)> VerifyFunc;
+    typedef std::function<void (const Configuration&)> VerifyFunc;
 
-    typedef boost::function<void (const Configuration&)> UpdateFunc;
+    typedef std::function<void (const Configuration&)> UpdateFunc;
 
     typedef void* Listener;
 

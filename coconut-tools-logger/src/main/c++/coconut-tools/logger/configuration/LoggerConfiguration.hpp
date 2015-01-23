@@ -1,7 +1,7 @@
 #ifndef LOGGERCONFIGURATION_HPP_
 #define LOGGERCONFIGURATION_HPP_
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace coconut_tools {
 namespace logger {
@@ -17,8 +17,8 @@ private:
 
 };
 
-typedef boost::shared_ptr<LoggerConfiguration> LoggerConfigurationPtr;
-typedef boost::shared_ptr<const LoggerConfiguration> ConstLoggerConfigurationPtr;
+typedef std::shared_ptr<LoggerConfiguration> LoggerConfigurationPtr;
+typedef std::shared_ptr<const LoggerConfiguration> ConstLoggerConfigurationPtr;
 
 }  // namespace configuration
 }  // namespace logger
