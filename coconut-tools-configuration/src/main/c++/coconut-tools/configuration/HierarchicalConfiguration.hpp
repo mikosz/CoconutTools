@@ -6,6 +6,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/operators.hpp>
 
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+
 #include "hierarchical/NodeSpecifier.hpp"
 #include "Configuration.hpp"
 #include "configuration-exceptions.hpp"
@@ -95,7 +97,7 @@ private:
 
 };
 
-typedef boost::shared_ptr<HierarchicalConfiguration> HierarchicalConfigurationPtr;
+CT_SMART_POINTER_DEFINITONS(HierarchicalConfiguration);
 
 } // namespace configuration
 } // namespace coconut_tools

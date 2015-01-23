@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 project(CoconutTools)
 
@@ -11,7 +11,9 @@ set(CoconutTools_VERSION_MAJOR 1)
 set(CoconutTools_VERSION_MINOR 0)
 set(CoconutTools_VERSION_BUGFIX 0)
 set(CoconutTools_VERSION_EXTRA "-SNAPSHOT")
-set(CoconutTools_VERSION "${CoconutTools_VERSION_MAJOR}.${CoconutTools_VERSION_MINOR}.${CoconutTools_VERSION_BUGFIX}${CoconutTools_VERSION_EXTRA}")
+set(CoconutTools_VERSION
+	"${CoconutTools_VERSION_MAJOR}.${CoconutTools_VERSION_MINOR}.${CoconutTools_VERSION_BUGFIX}${CoconutTools_VERSION_EXTRA}"
+	)
 
 option(COMPILER_IS_DEBUG_BUILD "Is debug build" ON)
 option(COMPILER_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)

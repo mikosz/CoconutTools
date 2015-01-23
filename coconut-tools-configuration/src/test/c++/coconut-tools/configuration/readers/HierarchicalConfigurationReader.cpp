@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(AddsKeyValuePairsParsedFromStream) {
             ;
     std::istringstream configurationStream(CONFIGURATION_CONTENTS);
 
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
 
     HierarchicalConfigurationReader reader;
     reader.read(parsers::XMLParser(), configurationStream, configuration.get());
@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test_utils::ResourcesDi
     const boost::filesystem::path CONFIGURATION_PATH(resourcesDir() / "configuration.xml");
     test_utils::writeToFile(CONFIGURATION_PATH, CONFIGURATION_CONTENTS);
 
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
 
     HierarchicalConfigurationReader reader;
     reader.read(parsers::XMLParser(), CONFIGURATION_PATH, configuration.get());

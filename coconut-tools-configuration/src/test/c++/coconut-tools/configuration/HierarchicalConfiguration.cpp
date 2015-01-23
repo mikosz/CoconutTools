@@ -13,7 +13,7 @@ using namespace coconut_tools::configuration;
 BOOST_AUTO_TEST_SUITE(HierachicalConfigurationTestSuite);
 
 BOOST_AUTO_TEST_CASE(BuildsAConfigurationHierarchy) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
 
     HierarchicalConfiguration::Node father1(HierarchicalConfiguration::create());
     father1->add("child", HierarchicalConfiguration::create("son1-1"));
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(BuildsAConfigurationHierarchy) {
 }
 
 BOOST_AUTO_TEST_CASE(CantAddANodeWithNonUniqueParent) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     configuration->set("grandfather", HierarchicalConfiguration::create());
     configuration->set("grandfather/parent", HierarchicalConfiguration::create());
     configuration->add("grandfather/parent", HierarchicalConfiguration::create());
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(CantAddANodeWithNonUniqueParent) {
 }
 
 BOOST_AUTO_TEST_CASE(CantAddANodeWithEmptyPath) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->add("", HierarchicalConfiguration::create()),
             hierarchical::NonEmptyNodeSpecifierExpected
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(CantAddANodeWithEmptyPath) {
 }
 
 BOOST_AUTO_TEST_CASE(CantSetNodeWithNonUniqueParent) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     configuration->set("grandfather", HierarchicalConfiguration::create());
 
     HierarchicalConfiguration::Node father1(HierarchicalConfiguration::create());
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(CantSetNodeWithNonUniqueParent) {
 }
 
 BOOST_AUTO_TEST_CASE(CantSetNodeWithEmptyPath) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->set("", HierarchicalConfiguration::create()),
             hierarchical::NonEmptyNodeSpecifierExpected
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(CantSetNodeWithEmptyPath) {
 }
 
 BOOST_AUTO_TEST_CASE(CantEraseNodeWithEmptyPath) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(configuration->erase(""), hierarchical::NonEmptyNodeSpecifierExpected);
 }
 

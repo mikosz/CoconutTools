@@ -18,7 +18,7 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	FileAppender(layout::LayoutPtr layout, log_file::LogFilePtr logFile) :
+	FileAppender(layout::LayoutPtr layout, log_file::LogFileSharedPtr logFile) :
 		Appender(layout),
 		logFile_(logFile)
 	{
@@ -32,7 +32,7 @@ protected:
 
 private:
 
-	log_file::LogFilePtr logFile_;
+	log_file::LogFileSharedPtr logFile_;
 
 	FileAppender() {
 	}

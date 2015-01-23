@@ -1,7 +1,7 @@
 #ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_VOLATILESTORAGE_HPP_
 #define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_VOLATILESTORAGE_HPP_
 
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "MappingStorage.hpp"
 
@@ -14,16 +14,16 @@ template <class IdentifierType, class InstanceType>
 class VolatileStorage :
     public MappingStorage<
         IdentifierType,
-        boost::weak_ptr<InstanceType>,
-        boost::shared_ptr<InstanceType>
+        std::weak_ptr<InstanceType>,
+        std::shared_ptr<InstanceType>
         >
 {
 private:
 
     typedef MappingStorage<
                 IdentifierType,
-                boost::weak_ptr<InstanceType>,
-                boost::shared_ptr<InstanceType>
+                std::weak_ptr<InstanceType>,
+                std::shared_ptr<InstanceType>
                 >
             Super;
 

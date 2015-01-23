@@ -4,7 +4,8 @@
 #include <fstream>
 
 #include <boost/filesystem/path.hpp>
-#include <boost/shared_ptr.hpp>
+
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -34,7 +35,7 @@ private:
 
 };
 
-typedef boost::shared_ptr<LogFile> LogFilePtr;
+CT_SMART_POINTER_DEFINITONS(LogFile);
 
 } // namespace log_file
 } // namespace logger

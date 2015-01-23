@@ -28,9 +28,9 @@ struct RootsEntry {
 
     std::string node;
 
-    HierarchicalConfigurationPtr subtree;
+    HierarchicalConfigurationSharedPtr subtree;
 
-    RootsEntry(const std::string& node, HierarchicalConfigurationPtr subtree) :
+    RootsEntry(const std::string& node, HierarchicalConfigurationSharedPtr subtree) :
         node(node),
         subtree(subtree)
     {
