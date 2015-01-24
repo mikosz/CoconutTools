@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
     std::ostringstream output;
 
     {
-        utils::RaiiHelper clogReset(
-                std::bind(&std::ostream::rdbuf, std::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
+    	auto clogRdbuf = std::clog.rdbuf(output.rdbuf());
+        utils::RaiiHelper clogReset([&]() { std::clog.rdbuf(clogRdbuf); });
 
         L logger(logger::Level::INFO);
 
