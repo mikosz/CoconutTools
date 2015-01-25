@@ -78,6 +78,8 @@ BOOST_AUTO_TEST_CASE(EmptyConfigurationDoesntCallCallbacks) {
             std::bind(&newChild, &expectedCalls, std::placeholders::_1, std::placeholders::_2),
             std::bind(&childEnd, &expectedCalls)
     );
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_AUTO_TEST_CASE(ReadsValues) {

@@ -64,6 +64,8 @@ BOOST_AUTO_TEST_CASE(UpdatesRegisteredConfigurables) {
     }
 
     updater.update(conf);
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_AUTO_TEST_CASE(UpdatesAtomically) {

@@ -52,6 +52,8 @@ BOOST_AUTO_TEST_CASE(AddsKeyValuePairsParsedFromStream) {
 
     FlatConfigurationReader<int, float> reader;
     reader.read(parsers::PropertiesParser(), configurationStream, &configuration);
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test_utils::ResourcesDirFixture) {
@@ -68,6 +70,8 @@ BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test_utils::ResourcesDi
 
     FlatConfigurationReader<int, float> reader;
     reader.read(parsers::PropertiesParser(), CONFIGURATION_PATH, &configuration);
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* SimpleConfigurationReaderTestSuite */)

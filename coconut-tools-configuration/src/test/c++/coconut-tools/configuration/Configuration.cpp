@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <sstream>
 
 #include <boost/mpl/list.hpp>
 
@@ -71,8 +72,8 @@ public:
         return multipleEntries_;
     }
 
-    void checkValuesEqual(int lhs, int rhs) const {
-        BOOST_CHECK_EQUAL(lhs, rhs);
+    Value value(Value value) const {
+    	return value;
     }
 
 private:
@@ -126,8 +127,10 @@ public:
     typedef std::shared_ptr<HierarchicalConfiguration> Value;
 
     ConfigurationTestSetup() :
-        singleEntry_(Key("single"), HierarchicalConfiguration::create("value")),
-        multipleEntriesKey_(Key("multiple")) {
+        singleEntry_(Key("single"),
+        HierarchicalConfiguration::create("value")),
+        multipleEntriesKey_(Key("multiple"))
+    {
         multipleEntries_.push_back(HierarchicalConfiguration::create("value 1"));
         multipleEntries_.push_back(HierarchicalConfiguration::create("value 2"));
         multipleEntries_.push_back(HierarchicalConfiguration::create("value 3"));
@@ -147,8 +150,7 @@ public:
         std::for_each(
                 multipleEntries_.begin(),
                 multipleEntries_.end(),
-                std::bind(
-                        &Configuration<Key, Value>::add, std::ref(configuration), multipleEntriesKey(), std::placeholders::_1)
+				[&](const Value& value) { configuration.add(multipleEntriesKey(), value); }
         );
     }
 
@@ -164,8 +166,8 @@ public:
         return multipleEntries_;
     }
 
-    void checkValuesEqual(Value lhs, Value rhs) const {
-        BOOST_CHECK_EQUAL(*lhs, *rhs);
+    const HierarchicalConfiguration& value(Value value) const {
+    	return *value;
     }
 
 private:
@@ -224,8 +226,8 @@ public:
         return multipleEntries_;
     }
 
-    void checkValuesEqual(const std::string& lhs, const std::string& rhs) const {
-        BOOST_CHECK_EQUAL(lhs, rhs);
+    const Value& value(const Value& value) const {
+    	return value;
     }
 
 private:
@@ -272,6 +274,28 @@ public:
     }
 
 };
+
+bool operator<(const HierarchicalConfiguration& lhs, const HierarchicalConfiguration& rhs) {
+	std::ostringstream lhsOss, rhsOss;
+	lhs.print(lhsOss);
+	rhs.print(rhsOss);
+	return lhsOss.str() < rhsOss.str();
+}
+
+template <class Setup, class Values>
+void sort(const Setup& setup, Values* valuesPtr) {
+	Values& values = utils::pointee(valuesPtr);
+
+	typedef typename Values::value_type Value;
+
+	std::sort(
+			values.begin(),
+			values.end(),
+			[&](const Value& lhs, const Value& rhs) {
+				return setup.value(lhs) < setup.value(rhs);
+			}
+			);
+}
 
 /**
  * This test suite should be executed for every concrete Configuration implementation.
@@ -333,7 +357,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GetReturnsStoredElement, ConfigurationImpl, Config
     std::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
     setup.setSingle(configuration.get());
-    setup.checkValuesEqual(configuration->get(setup.singleEntry().first), setup.singleEntry().second);
+    BOOST_CHECK_EQUAL(
+		setup.value(configuration->get(setup.singleEntry().first)),
+		setup.value(setup.singleEntry().second)
+    	);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GetThrowsWhenKeyNotPresent, ConfigurationImpl, ConfigurationImpls) {
@@ -359,9 +386,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GetAllYieldsAllOccurences, ConfigurationImpl, Conf
     typename ConfigurationImpl::Values values;
     configuration->getAll(setup.multipleEntriesKey(), &values);
 
-    BOOST_REQUIRE_EQUAL(values.size(), setup.multipleEntries().size());
+    auto expectedEntries = setup.multipleEntries();
+
+    sort(setup, &values);
+    sort(setup, &expectedEntries);
+
+    BOOST_REQUIRE_EQUAL(values.size(), expectedEntries.size());
     for (size_t i = 0; i < values.size(); ++i) {
-        setup.checkValuesEqual(values[i], setup.multipleEntries()[i]);
+        BOOST_CHECK_EQUAL(setup.value(values[i]), setup.value(expectedEntries[i]));
     }
 }
 
@@ -379,7 +411,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SetAddsKeyWhenNotPresent, ConfigurationImpl, Confi
     std::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
     configuration->set(setup.singleEntry().first, setup.singleEntry().second);
-    setup.checkValuesEqual(configuration->get(setup.singleEntry().first), setup.singleEntry().second);
+    BOOST_CHECK_EQUAL(
+    		setup.value(configuration->get(setup.singleEntry().first)),
+			setup.value(setup.singleEntry().second)
+			);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(SetReplacesAllOccurencesWithSingleInstance, ConfigurationImpl, ConfigurationImpls) {
@@ -388,7 +423,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SetReplacesAllOccurencesWithSingleInstance, Config
 
     setup.addMultiple(configuration.get());
     configuration->set(setup.multipleEntriesKey(), setup.singleEntry().second);
-    setup.checkValuesEqual(configuration->get(setup.multipleEntriesKey()), setup.singleEntry().second);
+    BOOST_CHECK_EQUAL(
+    		setup.value(configuration->get(setup.multipleEntriesKey())),
+			setup.value(setup.singleEntry().second)
+			);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AddAddsKeyWhenNotPresent, ConfigurationImpl, ConfigurationImpls) {
@@ -396,7 +434,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(AddAddsKeyWhenNotPresent, ConfigurationImpl, Confi
     std::shared_ptr<ConfigurationImpl> configuration = setup.create();
 
     configuration->add(setup.singleEntry().first, setup.singleEntry().second);
-    setup.checkValuesEqual(configuration->get(setup.singleEntry().first), setup.singleEntry().second);
+    BOOST_CHECK_EQUAL(
+    		setup.value(configuration->get(setup.singleEntry().first)),
+			setup.value(setup.singleEntry().second)
+			);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AddAddsANewInstanceOfKey, ConfigurationImpl, ConfigurationImpls) {
@@ -405,13 +446,21 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(AddAddsANewInstanceOfKey, ConfigurationImpl, Confi
 
     configuration->add(setup.multipleEntriesKey(), setup.multipleEntries()[0]);
     configuration->add(setup.multipleEntriesKey(), setup.multipleEntries()[1]);
-    BOOST_CHECK_EQUAL(configuration->count(setup.multipleEntriesKey()), 2);
+    configuration->add(setup.multipleEntriesKey(), setup.multipleEntries()[2]);
+    BOOST_CHECK_EQUAL(configuration->count(setup.multipleEntriesKey()), 3);
 
     typename ConfigurationImpl::Values values;
     configuration->getAll(setup.multipleEntriesKey(), &values);
-    BOOST_REQUIRE_EQUAL(values.size(), 2);
-    setup.checkValuesEqual(values[0], setup.multipleEntries()[0]);
-    setup.checkValuesEqual(values[1], setup.multipleEntries()[1]);
+
+    auto expectedEntries = setup.multipleEntries();
+
+    sort(setup, &values);
+    sort(setup, &expectedEntries);
+
+    BOOST_REQUIRE_EQUAL(values.size(), 3);
+    BOOST_CHECK_EQUAL(setup.value(values[0]), setup.value(expectedEntries[0]));
+    BOOST_CHECK_EQUAL(setup.value(values[1]), setup.value(expectedEntries[1]));
+    BOOST_CHECK_EQUAL(setup.value(values[2]), setup.value(expectedEntries[2]));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(EraseRemovesAllKeyOccurences, ConfigurationImpl, ConfigurationImpls) {
@@ -476,9 +525,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GetOptionalYieldsValueWhenKeyPresent, Configuratio
 
     setup.setSingle(configuration.get());
 
-    setup.checkValuesEqual(
-            *configuration->getOptional(setup.singleEntry().first),
-            setup.singleEntry().second
+    BOOST_CHECK_EQUAL(
+            setup.value(*configuration->getOptional(setup.singleEntry().first)),
+            setup.value(setup.singleEntry().second)
             );
 }
 
