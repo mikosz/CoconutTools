@@ -19,6 +19,10 @@ void LogFileFactory::registerLogFile(
 	) {
 	factory_.registerCreator(
 		id,
-		design_pattern::FunctorCreator<LogFile>([&]() { return create(path, overwrite); })
+		design_pattern::FunctorCreator<LogFile>([&]() { return ::create(path, overwrite); })
 		);
+}
+
+LogFileSharedPtr LogFileFactory::create(const std::string& id) {
+	return factory_.create(id);
 }

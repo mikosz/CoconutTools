@@ -16,6 +16,8 @@ public:
 
 	void registerLogFile(const std::string& id, const boost::filesystem::path& path, bool overwrite);
 
+	LogFileSharedPtr create(const std::string& id);
+
 private:
 
 	typedef design_pattern::Factory<
