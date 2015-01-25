@@ -5,6 +5,8 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include "coconut-tools/system/SystemError.hpp"
+
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
 
 namespace coconut_tools {
@@ -17,8 +19,14 @@ public:
 	explicit LogFile(const boost::filesystem::path& path, bool overwrite) :
 		stream_(
 				path.string().c_str(),
-				overwrite ? std::ios::out : std::ios::app
+				overwrite ? std::ios::trunc : std::ios::app
 				) {
+		if (!stream_) {
+			throw system::SystemError(
+				"Failed to open log file \"" + path.string() + "\" for writing",
+				std::error_code(errno, std::iostream_category())
+				);
+		}
 	}
 
 	virtual ~LogFile() {

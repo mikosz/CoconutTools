@@ -5,12 +5,19 @@
 
 #include "coconut-tools/configuration/readers/FlatConfigurationReader.hpp"
 #include "coconut-tools/configuration/parsers/PropertiesParser.hpp"
+
 #include "coconut-tools/test-utils/test-utils.hpp"
 #include "coconut-tools/test-utils/GMockFixture.hpp"
+
+#include "coconut-tools/system/platform.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
 using namespace coconut_tools::configuration::readers;
+
+#if defined(COMPILER_VISUAL_CXX)
+#	pragma warning(disable: 4373) // gmock const param warning
+#endif /* COMPILER_VISUAL_CXX */
 
 namespace {
 

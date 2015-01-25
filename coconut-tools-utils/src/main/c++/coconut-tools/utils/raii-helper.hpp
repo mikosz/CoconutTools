@@ -9,7 +9,9 @@ namespace utils {
 class RaiiHelper {
 public:
 
-    RaiiHelper(std::function<void ()> f) :
+	typedef std::function<void()> Callback;
+
+    RaiiHelper(Callback f) :
         f_(f) {
     }
 
@@ -20,12 +22,12 @@ public:
     }
 
     void reset() {
-        f_ = 0;
+        f_ = Callback();
     }
 
 private:
 
-    std::function<void ()> f_;
+    Callback f_;
 
 };
 

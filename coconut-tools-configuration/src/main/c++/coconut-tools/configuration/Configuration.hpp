@@ -62,7 +62,7 @@ public:
      * @param key - the key to look for in the configuration
      * @return size_t - the number of occurences of key in the configuration
      */
-    virtual size_t count(const KeyParam key) const = 0;
+    virtual size_t count(KeyParam key) const = 0;
 
     /**
      * Returns a single value specified for the provided key. If none or multiple values are specified,
@@ -73,7 +73,7 @@ public:
      * @throws MissingRequiredValue - iff count(key) == 0
      * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
      */
-    virtual Value get(const KeyParam key) const = 0;
+    virtual Value get(KeyParam key) const = 0;
 
     /**
      * Returns all values specified for the provided key. Does not clear values beforehand.
@@ -81,14 +81,14 @@ public:
      * @param key - the key to look for in the configuration
      * @param values[out] - all values specified for key
      */
-    virtual void getAll(const KeyParam key, Values* values) const = 0;
+    virtual void getAll(KeyParam key, Values* values) const = 0;
 
     /**
      * Sets the value for the provided key, overwriting the existing values.
      *
      * Postcondition: get(key) == value
      */
-    virtual void set(const KeyParam key, const ValueParam value) = 0;
+    virtual void set(KeyParam key, const ValueParam value) = 0;
 
     /**
      * Adds another value for the provided key.
@@ -96,7 +96,7 @@ public:
      * Precondition: count(key) == n
      * Postcondition: count(key) == n + 1 and getAll(key) contains value
      */
-    virtual void add(const KeyParam key, const ValueParam value) = 0;
+    virtual void add(KeyParam key, const ValueParam value) = 0;
 
     /**
      * Remove all occurences of the provided key.
@@ -105,7 +105,7 @@ public:
      *
      * @param key - the key to look for in the configuration
      */
-    virtual void erase(const KeyParam key) = 0;
+    virtual void erase(KeyParam key) = 0;
 
     /**
      * Returns all the keys existing in the current configuration. Does not clear k beforehand.
@@ -123,7 +123,7 @@ public:
      * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
      */
     boost::optional<Value> getOptional(
-            const KeyParam key,
+            KeyParam key,
             boost::optional<Value> defaultValue = boost::optional<Value>()
             ) {
         return count(key) ? get(key) : defaultValue;

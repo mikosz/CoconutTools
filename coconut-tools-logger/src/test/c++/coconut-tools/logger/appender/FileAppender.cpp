@@ -8,7 +8,10 @@
 #include "coconut-tools/logger/appender/FileAppender.hpp"
 #include "coconut-tools/logger/layout/EmptyLayout.hpp"
 #include "coconut-tools/logger/log-file/LogFile.hpp"
+
 #include "coconut-tools/test-utils/GMockFixture.hpp"
+#include "coconut-tools/test-utils/test-utils.hpp"
+
 #include "coconut-tools/utils/raii-helper.hpp"
 
 using namespace coconut_tools;
@@ -20,8 +23,8 @@ namespace {
 class MockLogFile : public log_file::LogFile {
 public:
 
-	MockLogFile() :
-		log_file::LogFile(boost::filesystem::path(), true) {
+	MockLogFile(const boost::filesystem::path& path) :
+		log_file::LogFile(path, true) {
 	}
 
 	MOCK_METHOD1(write, void (const std::string& message));
@@ -32,11 +35,11 @@ BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
 BOOST_AUTO_TEST_SUITE(AppenderTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FileAppenderTestSuite, test_utils::GMockFixture);
 
-BOOST_AUTO_TEST_CASE(WritesToFile) {
+BOOST_FIXTURE_TEST_CASE(WritesToFile, test_utils::ResourcesDirFixture) {
 	const std::string testString("test string");
 
 	layout::LayoutPtr layout(new layout::EmptyLayout);
-	log_file::LogFileSharedPtr logFile(new MockLogFile);
+	log_file::LogFileSharedPtr logFile(new MockLogFile(resourcesDir() / "log-file.txt"));
 	FileAppender appender(layout, logFile);
 
 	EXPECT_CALL(
