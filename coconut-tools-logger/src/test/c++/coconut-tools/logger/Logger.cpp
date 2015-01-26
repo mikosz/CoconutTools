@@ -17,7 +17,7 @@ namespace {
 using namespace coconut_tools;
 using namespace coconut_tools::logger;
 
-typedef boost::mpl::list<Logger, volatile Logger> LoggerTypes;
+typedef boost::mpl::list</*Logger,*/ volatile Logger> LoggerTypes;
 
 BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
 

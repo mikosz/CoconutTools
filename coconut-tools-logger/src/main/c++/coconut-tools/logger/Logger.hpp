@@ -7,6 +7,7 @@
 #include <functional>
 
 #include <boost/call_traits.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "coconut-tools/concurrent/Lockable.hpp"
 #include "appender/Appender.hpp"
@@ -70,7 +71,7 @@ private:
 
 public:
 
-    class StreamRef {
+    class StreamRef : boost::noncopyable {
     public:
 
         StreamRef() :
@@ -84,6 +85,14 @@ public:
         {
             stream_->reset(level, context);
         }
+
+		StreamRef(StreamRef&& other) :
+			stream_(other.stream_),
+			loggerLock_(other.loggerLock_)
+		{
+			other.stream_ = 0;
+			other.loggerLock_.reset();
+		}
 
         ~StreamRef() {
             if (stream_) {
