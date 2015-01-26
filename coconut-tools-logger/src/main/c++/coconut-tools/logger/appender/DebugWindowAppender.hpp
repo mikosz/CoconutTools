@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "coconut-tools/design-pattern/factory/creator/NewCreator.hpp"
+#include "coconut-tools/design-pattern/creator/NewCreator.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -30,7 +30,7 @@ private:
 	DebugWindowAppender() {
 	}
 
-	friend class design_pattern::factory::creator::NewCreator<Appender>;
+	friend class design_pattern::creator::NewCreator<Appender>;
 
 };
 

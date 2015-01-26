@@ -20,7 +20,8 @@ public:
 		stream_(
 				path.string().c_str(),
 				overwrite ? std::ios::trunc : std::ios::app
-				) {
+				)
+	{
 		if (!stream_) {
 			throw system::SystemError(
 				"Failed to open log file \"" + path.string() + "\" for writing",

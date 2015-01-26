@@ -1,11 +1,10 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_NEWCREATOR_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_NEWCREATOR_HPP_
+#ifndef COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_NEWCREATOR_HPP_
+#define COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_NEWCREATOR_HPP_
 
 #include <memory>
 
 namespace coconut_tools {
 namespace design_pattern {
-namespace factory {
 namespace creator {
 
 template <class InstanceType>
@@ -58,8 +57,7 @@ NewCreator<InstanceType> NewCreator<InstanceType>::makeCreator() {
 }
 
 } // namespace creator
-} // namespace factory
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_NEWCREATOR_HPP_ */
+#endif /* COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_NEWCREATOR_HPP_ */

@@ -1,67 +1,78 @@
-#ifndef COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_HPP_
-#define COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_HPP_
+#ifndef COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_SINGLETON_HPP_
+#define COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_SINGLETON_HPP_
 
 #include <cstdlib>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
+
+#include "coconut-tools/design-pattern/creator.hpp"
 
 namespace coconut_tools {
 namespace design_pattern {
 namespace singleton {
 
-template <class T, class LockingPolicy>
+template <
+	class InstanceType,
+	class LockingPolicyType,
+	class CreatorType = NewCreator<InstanceType>
+	>
 class Singleton : boost::noncopyable {
 public:
 
-    static T& instance() {
+	typedef InstanceType Instance;
+
+	typedef std::shared_ptr<InstanceType> InstancePtr;
+
+    typedef CreatorType Creator;
+
+    typedef LockingPolicyType LockingPolicy;
+
+    static InstancePtr instance() {
         if (!instance_) {
-            typename LockingPolicy::Lock lock(*mutex_);
+            auto lock = lockingPolicy_->lock(&instance_);
             if (!instance_) {
-                instance_ = new T;
+				Creator creator;
+                instance_.reset(creator.create().release());
                 std::atexit(&Singleton::destroy);
             }
         }
-        return *instance_;
+        return instance_;
     }
 
-    static void setInstance(T* instance) {
-    	typename LockingPolicy::Lock lock(*mutex_);
-    	if (instance_) {
-    		delete instance_;
-    		instance_ = 0;
-    	} else {
+    static void setInstance(std::unique_ptr<Instance>&& instance) {
+		auto lock = lockingPolicy_->lock(&instance_);
+    	if (!instance_) {
     		std::atexit(&Singleton::destroy);
     	}
-    	instance_ = instance;
+    	instance_.reset(instance.release());
     }
 
 private:
 
-    static typename LockingPolicy::Mutex* mutex_;
+    static std::unique_ptr<LockingPolicy> lockingPolicy_;
 
-    static T* volatile instance_;
+    static InstancePtr instance_;
 
     static void destroy() {
         if (instance_) {
-            typename LockingPolicy::Lock lock(*mutex_);
+			auto lock = lockingPolicy_->lock(&instance_);
             if (instance_) {
-                delete instance_;
-                instance_ = 0;
+                instance_.reset();
             }
         }
     }
 
 };
 
-// Yes, it's a memory leak. Without it, the code cannot be thread safe (imo).
-template <class T, class LockingPolicy>
-typename LockingPolicy::Mutex* Singleton<T, LockingPolicy>::mutex_ = new typename LockingPolicy::Mutex;
+template <class InstanceType, class LockingPolicy, class Creator>
+std::unique_ptr<LockingPolicy> Singleton<InstanceType, LockingPolicy, Creator>::lockingPolicy_(new LockingPolicy);
 
-template <class T, class LockingPolicy>
-T* volatile Singleton<T, LockingPolicy>::instance_ = 0;
+template <class InstanceType, class LockingPolicy, class Creator>
+typename Singleton<InstanceType, LockingPolicy, Creator>::InstancePtr Singleton<InstanceType, LockingPolicy, Creator>::instance_;
 
 } // namespace singleton
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_HPP_ */
+#endif /* COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_SINGLETON_HPP_ */

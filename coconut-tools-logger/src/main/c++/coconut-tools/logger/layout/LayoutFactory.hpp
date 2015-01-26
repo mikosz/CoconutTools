@@ -6,6 +6,7 @@
 #include "Layout.hpp"
 
 #include "coconut-tools/design-pattern/factory.hpp"
+
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 
 namespace coconut_tools {
@@ -16,10 +17,10 @@ class LayoutFactory :
 		public design_pattern::factory::Factory<
 			std::string,
 			Layout,
-			design_pattern::factory::PermanentStorage,
-			design_pattern::factory::NewCreator,
-			design_pattern::factory::NoLockingPolicy,
-			design_pattern::factory::IgnoringErrorPolicy
+			design_pattern::PermanentStorage,
+			design_pattern::NewCreator,
+			design_pattern::NoLockingPolicy,
+			design_pattern::IgnoringErrorPolicy
 			>
 {
 public:

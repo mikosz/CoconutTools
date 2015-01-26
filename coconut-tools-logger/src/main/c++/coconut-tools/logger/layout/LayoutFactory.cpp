@@ -9,7 +9,7 @@ using namespace coconut_tools::logger::layout;
 namespace {
 
 void registerBuiltins(LayoutFactory& factory) {
-	factory.registerCreator(EmptyLayout::CLASS_NAME, design_pattern::factory::NewCreator<Layout>::makeCreator<EmptyLayout>());
+	factory.registerCreator(EmptyLayout::CLASS_NAME, design_pattern::NewCreator<Layout>::makeCreator<EmptyLayout>());
 }
 
 } // anonymous namespace

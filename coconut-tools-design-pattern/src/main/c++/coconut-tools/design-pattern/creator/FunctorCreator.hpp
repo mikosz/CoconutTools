@@ -1,12 +1,11 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_
+#ifndef COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_FUNCTORCREATOR_HPP_
+#define COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_FUNCTORCREATOR_HPP_
 
 #include <memory>
 #include <functional>
 
 namespace coconut_tools {
 namespace design_pattern {
-namespace factory {
 namespace creator {
 
 template <class InstanceType>
@@ -32,8 +31,7 @@ private:
 };
 
 } // namespace creator
-} // namespace factory
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_ */
+#endif /* COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_FUNCTORCREATOR_HPP_ */

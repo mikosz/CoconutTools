@@ -11,9 +11,9 @@ using namespace coconut_tools::logger::appender;
 namespace {
 
 void registerBuiltins(AppenderFactory& factory) {
-	factory.registerCreator(ConsoleAppender::CLASS_NAME, design_pattern::factory::NewCreator<Appender>::makeCreator<ConsoleAppender>());
-	factory.registerCreator(DebugWindowAppender::CLASS_NAME, design_pattern::factory::NewCreator<Appender>::makeCreator<DebugWindowAppender>());
-	factory.registerCreator(FileAppender::CLASS_NAME, design_pattern::factory::NewCreator<Appender>::makeCreator<FileAppender>());
+	factory.registerCreator(ConsoleAppender::CLASS_NAME, design_pattern::NewCreator<Appender>::makeCreator<ConsoleAppender>());
+	factory.registerCreator(DebugWindowAppender::CLASS_NAME, design_pattern::NewCreator<Appender>::makeCreator<DebugWindowAppender>());
+	factory.registerCreator(FileAppender::CLASS_NAME, design_pattern::NewCreator<Appender>::makeCreator<FileAppender>());
 }
 
 } // anonymous namespace

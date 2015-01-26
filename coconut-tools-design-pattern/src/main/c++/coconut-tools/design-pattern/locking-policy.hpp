@@ -1,32 +1,18 @@
-#ifndef COCONUTTOOLS_DESIGN_PATTERN_LOCKING_POLICY_HPP_
-#define COCONUTTOOLS_DESIGN_PATTERN_LOCKING_POLICY_HPP_
+#ifndef COCONUT_TOOLS_DESIGN_PATTERN_LOCKING_POLICY_HPP_
+#define COCONUT_TOOLS_DESIGN_PATTERN_LOCKING_POLICY_HPP_
 
-#include <boost/thread/mutex.hpp>
-
-#include "coconut-tools/utils/Null.hpp"
+#include "locking-policy/NoLockingPolicy.hpp"
+#include "locking-policy/SharedMutexLockingPolicy.hpp"
+#include "locking-policy/UniqueMutexLockingPolicy.hpp"
 
 namespace coconut_tools {
 namespace design_pattern {
 
-class EmptyLockingPolicy {
-public:
-
-    typedef utils::Null Mutex;
-
-    typedef utils::Null Lock;
-
-};
-
-class BoostLockingPolicy {
-public:
-
-    typedef boost::mutex Mutex;
-
-    typedef boost::mutex::scoped_lock Lock;
-
-};
+using locking_policy::NoLockingPolicy;
+using locking_policy::SharedMutexLockingPolicy;
+using locking_policy::UniqueMutexLockingPolicy;
 
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUTTOOLS_DESIGN_PATTERN_LOCKING_POLICY_HPP_ */
+#endif /* COCONUT_TOOLS_DESIGN_PATTERN_LOCKING_POLICY_HPP_ */

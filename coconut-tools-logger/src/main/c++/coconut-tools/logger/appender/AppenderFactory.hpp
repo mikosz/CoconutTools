@@ -15,10 +15,10 @@ class AppenderFactory :
 		public design_pattern::factory::Factory<
 			std::string,
 			Appender,
-			design_pattern::factory::PermanentStorage,
-			design_pattern::factory::NewCreator,
-			design_pattern::factory::NoLockingPolicy,
-			design_pattern::factory::IgnoringErrorPolicy
+			design_pattern::PermanentStorage,
+			design_pattern::NewCreator,
+			design_pattern::NoLockingPolicy,
+			design_pattern::IgnoringErrorPolicy
 			>
 {
 public:

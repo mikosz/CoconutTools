@@ -11,19 +11,6 @@ namespace logger {
 class LoggerFactory {
 public:
 
-	Logger& getSystemLogger() const {
-		static bool initialised = false;
-		static Logger logger(Level::INFO);
-		static layout::LayoutPtr layout(new layout::EmptyLayout());
-		static appender::AppenderPtr appender(new appender::ConsoleAppender(layout));
-		if (!initialised) {
-			logger.addAppender(appender);
-			initialised = true;
-		}
-
-		return logger;
-	}
-
 };
 
 }  // namespace logger

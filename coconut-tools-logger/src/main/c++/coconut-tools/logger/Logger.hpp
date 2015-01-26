@@ -221,6 +221,6 @@ private:
 };
 
 }  // namespace logger
-}  // namespace CoconutTools {
+}  // namespace CoconutTools
 
 #endif /* COCONUTTOOLS_LOGGER_LOGGER_HPP_ */

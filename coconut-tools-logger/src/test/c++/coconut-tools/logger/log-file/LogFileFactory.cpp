@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(ProducesSameFileWithOverwrite) {
 	LogFileFactory factory;
 	factory.registerLogFile("to-overwrite", resourcesDir() / "to-overwrite.txt", true);
 
-	test_utils::writeToFile(resourcesDir() / "to-overwrite.txt", "original content");
+	test_utils::writeToFile(resourcesDir() / "to-overwrite.txt", "original content\n");
 
 	{
 		LogFileSharedPtr logFile = factory.create("to-overwrite");
@@ -32,6 +32,30 @@ BOOST_AUTO_TEST_CASE(ProducesSameFileWithOverwrite) {
 
 	BOOST_CHECK_EQUAL(
 		test_utils::readFile(resourcesDir() / "to-overwrite.txt"),
+		"new content\n"
+		"more new content\n"
+		);
+}
+
+BOOST_AUTO_TEST_CASE(ProducesSameFileWithAppend) {
+	LogFileFactory factory;
+	factory.registerLogFile("to-append", resourcesDir() / "to-append.txt", false);
+
+	test_utils::writeToFile(resourcesDir() / "to-append.txt", "original content\n");
+
+	{
+		LogFileSharedPtr logFile = factory.create("to-append");
+		logFile->write("new content\n");
+	}
+
+	{
+		LogFileSharedPtr logFile = factory.create("to-append");
+		logFile->write("more new content\n");
+	}
+
+	BOOST_CHECK_EQUAL(
+		test_utils::readFile(resourcesDir() / "to-append.txt"),
+		"original content\n"
 		"new content\n"
 		"more new content\n"
 		);
