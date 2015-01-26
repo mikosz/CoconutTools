@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "coconut-tools/utils/raii-helper.hpp"
+#include "coconut-tools/logger/SystemLogger.hpp"
 #include "coconut-tools/logger.hpp"
 
 #include "coconut-tools/logger/appender/DebugWindowAppender.hpp"
@@ -17,7 +18,7 @@ namespace {
 BOOST_AUTO_TEST_SUITE(LoggerFunctionalTestSuite);
 
 BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
-	Logger& logger = LoggerFactory().getSystemLogger();
+	Logger& logger = *SystemLogger::instance();
 	
 	std::ostringstream output;
 

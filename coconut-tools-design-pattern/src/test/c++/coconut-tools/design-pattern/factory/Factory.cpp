@@ -6,8 +6,9 @@
 
 #include "coconut-tools/design-pattern/factory/Factory.hpp"
 #include "coconut-tools/design-pattern/factory/storage.hpp"
-#include "coconut-tools/design-pattern/factory/locking-policy.hpp"
 #include "coconut-tools/design-pattern/factory/error-policy.hpp"
+#include "coconut-tools/design-pattern/locking-policy.hpp"
+
 #include "coconut-tools/test-utils/GMockFixture.hpp"
 
 namespace {

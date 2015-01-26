@@ -25,7 +25,7 @@ public:
 		if (!stream_) {
 			throw system::SystemError(
 				"Failed to open log file \"" + path.string() + "\" for writing",
-				std::error_code(errno, std::iostream_category())
+				std::error_code(errno, std::system_category()) // XXX: why does iostream_category fail here?
 				);
 		}
 	}

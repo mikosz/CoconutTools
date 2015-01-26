@@ -16,6 +16,11 @@ public:
     template <class ConcreteType>
     static NewCreator makeCreator();
 
+    NewCreator() :
+    	delegate_(std::make_shared<ConcreteDelegate<Instance> >())
+    {
+    }
+
     std::unique_ptr<Instance> create() {
     	return delegate_->create();
     }
