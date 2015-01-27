@@ -7,6 +7,9 @@
 
 #include "coconut-tools/design-pattern/factory.hpp"
 
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/logger/layout/LayoutFactory.hpp"
+
 namespace coconut_tools {
 namespace logger {
 namespace appender {
@@ -16,14 +19,37 @@ class AppenderFactory :
 			std::string,
 			Appender,
 			design_pattern::PermanentStorage,
-			design_pattern::NewCreator,
+			design_pattern::FunctorCreator,
 			design_pattern::NoLockingPolicy,
 			design_pattern::IgnoringErrorPolicy
 			>
 {
 public:
 
-	AppenderFactory();
+	typedef design_pattern::NewCreator<
+		Appender,
+		configuration::ConstLoggerConfigurationPtr,
+		layout::LayoutFactory&
+		> AppenderCreator;
+
+	AppenderFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);
+
+	void registerCreator(const std::string& appenderId, AppenderCreator creator);
+
+private:
+
+	typedef design_pattern::factory::Factory<
+		std::string,
+		Appender,
+		design_pattern::PermanentStorage,
+		design_pattern::FunctorCreator,
+		design_pattern::NoLockingPolicy,
+		design_pattern::IgnoringErrorPolicy
+		> Super;
+
+	configuration::ConstLoggerConfigurationPtr loggerConfiguration_;
+
+	layout::LayoutFactory layoutFactory_;
 
 };
 

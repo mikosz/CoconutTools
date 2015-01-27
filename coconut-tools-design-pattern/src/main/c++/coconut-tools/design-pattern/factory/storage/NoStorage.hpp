@@ -32,8 +32,8 @@ public:
         return false;
     }
 
-    Permanent store(const IdentifierParam, InstanceParam instance) {
-        return instance;
+    Permanent store(const IdentifierParam, InstanceParam&& instance) {
+        return instance.release();
     }
 
     void erase(const IdentifierParam) {

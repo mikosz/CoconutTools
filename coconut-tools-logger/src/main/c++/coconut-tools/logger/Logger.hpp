@@ -10,6 +10,9 @@
 #include <boost/noncopyable.hpp>
 
 #include "coconut-tools/concurrent/Lockable.hpp"
+
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+
 #include "appender/Appender.hpp"
 #include "Level.hpp"
 #include "Context.hpp"
@@ -52,7 +55,7 @@ private:
 
         friend class Logger;
 
-        typedef std::vector<appender::AppenderPtr> Appenders;
+        typedef std::vector<appender::AppenderSharedPtr> Appenders;
 
         Stream() :
         	level_(Level::INFO),
@@ -219,6 +222,8 @@ private:
     Stream stream_;
 
 };
+
+CT_SMART_POINTER_DEFINITONS(Logger);
 
 }  // namespace logger
 }  // namespace CoconutTools

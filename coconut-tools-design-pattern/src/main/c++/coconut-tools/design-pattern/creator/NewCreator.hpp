@@ -7,7 +7,7 @@ namespace coconut_tools {
 namespace design_pattern {
 namespace creator {
 
-template <class InstanceType>
+template <class InstanceType, class... Arguments>
 class NewCreator {
 public:
 
@@ -21,8 +21,8 @@ public:
     {
     }
 
-    std::unique_ptr<Instance> create() {
-    	return delegate_->create();
+    std::unique_ptr<Instance> create(Arguments&&... arguments) {
+    	return delegate_->create(arguments);
     }
 
 private:

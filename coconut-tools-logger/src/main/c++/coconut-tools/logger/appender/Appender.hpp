@@ -5,6 +5,8 @@
 #include <string>
 #include <memory>
 
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+
 #include "../layout/Layout.hpp"
 #include "../Context.hpp"
 
@@ -37,7 +39,7 @@ private:
 
 };
 
-typedef std::shared_ptr<Appender> AppenderPtr;
+CT_SMART_POINTER_DEFINITONS(Appender);
 
 } // namespace appender
 } // namespace logger

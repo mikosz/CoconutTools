@@ -1,5 +1,5 @@
-#ifndef LOGGERCONFIGURATION_HPP_
-#define LOGGERCONFIGURATION_HPP_
+#ifndef COCONUT_TOOLS_LOGGER_LOGGERCONFIGURATION_HPP_
+#define COCONUT_TOOLS_LOGGER_LOGGERCONFIGURATION_HPP_
 
 #include <memory>
 
@@ -24,4 +24,4 @@ typedef std::shared_ptr<const LoggerConfiguration> ConstLoggerConfigurationPtr;
 }  // namespace logger
 }  // namespace coconut_tools
 
-#endif /* LOGGERCONFIGURATION_HPP_ */
+#endif /* COCONUT_TOOLS_LOGGER_LOGGERCONFIGURATION_HPP_ */

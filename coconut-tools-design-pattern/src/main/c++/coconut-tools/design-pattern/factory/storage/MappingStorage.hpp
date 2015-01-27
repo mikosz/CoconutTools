@@ -40,7 +40,7 @@ public:
         return storage_.count(identifier) != 0;
     }
 
-    Permanent store(const IdentifierParam identifier, InstanceParam instance) {
+    Permanent store(const IdentifierParam identifier, InstanceParam&& instance) {
         if (isStored(identifier)) {
             erase(identifier);
         }
