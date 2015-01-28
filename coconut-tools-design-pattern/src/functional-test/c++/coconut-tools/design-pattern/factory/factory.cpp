@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 				std::string,
 				AbstractClass,
 				NoStorage,
-				NewCreator,
+				NewCreator<AbstractClass>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 				int,
 				int,
 				NoStorage,
-				FunctorCreator,
+				FunctorCreator<int>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 				int,
 				int,
 				PermanentStorage,
-				FunctorCreator,
+				FunctorCreator<int>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
 				int,
 				int,
 				PermanentStorage,
-				FunctorCreator,
+				FunctorCreator<int>,
 				UniqueMutexLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;

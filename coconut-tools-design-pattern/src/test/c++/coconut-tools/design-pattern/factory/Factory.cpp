@@ -24,7 +24,6 @@ public:
 
 };
 
-template <class>
 class CopyableMockCreatorAdapter {
 public:
 
@@ -170,10 +169,10 @@ BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
         ExceptionThrowingErrorPolicy
         > f;
 
-    CopyableMockCreatorAdapter<int> creator1;
+    CopyableMockCreatorAdapter creator1;
     EXPECT_CALL(*creator1.delegate(), create()).WillOnce(testing::Return(1));
 
-    CopyableMockCreatorAdapter<int> creator2;
+    CopyableMockCreatorAdapter creator2;
     EXPECT_CALL(*creator2.delegate(), create()).WillOnce(testing::Return(2));
 
     f.registerCreator("1", creator1);
@@ -210,10 +209,10 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
         EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(2));
     }
 
-    CopyableMockCreatorAdapter<int> creator1;
+    CopyableMockCreatorAdapter creator1;
     EXPECT_CALL(*creator1.delegate(), create()).WillOnce(testing::Return(1));
 
-    CopyableMockCreatorAdapter<int> creator2;
+    CopyableMockCreatorAdapter creator2;
     EXPECT_CALL(*creator2.delegate(), create()).WillOnce(testing::Return(2));
 
     f.registerCreator("1", creator1);
@@ -283,7 +282,7 @@ BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegiste
 
     EXPECT_CALL(*ErrorPolicy::delegate(), alreadyRegistered(std::string("1")));
 
-    CopyableMockCreatorAdapter<int> creator;
+    CopyableMockCreatorAdapter creator;
 
     f.registerCreator("1", creator);
     f.registerCreator("1", creator);

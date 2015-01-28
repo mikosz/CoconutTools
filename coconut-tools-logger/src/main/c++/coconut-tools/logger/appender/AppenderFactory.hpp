@@ -19,7 +19,7 @@ class AppenderFactory :
 			std::string,
 			Appender,
 			design_pattern::PermanentStorage,
-			design_pattern::FunctorCreator,
+			design_pattern::FunctorCreator<Appender>,
 			design_pattern::NoLockingPolicy,
 			design_pattern::IgnoringErrorPolicy
 			>
@@ -42,7 +42,7 @@ private:
 		std::string,
 		Appender,
 		design_pattern::PermanentStorage,
-		design_pattern::FunctorCreator,
+		design_pattern::FunctorCreator<Appender>,
 		design_pattern::NoLockingPolicy,
 		design_pattern::IgnoringErrorPolicy
 		> Super;

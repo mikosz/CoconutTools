@@ -35,5 +35,10 @@ AppenderFactory::AppenderFactory(configuration::ConstLoggerConfigurationPtr logg
 }
 
 void AppenderFactory::registerCreator(const std::string& appenderId, AppenderCreator creator) {
-	Super::registerCreator(appenderId, [=]() { creator(loggerConfiguration_, layoutFactory_); });
+	Super::registerCreator(
+		appenderId,
+		design_pattern::FunctorCreator<Appender>(
+			[=,&creator]() { creator.create(loggerConfiguration_, layoutFactory_); }
+			)
+		);
 }

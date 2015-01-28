@@ -191,11 +191,11 @@ public:
     	return log(Level::CRITICAL, context);
     }
 
-    void addAppender(appender::AppenderPtr appender) {
+    void addAppender(appender::AppenderSharedPtr appender) {
     	stream_.appenders_.push_back(appender);
     }
 
-    void addAppender(appender::AppenderPtr appender) volatile {
+    void addAppender(appender::AppenderSharedPtr appender) volatile {
     	lock()->addAppender(appender);
     }
 

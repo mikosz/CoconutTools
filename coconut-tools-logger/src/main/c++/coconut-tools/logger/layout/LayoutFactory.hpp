@@ -18,7 +18,7 @@ class LayoutFactory :
 			std::string,
 			Layout,
 			design_pattern::PermanentStorage,
-			design_pattern::NewCreator,
+			design_pattern::NewCreator<Layout>,
 			design_pattern::NoLockingPolicy,
 			design_pattern::IgnoringErrorPolicy
 			>

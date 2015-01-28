@@ -11,55 +11,51 @@ template <class InstanceType, class... Arguments>
 class NewCreator {
 public:
 
-    typedef InstanceType Instance;
+	typedef InstanceType Instance;
 
-    template <class ConcreteType>
-    static NewCreator makeCreator();
+	template <class ConcreteType>
+	static NewCreator makeCreator() {
+		return NewCreator(std::shared_ptr<AbstractDelegate>(new ConcreteDelegate<ConcreteType>));
+	}
 
-    NewCreator() :
-    	delegate_(std::make_shared<ConcreteDelegate<Instance> >())
-    {
-    }
+	NewCreator() :
+		delegate_(std::make_shared<ConcreteDelegate<Instance> >())
+	{
+	}
 
-    std::unique_ptr<Instance> create(Arguments&&... arguments) {
-    	return delegate_->create(arguments);
-    }
+	std::unique_ptr<Instance> create(Arguments... arguments) {
+		return delegate_->create(arguments...);
+	}
 
 private:
 
-    class AbstractDelegate {
-    public:
+	class AbstractDelegate {
+	public:
 
-    	virtual ~AbstractDelegate() {
-    	}
+		virtual ~AbstractDelegate() {
+		}
 
-    	virtual std::unique_ptr<Instance> create() = 0;
+		virtual std::unique_ptr<Instance> create(Arguments... arguments) = 0;
 
-    };
+	};
 
-    template <class ConcreteType>
-    class ConcreteDelegate : public AbstractDelegate {
-    public:
+	template <class ConcreteType>
+	class ConcreteDelegate : public AbstractDelegate {
+	public:
 
-    	std::unique_ptr<Instance> create() {
-    		return std::unique_ptr<Instance>(new ConcreteType);
-    	}
+		std::unique_ptr<Instance> create(Arguments... arguments) {
+			return std::unique_ptr<Instance>(new ConcreteType(arguments...));
+		}
 
-    };
+	};
 
-    NewCreator(std::shared_ptr<AbstractDelegate> delegate) :
-    	delegate_(delegate) {
-    }
+	NewCreator(std::shared_ptr<AbstractDelegate> delegate) :
+		delegate_(delegate) {
+	}
 
-    std::shared_ptr<AbstractDelegate> delegate_;
+	std::shared_ptr<AbstractDelegate> delegate_;
 
 };
-
-template <class InstanceType>
-template <class ConcreteType>
-NewCreator<InstanceType> NewCreator<InstanceType>::makeCreator() {
-	return NewCreator<InstanceType>(std::shared_ptr<AbstractDelegate>(new ConcreteDelegate<ConcreteType>));
-}
 
 } // namespace creator
 } // namespace design_pattern

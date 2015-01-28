@@ -13,7 +13,7 @@ template <
     class IdentifierType,
     class InstanceType,
     template<class /* IdentifierType */, class /* InstanceType */> class StorageType,
-    template<class /* InstanceType */> class CreatorType,
+    class CreatorType,
     class LockingPolicyType,
     template<class /* IdentifierType */, class /* InstanceType */> class ErrorPolicyType
     >
@@ -26,7 +26,7 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef CreatorType<Instance> Creator;
+    typedef CreatorType Creator;
 
     typedef LockingPolicyType LockingPolicy;
 

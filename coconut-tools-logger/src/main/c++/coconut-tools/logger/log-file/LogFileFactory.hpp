@@ -24,7 +24,7 @@ private:
 		std::string,
 		LogFile,
 		design_pattern::PermanentStorage,
-		design_pattern::FunctorCreator,
+		design_pattern::FunctorCreator<LogFile>,
 		design_pattern::NoLockingPolicy,
 		design_pattern::ExceptionThrowingErrorPolicy
 		> Factory;

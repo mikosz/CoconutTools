@@ -12,7 +12,7 @@ using namespace coconut_tools;
 using namespace coconut_tools::logger;
 using namespace coconut_tools::logger::appender;
 
-const std::string DebugWindowAppender::CLASS_NAME("DebugWindowAppender");
+const std::string DebugWindowAppender::CLASS_NAME("coconut_tools::logger::appender::DebugWindowAppender");
 
 void DebugWindowAppender::doAppend(const std::string& message) {
 #if defined(PLATFORM_WINDOWS)
