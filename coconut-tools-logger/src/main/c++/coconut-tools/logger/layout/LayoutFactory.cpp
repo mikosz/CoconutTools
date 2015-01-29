@@ -14,7 +14,7 @@ void registerBuiltins(LayoutFactory& factory) {
 
 } // anonymous namespace
 
-LayoutFactory::LayoutFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration) :
+LayoutFactory::LayoutFactory(logger::configuration::ConstLoggerConfigurationPtr loggerConfiguration) :
 	loggerConfiguration_(loggerConfiguration)
 {
 	registerBuiltins(*this);

@@ -11,6 +11,8 @@
 
 #include "coconut-tools/utils/pointee.hpp"
 
+#include "NodeSelectorIs.hpp"
+
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
 using namespace coconut_tools::configuration::hierarchical;
@@ -50,12 +52,26 @@ NodeSpecifier::NodeSpecifier(const char* path) {
 }
 
 bool NodeSpecifier::operator==(const NodeSpecifier& other) const {
-    return path_ == other.path_;
+    return (path_ == other.path_) && (*selector_ == *other.selector_);
 }
 
 NodeSpecifier& NodeSpecifier::operator/=(const NodeSpecifier& other) {
     std::copy(other.path_.begin(), other.path_.end(), std::back_inserter(path_));
     return *this;
+}
+
+NodeSpecifier NodeSpecifier::operator[](ConstNodeSelectorSharedPtr selector) const {
+	NodeSpecifier result(*this);
+	result.selector_ = selector;
+	return result;
+}
+
+ConstNodeSelectorSharedPtr NodeSpecifier::is(const std::string& text) const {
+	return std::make_shared<NodeSelectorIs>(text);
+}
+
+ConstNodeSelectorSharedPtr NodeSpecifier::has(const NodeSpecifier& subNode) const {
+	return ConstNodeSelectorSharedPtr (); // std::make_shared<NodeSelectorHas>(subNode);
 }
 
 const std::string& NodeSpecifier::root() const {

@@ -27,7 +27,7 @@ void registerBuiltins(AppenderFactory& factory) {
 
 } // anonymous namespace
 
-AppenderFactory::AppenderFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration) :
+AppenderFactory::AppenderFactory(logger::configuration::ConstLoggerConfigurationPtr loggerConfiguration) :
 	loggerConfiguration_(loggerConfiguration),
 	layoutFactory_(loggerConfiguration)
 {

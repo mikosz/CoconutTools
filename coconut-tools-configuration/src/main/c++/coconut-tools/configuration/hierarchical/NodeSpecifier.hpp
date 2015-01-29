@@ -8,6 +8,8 @@
 
 #include "coconut-tools/configuration/configuration-exceptions.hpp"
 
+#include "NodeSelector.hpp"
+
 namespace coconut_tools {
 namespace configuration {
 namespace hierarchical {
@@ -35,7 +37,7 @@ private:
 class NodeSpecifier :
     public boost::dividable<NodeSpecifier>,
     public boost::equality_comparable<NodeSpecifier>
-    {
+{
 public:
 
     static const char SEPARATOR = '/';
@@ -49,6 +51,12 @@ public:
     bool operator==(const NodeSpecifier& other) const;
 
     NodeSpecifier& operator/=(const NodeSpecifier& other);
+
+	NodeSpecifier operator[](ConstNodeSelectorSharedPtr selector) const;
+
+	ConstNodeSelectorSharedPtr is(const std::string& text) const;
+
+	ConstNodeSelectorSharedPtr has(const NodeSpecifier& subNode) const;
 
     const std::string& root() const;
 
@@ -65,6 +73,8 @@ public:
 private:
 
     std::deque<std::string> path_;
+
+	ConstNodeSelectorSharedPtr selector_;
 
 };
 

@@ -70,7 +70,7 @@ public:
 
 private:
 
-	configuration::HierarchicalConfigurationSharedPtr configuration_;
+	coconut_tools::configuration::HierarchicalConfigurationSharedPtr configuration_;
 
 };
 

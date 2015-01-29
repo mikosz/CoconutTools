@@ -116,7 +116,7 @@ void HierarchicalConfiguration::keys(Keys* keysParam) const {
     std::for_each(
             children_.begin(),
             children_.end(),
-            std::bind(&HierarchicalConfiguration::keys_, std::placeholders::_1, hierarchical::NodeSpecifier(), &k)
+			[&k](Node node) { node->keys_(hierarchical::NodeSpecifier(), &k); }
             );
 }
 
