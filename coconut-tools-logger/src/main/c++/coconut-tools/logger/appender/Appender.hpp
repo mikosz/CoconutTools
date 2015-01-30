@@ -7,8 +7,10 @@
 
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
 
-#include "../layout/Layout.hpp"
-#include "../Context.hpp"
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/logger/layout/LayoutFactory.hpp"
+#include "coconut-tools/logger/layout/Layout.hpp"
+#include "coconut-tools/logger/Context.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -32,6 +34,11 @@ protected:
 	Appender(layout::LayoutPtr layout) :
 		layout_(layout) {
 	}
+
+	Appender(
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		);
 
 private:
 

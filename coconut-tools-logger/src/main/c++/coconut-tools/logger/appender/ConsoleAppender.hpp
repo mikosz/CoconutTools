@@ -8,6 +8,9 @@
 
 #include "coconut-tools/design-pattern/creator/NewCreator.hpp"
 
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/logger/layout/LayoutFactory.hpp"
+
 namespace coconut_tools {
 namespace logger {
 namespace appender {
@@ -19,6 +22,14 @@ public:
 
 	ConsoleAppender(layout::LayoutPtr layout) :
 		Appender(layout)
+	{
+	}
+
+	ConsoleAppender(
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		) :
+		Appender(configuration, layoutFactory)
 	{
 	}
 

@@ -21,6 +21,14 @@ public:
 	{
 	}
 
+	DebugWindowAppender(
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		) :
+		Appender(configuration, layoutFactory)
+	{
+	}
+
 protected:
 
 	void doAppend(const std::string& message);

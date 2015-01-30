@@ -29,7 +29,7 @@ public:
 	typedef design_pattern::NewCreator<
 		Appender,
 		configuration::ConstLoggerConfigurationPtr,
-		layout::LayoutFactory&
+		layout::LayoutFactory*
 		> AppenderCreator;
 
 	AppenderFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);

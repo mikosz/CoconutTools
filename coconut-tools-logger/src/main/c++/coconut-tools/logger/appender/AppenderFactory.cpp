@@ -38,7 +38,7 @@ void AppenderFactory::registerCreator(const std::string& appenderId, AppenderCre
 	Super::registerCreator(
 		appenderId,
 		design_pattern::FunctorCreator<Appender>(
-			[=,&creator]() { creator.create(loggerConfiguration_, layoutFactory_); }
+			[=,&creator]() { creator.create(*this->loggerConfiguration_, &this->layoutFactory_); }
 			)
 		);
 }

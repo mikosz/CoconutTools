@@ -4,13 +4,25 @@
 #include <memory>
 #include <string>
 
-#include "coconut-tools/logger/Level.hpp"
-
 #include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+
+#include "coconut-tools/exceptions/RuntimeError.hpp"
+
+#include "coconut-tools/logger/Level.hpp"
 
 namespace coconut_tools {
 namespace logger {
 namespace configuration {
+
+class LoggerConfigurationError : public exceptions::RuntimeError {
+public:
+
+	LoggerConfigurationError(const std::string& message) :
+		exceptions::RuntimeError(message)
+	{
+	}
+
+};
 
 /**
  * <pre>
