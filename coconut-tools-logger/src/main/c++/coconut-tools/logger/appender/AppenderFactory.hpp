@@ -1,8 +1,6 @@
 #ifndef COCONUT_TOOLS_APPENDER_APPENDERFACTORY_HPP_
 #define COCONUT_TOOLS_APPENDER_APPENDERFACTORY_HPP_
 
-#include <string>
-
 #include "Appender.hpp"
 
 #include "coconut-tools/design-pattern/factory.hpp"
@@ -16,7 +14,7 @@ namespace appender {
 
 class AppenderFactory :
 		public design_pattern::factory::Factory<
-			std::string,
+			Appender::Id,
 			Appender,
 			design_pattern::PermanentStorage,
 			design_pattern::FunctorCreator<Appender>,
@@ -28,18 +26,19 @@ public:
 
 	typedef design_pattern::NewCreator<
 		Appender,
+		const Appender::Id&,
 		configuration::ConstLoggerConfigurationPtr,
 		layout::LayoutFactory*
 		> AppenderCreator;
 
 	AppenderFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);
 
-	void registerCreator(const std::string& appenderId, AppenderCreator creator);
+	void registerCreator(const Appender::Id& appenderId, AppenderCreator creator);
 
 private:
 
 	typedef design_pattern::factory::Factory<
-		std::string,
+		Appender::Id,
 		Appender,
 		design_pattern::PermanentStorage,
 		design_pattern::FunctorCreator<Appender>,

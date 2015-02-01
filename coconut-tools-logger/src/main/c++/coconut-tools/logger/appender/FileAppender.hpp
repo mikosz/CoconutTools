@@ -18,17 +18,18 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	FileAppender(layout::LayoutPtr layout, log_file::LogFileSharedPtr logFile) :
-		Appender(layout),
+	FileAppender(const Id& id, layout::LayoutPtr layout, log_file::LogFileSharedPtr logFile) :
+		Appender(id, layout),
 		logFile_(logFile)
 	{
 	}
 
 	FileAppender(
+		const Id& id,
 		const logger::configuration::LoggerConfiguration& configuration,
 		layout::LayoutFactory* layoutFactory
 		) :
-		Appender(configuration, layoutFactory)
+		Appender(id, configuration, layoutFactory)
 	{
 	}
 
@@ -41,9 +42,6 @@ protected:
 private:
 
 	log_file::LogFileSharedPtr logFile_;
-
-	FileAppender() {
-	}
 
 	friend class design_pattern::creator::NewCreator<Appender>;
 

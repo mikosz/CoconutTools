@@ -19,6 +19,8 @@ namespace appender {
 class Appender {
 public:
 
+	typedef std::string Id;
+
     virtual ~Appender() {
     }
 
@@ -28,14 +30,12 @@ protected:
 
     virtual void doAppend(const std::string& message) = 0;
 
-    Appender() {
-    }
-
-	Appender(layout::LayoutPtr layout) :
+	Appender(const Id& id, layout::LayoutPtr layout) :
 		layout_(layout) {
 	}
 
 	Appender(
+		const Id& id,
 		const logger::configuration::LoggerConfiguration& configuration,
 		layout::LayoutFactory* layoutFactory
 		);

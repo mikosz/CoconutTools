@@ -20,16 +20,17 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	ConsoleAppender(layout::LayoutPtr layout) :
-		Appender(layout)
+	ConsoleAppender(const Id& id, layout::LayoutPtr layout) :
+		Appender(id, layout)
 	{
 	}
 
 	ConsoleAppender(
+		const Id& id,
 		const logger::configuration::LoggerConfiguration& configuration,
 		layout::LayoutFactory* layoutFactory
 		) :
-		Appender(configuration, layoutFactory)
+		Appender(id, configuration, layoutFactory)
 	{
 	}
 
@@ -41,9 +42,6 @@ protected:
 	}
 
 private:
-
-	ConsoleAppender() {
-	}
 
 	friend class design_pattern::creator::NewCreator<Appender>;
 

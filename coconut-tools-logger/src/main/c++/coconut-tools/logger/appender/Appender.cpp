@@ -5,10 +5,11 @@ using namespace coconut_tools::logger;
 using namespace coconut_tools::logger::appender;
 
 Appender::Appender(
+	const Id& id,
 	const logger::configuration::LoggerConfiguration& configuration,
 	layout::LayoutFactory* layoutFactory
 	) :
-	layout_(layoutFactory->create(configuration))
+	layout_(layoutFactory->create(configuration.layoutId(id)))
 {
 }
 

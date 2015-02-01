@@ -34,11 +34,11 @@ AppenderFactory::AppenderFactory(logger::configuration::ConstLoggerConfiguration
 	registerBuiltins(*this);
 }
 
-void AppenderFactory::registerCreator(const std::string& appenderId, AppenderCreator creator) {
+void AppenderFactory::registerCreator(const Appender::Id& appenderId, AppenderCreator creator) {
 	Super::registerCreator(
 		appenderId,
 		design_pattern::FunctorCreator<Appender>(
-			[=,&creator]() { creator.create(*this->loggerConfiguration_, &this->layoutFactory_); }
+			[=, &creator]() { creator.create(appenderId, this->loggerConfiguration_, &this->layoutFactory_); }
 			)
 		);
 }

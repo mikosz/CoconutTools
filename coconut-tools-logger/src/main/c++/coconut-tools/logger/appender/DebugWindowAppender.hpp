@@ -16,16 +16,17 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	DebugWindowAppender(layout::LayoutPtr layout) :
-		Appender(layout)
+	DebugWindowAppender(const Id& id, layout::LayoutPtr layout) :
+		Appender(id, layout)
 	{
 	}
 
 	DebugWindowAppender(
+		const Id& id,
 		const logger::configuration::LoggerConfiguration& configuration,
 		layout::LayoutFactory* layoutFactory
 		) :
-		Appender(configuration, layoutFactory)
+		Appender(id, configuration, layoutFactory)
 	{
 	}
 
@@ -34,9 +35,6 @@ protected:
 	void doAppend(const std::string& message);
 
 private:
-
-	DebugWindowAppender() {
-	}
 
 	friend class design_pattern::creator::NewCreator<Appender>;
 

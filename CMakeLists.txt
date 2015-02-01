@@ -46,7 +46,7 @@ enable_testing()
 set(Boost_USE_STATIC_LIBS ${COMPILER_BOOST_USE_STATIC_LIBS})
 set(Boost_USE_MULTITHREADED ON)
 # boost enum can be downloaded from https://github.com/flaub/boost-enum
-find_package(Boost COMPONENTS system thread test_exec_monitor filesystem regex enum REQUIRED)
+find_package(Boost COMPONENTS system thread test_exec_monitor filesystem regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 

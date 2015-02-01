@@ -75,10 +75,16 @@ public:
 
 	typedef std::string LoggerId;
 
+	typedef std::string AppenderId;
+
+	typedef std::string LayoutId;
+
 	virtual ~LoggerConfiguration() {
 	}
 
 	Level loggerLevel(const LoggerId& loggerId) const;
+
+	LayoutId layoutId(const AppenderId& appenderId) const;
 
 private:
 
