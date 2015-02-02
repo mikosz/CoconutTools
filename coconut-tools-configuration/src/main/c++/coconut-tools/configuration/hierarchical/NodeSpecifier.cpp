@@ -52,7 +52,15 @@ NodeSpecifier::NodeSpecifier(const char* path) {
 }
 
 bool NodeSpecifier::operator==(const NodeSpecifier& other) const {
-    return (path_ == other.path_) && (*selector_ == *other.selector_);
+    if (path_ != other.path_) {
+		return false;
+	} else if (static_cast<bool>(selector_) != static_cast<bool>(other.selector_)) {
+		return false;
+	} else if (selector_) {
+		return *selector_ == *other.selector_;
+	}
+
+	return true;
 }
 
 NodeSpecifier& NodeSpecifier::operator/=(const NodeSpecifier& other) {
