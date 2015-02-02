@@ -111,4 +111,29 @@ BOOST_AUTO_TEST_CASE(CantEraseNodeWithEmptyPath) {
     BOOST_CHECK_THROW(configuration->erase(""), hierarchical::NonEmptyNodeSpecifierExpected);
 }
 
+BOOST_AUTO_TEST_CASE(NodeSpecifierIsSelectsApplicableNode) {
+	auto configuration = HierarchicalConfiguration::create();
+	configuration->set("grandfather", HierarchicalConfiguration::create());
+
+	auto father1 = HierarchicalConfiguration::create();
+	auto child1 = HierarchicalConfiguration::create();
+	child1->add("id", HierarchicalConfiguration::create("id-1"));
+	father1->add("child", child1);
+
+	configuration->add("grandfather/father", father1);
+
+	auto father2 = HierarchicalConfiguration::create();
+	auto child2 = HierarchicalConfiguration::create();
+	child2->add("id", HierarchicalConfiguration::create("id-2"));
+	father2->add("child", child2);
+
+	configuration->add("grandfather/father", father2);
+
+	auto found = configuration->get(
+		(hierarchical::NodeSpecifier() / "grandfather/father")[hierarchical::NodeSpecifier("child/id").is("id-2")]
+		);
+
+	BOOST_CHECK_EQUAL(father2, found);
+}
+
 BOOST_AUTO_TEST_SUITE_END(/* HierachicalConfigurationTestSuite */);

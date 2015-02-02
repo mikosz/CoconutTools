@@ -3,6 +3,7 @@
 
 #include <string>
 #include <deque>
+#include <iosfwd>
 
 #include <boost/operators.hpp>
 
@@ -77,6 +78,8 @@ private:
 	ConstNodeSelectorSharedPtr selector_;
 
 };
+
+std::ostream& operator<<(std::ostream& os, const NodeSpecifier& specifiers);
 
 } // namespace hierarchical
 } // namespace configuration

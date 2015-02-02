@@ -4,6 +4,7 @@
 #include <iterator>
 #include <sstream>
 #include <functional>
+#include <iostream>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -12,6 +13,7 @@
 #include "coconut-tools/utils/pointee.hpp"
 
 #include "NodeSelectorIs.hpp"
+#include "NodeSelectorHas.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
@@ -79,7 +81,7 @@ ConstNodeSelectorSharedPtr NodeSpecifier::is(const std::string& text) const {
 }
 
 ConstNodeSelectorSharedPtr NodeSpecifier::has(const NodeSpecifier& subNode) const {
-	return ConstNodeSelectorSharedPtr (); // std::make_shared<NodeSelectorHas>(subNode);
+	return std::make_shared<NodeSelectorHas>(subNode.string());
 }
 
 const std::string& NodeSpecifier::root() const {
@@ -119,5 +121,17 @@ bool NodeSpecifier::empty() const {
 }
 
 std::string NodeSpecifier::string() const {
-    return boost::join(path_, std::string() + NodeSpecifier::SEPARATOR);
+	std::ostringstream oss;
+	oss << boost::join(path_, std::string() + NodeSpecifier::SEPARATOR);
+	if (selector_) {
+		oss << '['
+			<< *selector_
+			<< ']';
+	}
+    return  oss.str();
+}
+
+std::ostream& coconut_tools::configuration::hierarchical::operator<<(
+	std::ostream& os, const NodeSpecifier& specifier) {
+	return os << specifier.string();
 }

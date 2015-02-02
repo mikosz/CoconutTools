@@ -1,5 +1,5 @@
-#ifndef _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTORIS_HPP_
-#define _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTORIS_HPP_
+#ifndef _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTORHAS_HPP_
+#define _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTORHAS_HPP_
 
 #include <string>
 
@@ -9,10 +9,10 @@ namespace coconut_tools {
 namespace configuration {
 namespace hierarchical {
 
-class NodeSelectorIs : public NodeSelector {
+class NodeSelectorHas : public NodeSelector {
 public:
 
-	NodeSelectorIs(const std::string& nodeText) :
+	NodeSelectorHas(const std::string& nodeText) :
 		nodeText_(nodeText)
 	{
 	}
@@ -24,11 +24,11 @@ public:
 protected:
 
 	Type selectorType() const override {
-		return IS;
+		return HAS;
 	}
 
 	bool equals(const NodeSelector& other) const override {
-		return nodeText_ == dynamic_cast<const NodeSelectorIs&>(other).nodeText_;
+		return nodeText_ == dynamic_cast<const NodeSelectorHas&>(other).nodeText_;
 	}
 
 private:
@@ -41,4 +41,4 @@ private:
 } // namespace configuration
 } // namespace coconut_tools
 
-#endif /* _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTORIS_HPP_ */
+#endif /* _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTORHAS_HPP_ */

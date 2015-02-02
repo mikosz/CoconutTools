@@ -1,7 +1,11 @@
 #ifndef _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTOR_HPP_
 #define _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTOR_HPP_
 
+#include <iosfwd>
+#include <string>
+
 #include <boost/noncopyable.hpp>
+#include <boost/operators.hpp>
 
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
 
@@ -12,7 +16,10 @@ class HierarchicalConfiguration;
 
 namespace hierarchical {
 
-class NodeSelector : boost::noncopyable {
+class NodeSelector :
+	boost::equality_comparable<NodeSelector>,
+	boost::noncopyable
+{
 public:
 
 	virtual ~NodeSelector() {
@@ -23,6 +30,8 @@ public:
 	}
 
 	virtual bool matches(const HierarchicalConfiguration& node) const = 0;
+
+	virtual std::string string() const = 0;
 
 protected:
 
@@ -39,6 +48,8 @@ protected:
 	virtual bool equals(const NodeSelector& other) const = 0;
 
 };
+
+std::ostream& operator<<(std::ostream& os, const NodeSelector& selector);
 
 CT_SMART_POINTER_DEFINITONS(NodeSelector);
 
