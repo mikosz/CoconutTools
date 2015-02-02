@@ -20,8 +20,8 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	ConsoleAppender(const Id& id, layout::LayoutPtr layout) :
-		Appender(id, layout)
+	ConsoleAppender(layout::LayoutPtr layout) :
+		Appender(layout)
 	{
 	}
 

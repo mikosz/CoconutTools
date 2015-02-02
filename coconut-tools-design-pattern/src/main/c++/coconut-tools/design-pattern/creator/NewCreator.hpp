@@ -15,7 +15,7 @@ public:
 
 	template <class ConcreteType>
 	static NewCreator makeCreator() {
-		return NewCreator(std::shared_ptr<AbstractDelegate>(new ConcreteDelegate<ConcreteType>));
+		return NewCreator(std::make_shared<ConcreteDelegate<ConcreteType> >());
 	}
 
 	NewCreator() :
@@ -43,7 +43,7 @@ private:
 	class ConcreteDelegate : public AbstractDelegate {
 	public:
 
-		std::unique_ptr<Instance> create(Arguments... arguments) {
+		std::unique_ptr<Instance> create(Arguments... arguments) override {
 			return std::unique_ptr<Instance>(new ConcreteType(arguments...));
 		}
 

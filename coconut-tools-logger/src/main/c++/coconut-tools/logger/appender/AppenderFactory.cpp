@@ -27,7 +27,7 @@ void registerBuiltins(AppenderFactory& factory) {
 
 } // anonymous namespace
 
-AppenderFactory::AppenderFactory(logger::configuration::ConstLoggerConfigurationPtr loggerConfiguration) :
+AppenderFactory::AppenderFactory(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration) :
 	loggerConfiguration_(loggerConfiguration),
 	layoutFactory_(loggerConfiguration)
 {
@@ -37,8 +37,8 @@ AppenderFactory::AppenderFactory(logger::configuration::ConstLoggerConfiguration
 void AppenderFactory::registerCreator(const Appender::Id& appenderId, AppenderCreator creator) {
 	Super::registerCreator(
 		appenderId,
-		design_pattern::FunctorCreator<Appender>(
-			[=, &creator]() { creator.create(appenderId, this->loggerConfiguration_, &this->layoutFactory_); }
+		design_pattern::FunctorCreator<Appender>( // TODO: I couldn't replace this with a lambda - why?
+			std::bind(&AppenderCreator::create, creator, appenderId, std::cref(*loggerConfiguration_), &layoutFactory_)
 			)
 		);
 }

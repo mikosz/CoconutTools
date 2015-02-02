@@ -25,6 +25,13 @@ HierarchicalConfigurationSharedPtr getRootNode(HierarchicalConfigurationSharedPt
 	return configuration->get(NodeSpecifier() / "root-logger");
 }
 
+HierarchicalConfigurationSharedPtr getAppenderNode(
+	HierarchicalConfigurationSharedPtr configuration,
+	const std::string& appenderId
+	) {
+	return configuration->get((NodeSpecifier() / "appenders" / "appender")[NodeSpecifier("id").is(appenderId)]);
+}
+
 } // anonymous namespace
 
 Level LoggerConfiguration::loggerLevel(const LoggerId& loggerId) const {
@@ -56,4 +63,27 @@ Level LoggerConfiguration::loggerLevel(const LoggerId& loggerId) const {
 	}
 
 	throw LoggerConfigurationError("level option not specified for logger \"" + loggerId + '"');
+}
+
+LoggerConfiguration::LayoutId LoggerConfiguration::layoutId(const AppenderId& appenderId) const {
+	std::vector<LoggerId> elements;
+	boost::split(elements, appenderId, boost::is_any_of("."));
+
+	while (!elements.empty()) {
+		LoggerId nodeId;
+		boost::join(elements, ".");
+
+		auto node = getAppenderNode(configuration_, nodeId);
+
+		if (node) {
+			auto layoutNode = node->get("layout");
+			if (layoutNode) {
+				return layoutNode->text();
+			}
+		}
+
+		elements.pop_back();
+	}
+
+	throw LoggerConfigurationError("layout option not specified for appender \"" + appenderId + '"');
 }

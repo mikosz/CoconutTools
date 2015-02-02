@@ -2,7 +2,7 @@
 
 using namespace coconut_tools::logger;
 
-LoggerFactory::LoggerFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration) :
+LoggerFactory::LoggerFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration) :
 	loggerConfiguration_(loggerConfiguration),
 	appenderFactory_(loggerConfiguration)
 {

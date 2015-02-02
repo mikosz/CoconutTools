@@ -18,8 +18,8 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	FileAppender(const Id& id, layout::LayoutPtr layout, log_file::LogFileSharedPtr logFile) :
-		Appender(id, layout),
+	FileAppender(layout::LayoutPtr layout, log_file::LogFileSharedPtr logFile) :
+		Appender(layout),
 		logFile_(logFile)
 	{
 	}

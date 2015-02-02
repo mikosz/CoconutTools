@@ -25,11 +25,11 @@ class LayoutFactory :
 {
 public:
 
-	LayoutFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);
+	LayoutFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
 private:
 
-	configuration::ConstLoggerConfigurationPtr loggerConfiguration_;
+	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
 };
 

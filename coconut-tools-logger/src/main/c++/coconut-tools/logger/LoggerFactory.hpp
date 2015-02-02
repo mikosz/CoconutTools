@@ -22,7 +22,7 @@ public:
 
 	typedef std::string LoggerId;
 
-	LoggerFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);
+	LoggerFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
 	LoggerSharedPtr create(const LoggerId& loggerId);
 
@@ -30,7 +30,7 @@ public:
 
 private:
 
-	configuration::ConstLoggerConfigurationPtr loggerConfiguration_;
+	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
 	design_pattern::factory::storage::PermanentStorage<LoggerId, Logger> storage_;
 

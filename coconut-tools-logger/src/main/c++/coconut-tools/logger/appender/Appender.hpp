@@ -30,7 +30,7 @@ protected:
 
     virtual void doAppend(const std::string& message) = 0;
 
-	Appender(const Id& id, layout::LayoutPtr layout) :
+	Appender(layout::LayoutPtr layout) :
 		layout_(layout) {
 	}
 

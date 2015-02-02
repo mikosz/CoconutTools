@@ -27,11 +27,11 @@ public:
 	typedef design_pattern::NewCreator<
 		Appender,
 		const Appender::Id&,
-		configuration::ConstLoggerConfigurationPtr,
+		const logger::configuration::LoggerConfiguration&,
 		layout::LayoutFactory*
 		> AppenderCreator;
 
-	AppenderFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);
+	AppenderFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
 	void registerCreator(const Appender::Id& appenderId, AppenderCreator creator);
 
@@ -46,7 +46,7 @@ private:
 		design_pattern::IgnoringErrorPolicy
 		> Super;
 
-	configuration::ConstLoggerConfigurationPtr loggerConfiguration_;
+	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
 	layout::LayoutFactory layoutFactory_;
 

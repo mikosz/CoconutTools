@@ -8,6 +8,8 @@
 
 #include "coconut-tools/exceptions/RuntimeError.hpp"
 
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+
 #include "coconut-tools/logger/Level.hpp"
 
 namespace coconut_tools {
@@ -92,8 +94,7 @@ private:
 
 };
 
-typedef std::shared_ptr<LoggerConfiguration> LoggerConfigurationPtr;
-typedef std::shared_ptr<const LoggerConfiguration> ConstLoggerConfigurationPtr;
+CT_SMART_POINTER_DEFINITONS(LoggerConfiguration);
 
 }  // namespace configuration
 }  // namespace logger

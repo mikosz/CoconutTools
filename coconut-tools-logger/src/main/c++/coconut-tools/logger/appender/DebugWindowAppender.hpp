@@ -16,8 +16,8 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	DebugWindowAppender(const Id& id, layout::LayoutPtr layout) :
-		Appender(id, layout)
+	DebugWindowAppender(layout::LayoutPtr layout) :
+		Appender(layout)
 	{
 	}
 
