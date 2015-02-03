@@ -45,9 +45,9 @@ public:
 
     NodeSpecifier();
 
-    NodeSpecifier(const std::string& path);
+    NodeSpecifier(const std::string& path, ConstNodeSelectorSharedPtr selector = ConstNodeSelectorSharedPtr());
 
-    NodeSpecifier(const char* path);
+    NodeSpecifier(const char* path, ConstNodeSelectorSharedPtr selector = ConstNodeSelectorSharedPtr());
 
     bool operator==(const NodeSpecifier& other) const;
 
@@ -55,9 +55,9 @@ public:
 
 	NodeSpecifier operator[](ConstNodeSelectorSharedPtr selector) const;
 
-	ConstNodeSelectorSharedPtr is(const std::string& text) const;
+	NodeSpecifier is(const std::string& text) const;
 
-	ConstNodeSelectorSharedPtr has(const NodeSpecifier& subNode) const;
+	NodeSpecifier has(const NodeSpecifier& subNode) const;
 
     const std::string& root() const;
 

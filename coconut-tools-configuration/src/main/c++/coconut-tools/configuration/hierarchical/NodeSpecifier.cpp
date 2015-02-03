@@ -45,11 +45,15 @@ std::string NonEmptyNodeSpecifierExpected::constructMessage(const std::string& o
 NodeSpecifier::NodeSpecifier() {
 }
 
-NodeSpecifier::NodeSpecifier(const std::string& path) {
+NodeSpecifier::NodeSpecifier(const std::string& path, ConstNodeSelectorSharedPtr selector) :
+	selector_(selector)
+{
     parse(path, &path_);
 }
 
-NodeSpecifier::NodeSpecifier(const char* path) {
+NodeSpecifier::NodeSpecifier(const char* path, ConstNodeSelectorSharedPtr selector) :
+	selector_(selector)
+{
     parse(path, &path_);
 }
 
