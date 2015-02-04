@@ -19,22 +19,22 @@ BOOST_AUTO_TEST_CASE(OperatorDivideAppendsNodeSpecifier) {
 }
 
 BOOST_AUTO_TEST_CASE(DifferentValueSelectorsYieldUnequal) {
-	auto lhs = (NodeSpecifier() / "name")[NodeSpecifier().has("selector-1")];
-	auto rhs = (NodeSpecifier() / "name")[NodeSpecifier().has("selector-2")];
+	auto lhs = (NodeSpecifier() / "name")["selector-1"];
+	auto rhs = (NodeSpecifier() / "name")["selector-2"];
 
 	BOOST_CHECK_NE(lhs, rhs);
 }
 
 BOOST_AUTO_TEST_CASE(DifferentTypeSelectorsYieldUnequal) {
-	auto lhs = (NodeSpecifier() / "name")[NodeSpecifier().has("selector")];
-	auto rhs = (NodeSpecifier() / "name")[NodeSpecifier().is("selector")];
+	auto lhs = (NodeSpecifier() / "name")["selector"];
+	auto rhs = (NodeSpecifier() / "name").is("selector");
 
 	BOOST_CHECK_NE(lhs, rhs);
 }
 
 BOOST_AUTO_TEST_CASE(SameSelectorsYieldEqual) {
-	auto lhs = (NodeSpecifier() / "name")[NodeSpecifier().is("selector")];
-	auto rhs = (NodeSpecifier() / "name")[NodeSpecifier().is("selector")];
+	auto lhs = (NodeSpecifier() / "name")[NodeSpecifier("subNode").is("selector")];
+	auto rhs = (NodeSpecifier() / "name")[NodeSpecifier("subNode").is("selector")];
 
 	BOOST_CHECK_EQUAL(lhs, rhs);
 }

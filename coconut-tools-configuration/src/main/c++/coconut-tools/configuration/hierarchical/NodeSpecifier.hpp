@@ -13,6 +13,9 @@
 
 namespace coconut_tools {
 namespace configuration {
+
+class HierarchicalConfiguration;
+
 namespace hierarchical {
 
 class NonEmptyNodeSpecifierExpected : public ConfigurationException {
@@ -43,7 +46,7 @@ public:
 
     static const char SEPARATOR = '/';
 
-    NodeSpecifier();
+    NodeSpecifier(ConstNodeSelectorSharedPtr selector = ConstNodeSelectorSharedPtr());
 
     NodeSpecifier(const std::string& path, ConstNodeSelectorSharedPtr selector = ConstNodeSelectorSharedPtr());
 
@@ -53,11 +56,9 @@ public:
 
     NodeSpecifier& operator/=(const NodeSpecifier& other);
 
-	NodeSpecifier operator[](ConstNodeSelectorSharedPtr selector) const;
+	NodeSpecifier operator[](const NodeSpecifier& subSpecifier) const;
 
 	NodeSpecifier is(const std::string& text) const;
-
-	NodeSpecifier has(const NodeSpecifier& subNode) const;
 
     const std::string& root() const;
 
@@ -67,9 +68,11 @@ public:
 
     const std::string& child() const;
 
-    bool empty() const;
+    bool hasChildren() const;
 
     std::string string() const;
+
+	bool selectorMatches(const HierarchicalConfiguration& configurationNode) const;
 
 private:
 

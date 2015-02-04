@@ -144,53 +144,55 @@ void HierarchicalConfiguration::find_(
         ) const {
     Nodes& nodes = utils::pointee(nodesParam);
 
-    if (key.empty()) {
-        // XXX: Dirty! shared_from_this has a different const-correctness tactic
-        // to shared_ptr, so we either have to reimplement it or use const_cast...
-        nodes.push_back(const_cast<HierarchicalConfiguration&>(*this).shared_from_this());
-    } else {
-        std::string head = key.root();
-        hierarchical::NodeSpecifier tail = key.childPath();
+	if (key.selectorMatches(*this)) {
+		if (!key.hasChildren()) {
+			// XXX: Dirty! shared_from_this has a different const-correctness tactic
+			// to shared_ptr, so we either have to reimplement it or use const_cast...
+			nodes.push_back(const_cast<HierarchicalConfiguration&>(*this).shared_from_this());
+		} else {
+			std::string head = key.root();
+			hierarchical::NodeSpecifier tail = key.childPath();
 
-        Nodes::const_iterator it, end = children_.end();
-        for (it = children_.begin(); it != end; ++it) {
-            if ((*it)->name_ == head) {
-                (*it)->find_(tail, &nodes);
-            }
-        }
-    }
+			Nodes::const_iterator it, end = children_.end();
+			for (it = children_.begin(); it != end; ++it) {
+				if ((*it)->name_ == head) {
+					(*it)->find_(tail, &nodes);
+				}
+			}
+		}
+	}
 }
 
 HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(
         const hierarchical::NodeSpecifier& key,
         const hierarchical::NodeSpecifier& originalKey
         ) const {
-    if (key.empty()) {
-        // XXX: Dirty! shared_from_this has a different const-correctness tactic
-        // to shared_ptr, so we either have to reimplement it or use const_cast...
-        return const_cast<HierarchicalConfiguration&>(*this).shared_from_this();
-    } else {
-        std::string head = key.root();
-        hierarchical::NodeSpecifier tail = key.childPath();
+	if (!key.hasChildren()) {
+		// XXX: Dirty! shared_from_this has a different const-correctness tactic
+		// to shared_ptr, so we either have to reimplement it or use const_cast...
+		return const_cast<HierarchicalConfiguration&>(*this).shared_from_this();
+	} else {
+		std::string head = key.root();
+		hierarchical::NodeSpecifier tail = key.childPath();
 
-        Node result;
-        Nodes::const_iterator it, end = children_.end();
-        for (it = children_.begin(); it != end; ++it) {
-            if ((*it)->name_ == head) {
-                if (!result) {
-                     result = (*it)->findSingle_(tail, originalKey);
-                } else {
-                    throw MultipleValuesWhereSingleValueRequired(originalKey.string());
-                }
-            }
-        }
-
-        if (!result) {
-            throw MissingRequiredValue(originalKey.string());
-        } else {
-            return result;
-        }
-    }
+		Node result;
+		Nodes::const_iterator it, end = children_.end();
+		for (it = children_.begin(); it != end; ++it) {
+			if ((*it)->name_ == head) {
+				if (!result) {
+					result = (*it)->findSingle_(tail, originalKey);
+				} else {
+					throw MultipleValuesWhereSingleValueRequired(originalKey.string());
+				}
+			}
+		}
+		this is wrong
+		if (!result) {
+			throw MissingRequiredValue(originalKey.string());
+		} else {
+			return result;
+		}
+	}
 }
 
 void HierarchicalConfiguration::add_(Node parent, const std::string& childName, ValueParam value) {

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "NodeSelector.hpp"
+#include "NodeSpecifier.hpp"
 
 namespace coconut_tools {
 namespace configuration {
@@ -12,8 +13,8 @@ namespace hierarchical {
 class NodeSelectorHas : public NodeSelector {
 public:
 
-	NodeSelectorHas(const std::string& nodeText) :
-		nodeText_(nodeText)
+	NodeSelectorHas(const NodeSpecifier& nodeSpecifier) :
+		nodeSpecifier_(nodeSpecifier)
 	{
 	}
 
@@ -28,12 +29,12 @@ protected:
 	}
 
 	bool equals(const NodeSelector& other) const override {
-		return nodeText_ == dynamic_cast<const NodeSelectorHas&>(other).nodeText_;
+		return nodeSpecifier_ == dynamic_cast<const NodeSelectorHas&>(other).nodeSpecifier_;
 	}
 
 private:
 
-	std::string nodeText_;
+	NodeSpecifier nodeSpecifier_;
 
 };
 

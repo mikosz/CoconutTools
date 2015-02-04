@@ -24,7 +24,14 @@ namespace {
 void parse(const std::string& string, std::deque<std::string>* pathParam) {
     std::deque<std::string>& path = utils::pointee(pathParam);
     boost::split(path, string, boost::is_any_of(std::string() + NodeSpecifier::SEPARATOR));
-    path.erase(std::remove_if(path.begin(), path.end(), std::bind(&std::string::empty, std::placeholders::_1)), path.end());
+    path.erase(
+		std::remove_if(
+			path.begin(),
+			path.end(), 
+			[](const std::string& s) { return s.empty(); }
+			),
+		path.end()
+		);
 }
 
 } // anonymous namespace
@@ -42,7 +49,9 @@ std::string NonEmptyNodeSpecifierExpected::constructMessage(const std::string& o
     return oss.str();
 }
 
-NodeSpecifier::NodeSpecifier() {
+NodeSpecifier::NodeSpecifier(ConstNodeSelectorSharedPtr selector) :
+	selector_(selector)
+{
 }
 
 NodeSpecifier::NodeSpecifier(const std::string& path, ConstNodeSelectorSharedPtr selector) :
@@ -74,18 +83,14 @@ NodeSpecifier& NodeSpecifier::operator/=(const NodeSpecifier& other) {
     return *this;
 }
 
-NodeSpecifier NodeSpecifier::operator[](ConstNodeSelectorSharedPtr selector) const {
+NodeSpecifier NodeSpecifier::operator[](const NodeSpecifier& subSpecifier) const {
 	NodeSpecifier result(*this);
-	result.selector_ = selector;
+	result.selector_ = std::make_shared<NodeSelectorHas>(subSpecifier);
 	return result;
 }
 
 ConstNodeSelectorSharedPtr NodeSpecifier::is(const std::string& text) const {
 	return std::make_shared<NodeSelectorIs>(text);
-}
-
-ConstNodeSelectorSharedPtr NodeSpecifier::has(const NodeSpecifier& subNode) const {
-	return std::make_shared<NodeSelectorHas>(subNode.string());
 }
 
 const std::string& NodeSpecifier::root() const {
@@ -120,8 +125,8 @@ const std::string& NodeSpecifier::child() const {
     return path_.back();
 }
 
-bool NodeSpecifier::empty() const {
-    return path_.empty();
+bool NodeSpecifier::hasChildren() const {
+    return !path_.empty();
 }
 
 std::string NodeSpecifier::string() const {
@@ -133,6 +138,13 @@ std::string NodeSpecifier::string() const {
 			<< ']';
 	}
     return  oss.str();
+}
+
+bool NodeSpecifier::selectorMatches(const HierarchicalConfiguration& configurationNode) const {
+	if (selector_) {
+		return selector_->matches(configurationNode);
+	}
+	return true;
 }
 
 std::ostream& coconut_tools::configuration::hierarchical::operator<<(
