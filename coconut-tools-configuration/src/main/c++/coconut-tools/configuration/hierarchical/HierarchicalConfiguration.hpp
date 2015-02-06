@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_CONFIGURATION_HIERARCHICALCONFIGURATION_HPP_
-#define COCONUT_TOOLS_CONFIGURATION_HIERARCHICALCONFIGURATION_HPP_
+#ifndef COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_HIERARCHICALCONFIGURATION_HPP_
+#define COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_HIERARCHICALCONFIGURATION_HPP_
 
 #include <iosfwd>
 #include <memory>
@@ -8,15 +8,16 @@
 
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
 
-#include "hierarchical/NodeSpecifier.hpp"
-#include "Configuration.hpp"
-#include "configuration-exceptions.hpp"
+#include "node/Path.hpp"
+#include "../Configuration.hpp"
+#include "../configuration-exceptions.hpp"
 
 namespace coconut_tools {
 namespace configuration {
+namespace hierarchical {
 
 class HierarchicalConfiguration :
-    public Configuration<hierarchical::NodeSpecifier, std::shared_ptr<HierarchicalConfiguration> >,
+    public Configuration<node::Path, std::shared_ptr<HierarchicalConfiguration> >,
     public std::enable_shared_from_this<HierarchicalConfiguration>,
     public boost::equality_comparable<HierarchicalConfiguration>
 {
@@ -40,17 +41,17 @@ public:
 
     bool empty() const;
 
-    size_t count(const hierarchical::NodeSpecifier& key) const;
+    size_t count(const node::Path& key) const;
 
-    Value get(const hierarchical::NodeSpecifier& key) const;
+    Value get(const node::Path& key) const;
 
-    void getAll(const hierarchical::NodeSpecifier& key, Nodes* values) const;
+    void getAll(const node::Path& key, Nodes* values) const;
 
-    void set(const hierarchical::NodeSpecifier& key, ValueParam value);
+    void set(const node::Path& key, ValueParam value);
 
-    void add(const hierarchical::NodeSpecifier& key, ValueParam value);
+    void add(const node::Path& key, ValueParam value);
 
-    void erase(const hierarchical::NodeSpecifier& key);
+    void erase(const node::Path& key);
 
     void keys(Keys* k) const;
 
@@ -76,18 +77,18 @@ private:
 
     Node copy_() const;
 
-    void find_(const hierarchical::NodeSpecifier& key, Nodes* nodes) const;
+    void find_(const node::Path& key, Nodes* nodes) const;
 
     Node findSingle_(
-            const hierarchical::NodeSpecifier& key,
-            const hierarchical::NodeSpecifier& originalKey
+            const node::Path& key,
+            const node::Path& originalKey
             ) const;
 
     void add_(Node parent, const std::string& childName, ValueParam value);
 
     void erase_(Node parent, const std::string& childName);
 
-    void keys_(const hierarchical::NodeSpecifier& parent, Keys* k) const;
+    void keys_(const node::Path& parent, Keys* k) const;
 
     std::ostream& print_(std::ostream& os, size_t indentation) const;
 
@@ -99,7 +100,8 @@ private:
 
 CT_SMART_POINTER_DEFINITONS(HierarchicalConfiguration);
 
+} // namespace hierarchical
 } // namespace configuration
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_CONFIGURATION_HIERARCHICALCONFIGURATION_HPP_ */
+#endif /* COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_HIERARCHICALCONFIGURATION_HPP_ */

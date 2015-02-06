@@ -4,9 +4,12 @@
 #include <functional>
 
 #include "coconut-tools/utils/pointee.hpp"
-#include "configuration-exceptions.hpp"
 
+#include "../configuration-exceptions.hpp"
+
+using namespace coconut_tools;
 using namespace coconut_tools::configuration;
+using namespace coconut_tools::configuration::hierarchical;
 
 std::shared_ptr<HierarchicalConfiguration> HierarchicalConfiguration::create(const std::string& text) {
     return Node(new HierarchicalConfiguration(text));
@@ -67,14 +70,14 @@ bool HierarchicalConfiguration::empty() const {
     }
 }
 
-size_t HierarchicalConfiguration::count(const hierarchical::NodeSpecifier& key) const {
+size_t HierarchicalConfiguration::count(const node::Path& key) const {
     Nodes nodes;
     find_(key, &nodes);
     return nodes.size();
 }
 
 HierarchicalConfiguration::Value HierarchicalConfiguration::get(
-        const hierarchical::NodeSpecifier& key
+        const node::Path& key
         ) const {
     Nodes nodes;
     find_(key, &nodes);
@@ -87,26 +90,26 @@ HierarchicalConfiguration::Value HierarchicalConfiguration::get(
     }
 }
 
-void HierarchicalConfiguration::getAll(const hierarchical::NodeSpecifier& key, Nodes* valuesParam) const {
+void HierarchicalConfiguration::getAll(const node::Path& key, Nodes* valuesParam) const {
     Nodes& values = utils::pointee(valuesParam);
     find_(key, &values);
 }
 
-void HierarchicalConfiguration::set(const hierarchical::NodeSpecifier& key, ValueParam value) {
-    hierarchical::NodeSpecifier parent = key.parentPath();
+void HierarchicalConfiguration::set(const node::Path& key, ValueParam value) {
+    node::Path parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
     erase_(parentNode, key.child());
     add_(parentNode, key.child(), value);
 }
 
-void HierarchicalConfiguration::add(const hierarchical::NodeSpecifier& key, ValueParam value) {
-    hierarchical::NodeSpecifier parent = key.parentPath();
+void HierarchicalConfiguration::add(const node::Path& key, ValueParam value) {
+    node::Path parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
     add_(parentNode, key.child(), value);
 }
 
-void HierarchicalConfiguration::erase(const hierarchical::NodeSpecifier& key) {
-    hierarchical::NodeSpecifier parent = key.parentPath();
+void HierarchicalConfiguration::erase(const node::Path& key) {
+    node::Path parent = key.parentPath();
     Node parentNode = findSingle_(parent, parent);
     erase_(parentNode, key.child());
 }
@@ -116,7 +119,7 @@ void HierarchicalConfiguration::keys(Keys* keysParam) const {
     std::for_each(
             children_.begin(),
             children_.end(),
-			[&k](Node node) { node->keys_(hierarchical::NodeSpecifier(), &k); }
+			[&k](Node node) { node->keys_(node::Specifier(), &k); }
             );
 }
 
@@ -139,7 +142,7 @@ HierarchicalConfiguration::Node HierarchicalConfiguration::copy_() const {
 }
 
 void HierarchicalConfiguration::find_(
-        const hierarchical::NodeSpecifier& key,
+        const node::Path& key,
         Nodes* nodesParam
         ) const {
     Nodes& nodes = utils::pointee(nodesParam);
@@ -151,7 +154,7 @@ void HierarchicalConfiguration::find_(
 			nodes.push_back(const_cast<HierarchicalConfiguration&>(*this).shared_from_this());
 		} else {
 			std::string head = key.root();
-			hierarchical::NodeSpecifier tail = key.childPath();
+			node::Path tail = key.childPath();
 
 			Nodes::const_iterator it, end = children_.end();
 			for (it = children_.begin(); it != end; ++it) {
@@ -164,8 +167,8 @@ void HierarchicalConfiguration::find_(
 }
 
 HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(
-        const hierarchical::NodeSpecifier& key,
-        const hierarchical::NodeSpecifier& originalKey
+        const node::Path& key,
+        const node::Path& originalKey
         ) const {
 	if (!key.hasChildren()) {
 		// XXX: Dirty! shared_from_this has a different const-correctness tactic
@@ -173,7 +176,7 @@ HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(
 		return const_cast<HierarchicalConfiguration&>(*this).shared_from_this();
 	} else {
 		std::string head = key.root();
-		hierarchical::NodeSpecifier tail = key.childPath();
+		node::Path tail = key.childPath();
 
 		Node result;
 		Nodes::const_iterator it, end = children_.end();
@@ -186,7 +189,7 @@ HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(
 				}
 			}
 		}
-		this is wrong
+
 		if (!result) {
 			throw MissingRequiredValue(originalKey.string());
 		} else {
@@ -210,10 +213,10 @@ void HierarchicalConfiguration::erase_(Node parent, const std::string& childName
     parent->children_.erase(end, parent->children_.end());
 }
 
-void HierarchicalConfiguration::keys_(const hierarchical::NodeSpecifier& parent, Keys* keysParam) const {
+void HierarchicalConfiguration::keys_(const node::Specifier& parent, Keys* keysParam) const {
     Keys& k = utils::pointee(keysParam);
 
-    hierarchical::NodeSpecifier node = parent / name_;
+    node::Specifier node = parent / name_;
     k.insert(node);
 
     std::for_each(

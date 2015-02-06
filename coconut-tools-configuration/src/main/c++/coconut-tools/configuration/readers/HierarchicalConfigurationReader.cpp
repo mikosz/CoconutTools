@@ -4,7 +4,7 @@
 #include <stack>
 #include <functional>
 
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 #include "coconut-tools/utils/pointee.hpp"
 #include "coconut-tools/exceptions/LogicError.hpp"
 
@@ -27,9 +27,9 @@ struct RootsEntry {
 
     std::string node;
 
-    HierarchicalConfigurationSharedPtr subtree;
+    hierarchical::HierarchicalConfigurationSharedPtr subtree;
 
-    RootsEntry(const std::string& node, HierarchicalConfigurationSharedPtr subtree) :
+    RootsEntry(const std::string& node, hierarchical::HierarchicalConfigurationSharedPtr subtree) :
         node(node),
         subtree(subtree)
     {
@@ -41,7 +41,7 @@ typedef std::stack<RootsEntry> Roots;
 
 void newChild(Roots* rootsPtr, const std::string& node, const std::string& text) {
     Roots& roots = utils::pointee(rootsPtr);
-    roots.push(RootsEntry(node, HierarchicalConfiguration::create(text)));
+    roots.push(RootsEntry(node, hierarchical::HierarchicalConfiguration::create(text)));
 }
 
 void childrenEnd(Roots* rootsPtr) {
@@ -59,9 +59,9 @@ void childrenEnd(Roots* rootsPtr) {
 void HierarchicalConfigurationReader::read(
         const parsers::HierarchicalParser& parser,
         std::istream& is,
-        HierarchicalConfiguration* configurationPtr
+        hierarchical::HierarchicalConfiguration* configurationPtr
         ) const {
-    HierarchicalConfiguration& configuration = utils::pointee(configurationPtr);
+    hierarchical::HierarchicalConfiguration& configuration = utils::pointee(configurationPtr);
 
     Roots roots;
     roots.push(RootsEntry(std::string(), configuration.shared_from_this()));
@@ -82,9 +82,9 @@ void HierarchicalConfigurationReader::read(
 void HierarchicalConfigurationReader::read(
         const parsers::HierarchicalParser& parser,
         const boost::filesystem::path& path,
-        HierarchicalConfiguration* configurationPtr
+        hierarchical::HierarchicalConfiguration* configurationPtr
         ) const {
-    HierarchicalConfiguration& configuration = utils::pointee(configurationPtr);
+    hierarchical::HierarchicalConfiguration& configuration = utils::pointee(configurationPtr);
 
     Roots roots;
     roots.push(RootsEntry(std::string(), configuration.shared_from_this()));

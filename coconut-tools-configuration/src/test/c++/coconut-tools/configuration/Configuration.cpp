@@ -9,13 +9,14 @@
 #include "coconut-tools/configuration/Configuration.hpp"
 #include "coconut-tools/configuration/FlatConfiguration.hpp"
 #include "coconut-tools/configuration/StackedConfiguration.hpp"
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 #include "coconut-tools/utils/pointee.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
+using namespace coconut_tools::configuration::hierarchical;
 
-namespace {
+namespace /* anonymous */ {
 
 typedef boost::mpl::list<
         FlatConfiguration<int, int>,
@@ -122,7 +123,7 @@ public:
 
     typedef std::shared_ptr<HierarchicalConfiguration> Ptr;
 
-    typedef hierarchical::NodeSpecifier Key;
+    typedef node::Specifier Key;
 
     typedef std::shared_ptr<HierarchicalConfiguration> Value;
 

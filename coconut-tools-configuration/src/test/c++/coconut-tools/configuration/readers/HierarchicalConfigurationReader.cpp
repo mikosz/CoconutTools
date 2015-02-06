@@ -1,13 +1,16 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include "coconut-tools/test-utils/test-utils.hpp"
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 #include "coconut-tools/configuration/parsers/XMLParser.hpp"
 #include "coconut-tools/configuration/readers/HierarchicalConfigurationReader.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
 using namespace coconut_tools::configuration::readers;
+
+using coconut_tools::configuration::hierarchical::HierarchicalConfiguration;
+using coconut_tools::configuration::hierarchical::HierarchicalConfigurationSharedPtr;
 
 namespace {
 

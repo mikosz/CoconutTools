@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 
 #include "coconut-tools/exceptions/RuntimeError.hpp"
 
@@ -90,7 +90,7 @@ public:
 
 private:
 
-	coconut_tools::configuration::HierarchicalConfigurationSharedPtr configuration_;
+	coconut_tools::configuration::hierarchical::HierarchicalConfigurationSharedPtr configuration_;
 
 };
 

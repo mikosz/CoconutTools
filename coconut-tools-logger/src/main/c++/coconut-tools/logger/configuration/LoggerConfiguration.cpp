@@ -9,8 +9,8 @@ using namespace coconut_tools;
 using namespace coconut_tools::logger;
 using namespace coconut_tools::logger::configuration;
 
-using coconut_tools::configuration::hierarchical::NodeSpecifier;
-using coconut_tools::configuration::HierarchicalConfigurationSharedPtr;
+using coconut_tools::configuration::hierarchical::node::Specifier;
+using coconut_tools::configuration::hierarchical::HierarchicalConfigurationSharedPtr;
 
 namespace /* anonymous */ {
 
@@ -18,18 +18,18 @@ HierarchicalConfigurationSharedPtr getLoggerNode(
 	HierarchicalConfigurationSharedPtr configuration,
 	const std::string& loggerId
 	) {
-	return configuration->get((NodeSpecifier() / "loggers" / "logger")[NodeSpecifier("id").is(loggerId)]);
+	return configuration->get((Specifier() / "loggers" / "logger")[Specifier("id").is(loggerId)]);
 }
 
 HierarchicalConfigurationSharedPtr getRootNode(HierarchicalConfigurationSharedPtr configuration) {
-	return configuration->get(NodeSpecifier() / "root-logger");
+	return configuration->get(Specifier() / "root-logger");
 }
 
 HierarchicalConfigurationSharedPtr getAppenderNode(
 	HierarchicalConfigurationSharedPtr configuration,
 	const std::string& appenderId
 	) {
-	return configuration->get((NodeSpecifier() / "appenders" / "appender")[NodeSpecifier("id").is(appenderId)]);
+	return configuration->get((Specifier() / "appenders" / "appender")[Specifier("id").is(appenderId)]);
 }
 
 } // anonymous namespace

@@ -1,5 +1,5 @@
-#ifndef _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTOR_HPP_
-#define _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTOR_HPP_
+#ifndef _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODE_SELECTOR_HPP_
+#define _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODE_SELECTOR_HPP_
 
 #include <iosfwd>
 #include <string>
@@ -11,21 +11,22 @@
 
 namespace coconut_tools {
 namespace configuration {
+namespace hierarchical {
 
 class HierarchicalConfiguration;
 
-namespace hierarchical {
+namespace node {
 
-class NodeSelector :
-	boost::equality_comparable<NodeSelector>,
+class Selector :
+	boost::equality_comparable<Selector>,
 	boost::noncopyable
 {
 public:
 
-	virtual ~NodeSelector() {
+	virtual ~Selector() {
 	}
 
-	bool operator==(const NodeSelector& other) const {
+	bool operator==(const Selector& other) const {
 		return selectorType() == other.selectorType() && equals(other);
 	}
 
@@ -40,21 +41,22 @@ protected:
 		HAS,
 	};
 
-	NodeSelector() {
+	Selector() {
 	}
 
 	virtual Type selectorType() const = 0;
 
-	virtual bool equals(const NodeSelector& other) const = 0;
+	virtual bool equals(const Selector& other) const = 0;
 
 };
 
-std::ostream& operator<<(std::ostream& os, const NodeSelector& selector);
+std::ostream& operator<<(std::ostream& os, const Selector& selector);
 
-CT_SMART_POINTER_DEFINITONS(NodeSelector);
+CT_SMART_POINTER_DEFINITONS(Selector);
 
+} // namespace node
 } // namespace hierarchical
 } // namespace configuration
 } // namespace coconut_tools
 
-#endif /* _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODESELECTOR_HPP_ */
+#endif /* _COCONUT_TOOLS_CONFIGURATION_HIERARCHICAL_NODE_SELECTOR_HPP_ */

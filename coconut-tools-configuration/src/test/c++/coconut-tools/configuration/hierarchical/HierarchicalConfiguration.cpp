@@ -5,9 +5,11 @@
 #include <set>
 #include <functional>
 
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 
+using namespace coconut_tools;
 using namespace coconut_tools::configuration;
+using namespace coconut_tools::configuration::hierarchical;
 
 BOOST_AUTO_TEST_SUITE(HierachicalConfigurationTestSuite);
 
@@ -72,7 +74,7 @@ BOOST_AUTO_TEST_CASE(CantAddANodeWithEmptyPath) {
     HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->add("", HierarchicalConfiguration::create()),
-            hierarchical::NonEmptyNodeSpecifierExpected
+            node::NonEmptySpecifierExpected
             );
 }
 
@@ -102,13 +104,13 @@ BOOST_AUTO_TEST_CASE(CantSetNodeWithEmptyPath) {
     HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->set("", HierarchicalConfiguration::create()),
-            hierarchical::NonEmptyNodeSpecifierExpected
+            node::NonEmptySpecifierExpected
             );
 }
 
 BOOST_AUTO_TEST_CASE(CantEraseNodeWithEmptyPath) {
     HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
-    BOOST_CHECK_THROW(configuration->erase(""), hierarchical::NonEmptyNodeSpecifierExpected);
+    BOOST_CHECK_THROW(configuration->erase(""), node::NonEmptySpecifierExpected);
 }
 
 BOOST_AUTO_TEST_CASE(NodeSpecifierIsSelectsApplicableNode) {
@@ -130,7 +132,7 @@ BOOST_AUTO_TEST_CASE(NodeSpecifierIsSelectsApplicableNode) {
 	configuration->add("grandfather/father", father2);
 
 	auto found = configuration->get(
-		(hierarchical::NodeSpecifier() / "grandfather/father")[hierarchical::NodeSpecifier("child/id").is("id-2")]
+		(node::Specifier() / "grandfather/father")[node::Specifier("child/id").is("id-2")]
 		);
 
 	BOOST_CHECK_EQUAL(father2, found);
