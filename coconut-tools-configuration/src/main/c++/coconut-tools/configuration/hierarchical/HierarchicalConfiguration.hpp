@@ -79,14 +79,11 @@ private:
 
     void find_(const node::Path& key, Nodes* nodes) const;
 
-    Node findSingle_(
-            const node::Path& key,
-            const node::Path& originalKey
-            ) const;
+    Node findSingle_(const node::Path& key) const;
 
-    void add_(Node parent, const std::string& childName, ValueParam value);
+    void add_(Node parent, const node::Path::Element& child, ValueParam value);
 
-    void erase_(Node parent, const std::string& childName);
+    void erase_(Node parent, const node::Path::Element& child);
 
     void keys_(const node::Path& parent, Keys* k) const;
 

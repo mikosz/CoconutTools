@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
 #include "coconut-tools/utils/pointee.hpp"
@@ -28,30 +27,61 @@ NonEmptyPathExpected::NonEmptyPathExpected(const std::string& operation) :
 
 std::string NonEmptyPathExpected::constructMessage(const std::string& operation) {
     std::ostringstream oss;
-    oss << "Empty node specifier provided where a non-empty specifier expected while calling \""
+    oss << "Empty node path provided where a non-empty path expected while calling \""
             << operation << "\"";
     return oss.str();
 }
 
-Path::Path(ConstSelectorSharedPtr selector) :
-	path_{ Element("", selector) }
-{
+bool Path::Element::selectorsMatch(const HierarchicalConfiguration& configurationNode) const {
+	return std::find_if_not(
+		selectors.begin(),
+		selectors.end(),
+		[&](ConstSelectorSharedPtr selector) { return selector->matches(configurationNode); }
+		) == selectors.end();
+}
+
+bool Path::Element::operator==(const Element& other) const {
+	if (name != other.name) {
+		return false;
+	}
+
+	return selectors == other.selectors;
+}
+
+std::string Path::Element::string() const {
+	std::ostringstream oss;
+	oss << name;
+	for (auto selector : selectors) {
+		oss << '[' << *selector << ']';
+	}
+	return oss.str();
+}
+
+Path::Path(const Element& element) {
+	path_.push_back(element);
+}
+
+Path::Path(ConstSelectorSharedPtr selector) { // can't use initializer list here?
+	Element element("", selector);
+	path_.push_back(element);
 }
 
 Path::Path(const std::string& path, ConstSelectorSharedPtr selector) {
     parse_(path, &path_);
 	if (path_.empty()) {
-		path_.push_back("");
+		path_.push_back(Element(""));
 	}
-	path_.back().selector = selector;
+
+	path_.back().selectors.push_back(selector);
 }
 
 Path::Path(const char* path, ConstSelectorSharedPtr selector) {
 	parse_(path, &path_);
 	if (path_.empty()) {
-		path_.push_back("");
+		path_.push_back(Element(""));
 	}
-	path_.back().selector = selector;
+
+	path_.back().selectors.push_back(selector);
 }
 
 bool Path::operator==(const Path& other) const {
@@ -63,9 +93,13 @@ Path& Path::operator/=(const Path& other) {
     return *this;
 }
 
-Path Path::operator[](const Path& subSpecifier) const {
+Path Path::operator[](const Path& subPath) const {
 	Path result(*this);
-	result.selector_ = std::make_shared<SelectorHas>(subSpecifier);
+	if (result.path_.empty()) {
+		result.path_.push_back(Element(""));
+	}
+
+	result.path_.back().selectors.push_back(std::make_shared<SelectorHas>(subPath));
 	return result;
 }
 
@@ -73,10 +107,11 @@ Path Path::is(const std::string& text) const {
 	return std::make_shared<SelectorIs>(text);
 }
 
-const std::string& Path::root() const {
+Path Path::root() const {
     if (path_.empty()) {
         throw NonEmptyPathExpected("root");
     }
+
     return path_.front();
 }
 
@@ -98,59 +133,48 @@ Path Path::childPath() const {
     return c;
 }
 
-const std::string& Path::child() const {
+const Path::Element& Path::child() const {
     if (path_.empty()) {
         throw NonEmptyPathExpected("child");
     }
     return path_.back();
 }
 
-bool Path::hasChildren() const {
-    return !path_.empty();
+bool Path::empty() const {
+    return path_.empty();
 }
 
 std::string Path::string() const {
 	std::ostringstream oss;
-	oss << boost::join(path_, std::string() + Path::SEPARATOR);
-	if (selector_) {
-		oss << '['
-			<< *selector_
-			<< ']';
+	for (auto element : path_) {
+		oss << element;
 	}
-    return  oss.str();
-}
-
-bool Path::selectorMatches(const HierarchicalConfiguration& configurationNode) const {
-	if (selector_) {
-		return selector_->matches(configurationNode);
-	}
-	return true;
-}
-
-bool Path::Element::operator==(const Element& other) const {
-	if (name != other.name) {
-		return false;
-	} else if (static_cast<bool>(selector) != static_cast<bool>(other.selector)) {
-		return false;
-	} else if (selector) {
-		return *selector == *other.selector;
-	}
+    return oss.str();
 }
 
 void Path::parse_(const std::string& pathString, Elements* pathParam) {
 	Elements& path = utils::pointee(pathParam);
-	boost::split(path, pathString, boost::is_any_of(std::string() + Path::SEPARATOR));
-	path.erase(
+
+	std::vector<std::string> pathNames;
+	boost::split(pathNames, pathString, boost::is_any_of(std::string() + Path::SEPARATOR));
+	pathNames.erase(
 		std::remove_if(
-			path.begin(),
-			path.end(), 
+			pathNames.begin(),
+			pathNames.end(), 
 			[](const Element& e) { return e.name.empty(); }
 			),
-		path.end()
+		pathNames.end()
 		);
+
+	std::copy(pathNames.begin(), pathNames.end(), std::back_inserter(path));
 }
 
 std::ostream& coconut_tools::configuration::hierarchical::node::operator<<(
-	std::ostream& os, const Path& specifier) {
-	return os << specifier.string();
+	std::ostream& os, const Path::Element& pathElement) {
+	return os << pathElement.string();
+}
+
+std::ostream& coconut_tools::configuration::hierarchical::node::operator<<(
+	std::ostream& os, const Path& path) {
+	return os << path.string();
 }

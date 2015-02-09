@@ -45,7 +45,35 @@ class Path :
 {
 public:
 
+	struct Element {
+
+		typedef std::string Name;
+
+		typedef std::vector<ConstSelectorSharedPtr> Selectors;
+
+		Name name;
+
+		Selectors selectors;
+
+		Element(const std::string& name, ConstSelectorSharedPtr selector = ConstSelectorSharedPtr()) :
+			name(name)
+		{
+			if (selector) {
+				selectors.push_back(selector);
+			}
+		}
+
+		bool operator==(const Element& other) const;
+
+		bool selectorsMatch(const HierarchicalConfiguration& configurationNode) const;
+
+		std::string string() const;
+
+	};
+
     static const char SEPARATOR = '/';
+
+	Path(const Element& element);
 
     Path(ConstSelectorSharedPtr selector = ConstSelectorSharedPtr());
 
@@ -57,42 +85,23 @@ public:
 
     Path& operator/=(const Path& other);
 
-	Path operator[](const Path& subSpecifier) const;
+	Path operator[](const Path& subPath) const;
 
 	Path is(const std::string& text) const;
 
-    const std::string& root() const;
+    Path root() const;
 
     Path parentPath() const;
 
     Path childPath() const;
 
-    const std::string& child() const;
+    const Element& child() const;
 
-    bool hasChildren() const;
+    bool empty() const;
 
     std::string string() const;
 
-	bool selectorMatches(const HierarchicalConfiguration& configurationNode) const;
-
 private:
-
-	struct Element {
-
-		typedef std::string Name;
-
-		Name name;
-
-		ConstSelectorSharedPtr selector;
-
-		Element(const std::string& name, ConstSelectorSharedPtr selector = ConstSelectorSharedPtr()) :
-			name(name)
-		{
-		}
-
-		bool operator==(const Element& other) const;
-
-	};
 
 	typedef std::deque<Element> Elements;
 
@@ -102,7 +111,8 @@ private:
 
 };
 
-std::ostream& operator<<(std::ostream& os, const Path& specifiers);
+std::ostream& operator<<(std::ostream& os, const Path::Element& pathElement);
+std::ostream& operator<<(std::ostream& os, const Path& path);
 
 } // namespace node
 } // namespace hierarchical
@@ -114,8 +124,8 @@ namespace std {
 template <>
 struct hash<coconut_tools::configuration::hierarchical::node::Path> {
 
-	size_t operator()(const coconut_tools::configuration::hierarchical::node::Path& nodeSpecifier) const {
-		return std::hash<std::string>()(nodeSpecifier.string());
+	size_t operator()(const coconut_tools::configuration::hierarchical::node::Path& nodePath) const {
+		return std::hash<std::string>()(nodePath.string());
 	}
 
 };

@@ -123,7 +123,7 @@ public:
 
     typedef std::shared_ptr<HierarchicalConfiguration> Ptr;
 
-    typedef node::Specifier Key;
+    typedef node::Path Key;
 
     typedef std::shared_ptr<HierarchicalConfiguration> Value;
 

@@ -14,8 +14,8 @@ namespace node {
 class SelectorHas : public Selector {
 public:
 
-	SelectorHas(const Path& nodeSpecifier) :
-		nodeSpecifier_(nodeSpecifier)
+	SelectorHas(const Path& nodePath) :
+		nodePath_(nodePath)
 	{
 	}
 
@@ -30,12 +30,12 @@ protected:
 	}
 
 	bool equals(const Selector& other) const override {
-		return nodeSpecifier_ == dynamic_cast<const SelectorHas&>(other).nodeSpecifier_;
+		return nodePath_ == dynamic_cast<const SelectorHas&>(other).nodePath_;
 	}
 
 private:
 
-	Path nodeSpecifier_;
+	Path nodePath_;
 
 };
 

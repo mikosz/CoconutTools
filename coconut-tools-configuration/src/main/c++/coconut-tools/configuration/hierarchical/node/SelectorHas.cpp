@@ -8,9 +8,9 @@ using namespace coconut_tools::configuration::hierarchical;
 using namespace coconut_tools::configuration::hierarchical::node;
 
 bool SelectorHas::matches(const HierarchicalConfiguration& node) const {
-	return node.count(nodeSpecifier_) != 0;
+	return node.count(nodePath_) != 0;
 }
 
 std::string SelectorHas::string() const {
-	return "HAS: " + nodeSpecifier_.string();
+	return "HAS: " + nodePath_.string();
 }

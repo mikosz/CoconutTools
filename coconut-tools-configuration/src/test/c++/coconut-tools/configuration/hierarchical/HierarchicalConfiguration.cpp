@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(CantAddANodeWithEmptyPath) {
     HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->add("", HierarchicalConfiguration::create()),
-            node::NonEmptySpecifierExpected
+            node::NonEmptyPathExpected
             );
 }
 
@@ -104,16 +104,16 @@ BOOST_AUTO_TEST_CASE(CantSetNodeWithEmptyPath) {
     HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->set("", HierarchicalConfiguration::create()),
-            node::NonEmptySpecifierExpected
+            node::NonEmptyPathExpected
             );
 }
 
 BOOST_AUTO_TEST_CASE(CantEraseNodeWithEmptyPath) {
     HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
-    BOOST_CHECK_THROW(configuration->erase(""), node::NonEmptySpecifierExpected);
+    BOOST_CHECK_THROW(configuration->erase(""), node::NonEmptyPathExpected);
 }
 
-BOOST_AUTO_TEST_CASE(NodeSpecifierIsSelectsApplicableNode) {
+BOOST_AUTO_TEST_CASE(NodePathIsSelectsApplicableNode) {
 	auto configuration = HierarchicalConfiguration::create();
 	configuration->set("grandfather", HierarchicalConfiguration::create());
 
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(NodeSpecifierIsSelectsApplicableNode) {
 	configuration->add("grandfather/father", father2);
 
 	auto found = configuration->get(
-		(node::Specifier() / "grandfather/father")[node::Specifier("child/id").is("id-2")]
+		(node::Path() / "grandfather/father")[node::Path("child/id").is("id-2")]
 		);
 
 	BOOST_CHECK_EQUAL(father2, found);
