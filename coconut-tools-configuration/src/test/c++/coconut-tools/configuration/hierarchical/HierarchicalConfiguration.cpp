@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(NodePathIsSelectsApplicableNode) {
 		(node::Path() / "grandfather/father")[node::Path("child/id").is("id-2")]
 		);
 
-	BOOST_CHECK_EQUAL(father2, found);
+	BOOST_CHECK_EQUAL(*father2, *found);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* HierachicalConfigurationTestSuite */);

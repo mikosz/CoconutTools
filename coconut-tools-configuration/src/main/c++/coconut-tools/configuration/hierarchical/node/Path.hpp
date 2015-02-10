@@ -67,6 +67,8 @@ public:
 
 		bool selectorsMatch(const HierarchicalConfiguration& configurationNode) const;
 
+		bool empty() const;
+
 		std::string string() const;
 
 	};
@@ -107,7 +109,7 @@ private:
 
     Elements path_;
 
-	void parse_(const std::string& string, Elements* pathParam);
+	void parse_(const std::string& string, ConstSelectorSharedPtr selector, Elements* pathParam);
 
 };
 

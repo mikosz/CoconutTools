@@ -46,7 +46,12 @@ bool HierarchicalConfiguration::operator==(const HierarchicalConfiguration& othe
     // XXX: Not comparing name_ here, because of the way adding works. Is this ok?
     return text_ == other.text_ &&
             children_.size() == other.children_.size() &&
-            std::equal(children_.begin(), children_.end(), other.children_.begin());
+            std::equal(
+				children_.begin(),
+				children_.end(),
+				other.children_.begin(),
+				[](Node lhs, Node rhs) { return *lhs == *rhs; }
+				);
 }
 
 std::ostream& HierarchicalConfiguration::print(std::ostream& os) const {
@@ -80,14 +85,7 @@ HierarchicalConfiguration::Value HierarchicalConfiguration::get(
         const node::Path& key
         ) const {
     Nodes nodes;
-    find_(key, &nodes);
-    if (nodes.empty()) {
-        throw MissingRequiredValue(key.string());
-    } else if (nodes.size() > 1) {
-        throw MultipleValuesWhereSingleValueRequired(key.string());
-    } else {
-        return nodes.front();
-    }
+    return findSingle_(key);
 }
 
 void HierarchicalConfiguration::getAll(const node::Path& key, Nodes* valuesParam) const {

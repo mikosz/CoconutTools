@@ -11,8 +11,7 @@ BOOST_AUTO_TEST_SUITE(PathTestSuite);
 
 BOOST_AUTO_TEST_CASE(EmptyStringYieldsEmptyPath) {
     Path nodePath("");
-    BOOST_CHECK(!nodePath.hasChildren());
-	BOOST_CHECK(nodePath.string().empty());
+    BOOST_CHECK(nodePath.empty());
 }
 
 BOOST_AUTO_TEST_CASE(OperatorDivideAppendsPath) {
