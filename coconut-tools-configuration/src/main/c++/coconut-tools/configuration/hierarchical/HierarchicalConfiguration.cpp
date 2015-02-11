@@ -84,8 +84,13 @@ size_t HierarchicalConfiguration::count(const node::Path& key) const {
 HierarchicalConfiguration::Value HierarchicalConfiguration::get(
         const node::Path& key
         ) const {
-    Nodes nodes;
     return findSingle_(key);
+}
+
+HierarchicalConfiguration::Value HierarchicalConfiguration::getRequired(
+	const node::Path& key
+	) const {
+	return findRequired_(key);
 }
 
 void HierarchicalConfiguration::getAll(const node::Path& key, Nodes* valuesParam) const {
@@ -99,7 +104,7 @@ void HierarchicalConfiguration::set(const node::Path& key, ValueParam value) {
 	}
 
 	node::Path parent = key.parentPath();
-    Node parentNode = findSingle_(parent);
+    Node parentNode = findRequired_(parent);
     erase_(parentNode, key.child());
     add_(parentNode, key.child(), value);
 }
@@ -110,14 +115,16 @@ void HierarchicalConfiguration::add(const node::Path& key, ValueParam value) {
 	}
 
     node::Path parent = key.parentPath();
-    Node parentNode = findSingle_(parent);
+    Node parentNode = findRequired_(parent);
     add_(parentNode, key.child(), value);
 }
 
 void HierarchicalConfiguration::erase(const node::Path& key) {
     node::Path parent = key.parentPath();
     Node parentNode = findSingle_(parent);
-    erase_(parentNode, key.child());
+	if (parentNode) {
+		erase_(parentNode, key.child());
+	}
 }
 
 void HierarchicalConfiguration::keys(Keys* keysParam) const {
@@ -174,11 +181,20 @@ HierarchicalConfiguration::Node HierarchicalConfiguration::findSingle_(const nod
 	find_(key, &nodes);
 
 	if (nodes.empty()) {
-		throw MissingRequiredValue(key.string());
+		return Node();
 	} else if (nodes.size() > 1) {
 		throw MultipleValuesWhereSingleValueRequired(key.string());
 	} else {
 		return nodes.front();
+	}
+}
+
+HierarchicalConfiguration::Node HierarchicalConfiguration::findRequired_(const node::Path& key) const {
+	auto node = findSingle_(key);
+	if (!node) {
+		throw MissingRequiredValue(key.string());
+	} else {
+		return node;
 	}
 }
 

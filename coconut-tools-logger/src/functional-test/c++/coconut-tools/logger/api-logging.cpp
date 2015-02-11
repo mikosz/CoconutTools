@@ -5,7 +5,13 @@
 #include <functional>
 
 #include "coconut-tools/utils/raii-helper.hpp"
+
+#include "coconut-tools/configuration/readers/HierarchicalConfigurationReader.hpp"
+#include "coconut-tools/configuration/parsers/XMLParser.hpp"
+
+#include "coconut-tools/logger/LoggerFactory.hpp"
 #include "coconut-tools/logger/SystemLogger.hpp"
+
 #include "coconut-tools/logger.hpp"
 
 #include "coconut-tools/logger/appender/DebugWindowAppender.hpp"
@@ -53,6 +59,63 @@ BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
 			;
 
 	BOOST_CHECK_EQUAL(output.str(), EXPECTED + EXPECTED);
+}
+
+BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
+	auto configurationData = coconut_tools::configuration::hierarchical::HierarchicalConfiguration::create();
+
+	std::istringstream iss(
+		"<root-logger>"
+		"  <level>trace</level>"
+		"  <appender>appender-id</appender>"
+		"</root-logger>"
+		"<appenders>"
+		"  <appender>"
+		"    <id>appender-id</id>"
+		"    <type>coconut_tools::logger::appender::ConsoleAppender</type>"
+		"    <layout>layout-id</layout>"
+		"  </appender>"
+		"</appenders>"
+		);
+
+	coconut_tools::configuration::readers::HierarchicalConfigurationReader().read(
+		coconut_tools::configuration::parsers::XMLParser(),
+		iss,
+		configurationData.get()
+		);
+
+	logger::configuration::LoggerConfigurationSharedPtr config(
+		std::make_shared<logger::configuration::LoggerConfiguration>(configurationData));
+
+	LoggerFactory loggerFactory(config);
+
+	std::ostringstream output;
+
+	{
+		auto clogBuf = std::clog.rdbuf(output.rdbuf());
+		utils::RaiiHelper clogReset(
+			[&]() { std::clog.rdbuf(clogBuf); }
+		);
+
+		Logger& logger = *loggerFactory.create("id");
+
+		// Example of API logging using level specific functions
+		logger.trace() << "Trace level hidden";
+		logger.debug() << "Debug level hidden";
+		logger.info() << "Info level hidden";
+		logger.warning() << "Warning level hidden";
+		logger.error() << "Log on level error with implicit context";
+		logger.critical() << "Log on level critical with implicit context";
+	}
+
+	const std::string EXPECTED =
+		"Log on level info with implicit context\n"
+		"Log on level info with default context\n"
+		"Log on level error with full context\n"
+		"Log on level critical with context from macro\n"
+		;
+
+	BOOST_CHECK_EQUAL(output.str(), EXPECTED);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* LoggerFunctionalTestSuite */);

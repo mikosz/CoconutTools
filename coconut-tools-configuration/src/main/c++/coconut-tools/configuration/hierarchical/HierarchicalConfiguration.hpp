@@ -64,6 +64,8 @@ public:
 
     Value get(const node::Path& key) const;
 
+	Value getRequired(const node::Path& key) const;
+
     void getAll(const node::Path& key, Nodes* values) const;
 
     void set(const node::Path& key, ValueParam value);
@@ -99,6 +101,8 @@ private:
     void find_(const node::Path& key, Nodes* nodes) const;
 
     Node findSingle_(const node::Path& key) const;
+
+	Node findRequired_(const node::Path& key) const;
 
     void add_(Node parent, const node::Path::Element& child, ValueParam value);
 

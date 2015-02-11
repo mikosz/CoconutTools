@@ -15,7 +15,7 @@ LoggerSharedPtr LoggerFactory::create(const LoggerId& loggerId) {
 	}
 	
 	LoggerUniquePtr newLogger(new Logger(loggerConfiguration_->loggerLevel(loggerId)));
-	newLogger->addAppender(appenderFactory_.create(loggerId));
+	newLogger->addAppender(appenderFactory_.create(loggerConfiguration_->appenderId(loggerId)));
 	return storage_.store(loggerId, LoggerUniquePtr(newLogger.release()));
 }
 

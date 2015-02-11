@@ -12,17 +12,10 @@ namespace coconut_tools {
 namespace logger {
 namespace appender {
 
-class AppenderFactory :
-		public design_pattern::factory::Factory<
-			Appender::Id,
-			Appender,
-			design_pattern::PermanentStorage,
-			design_pattern::FunctorCreator<Appender>,
-			design_pattern::NoLockingPolicy,
-			design_pattern::IgnoringErrorPolicy
-			>
-{
+class AppenderFactory {
 public:
+
+	typedef std::string AppenderTypeId;
 
 	typedef design_pattern::NewCreator<
 		Appender,
@@ -33,18 +26,24 @@ public:
 
 	AppenderFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
-	void registerCreator(const Appender::Id& appenderId, AppenderCreator creator);
+	void registerCreator(const AppenderTypeId& appenderTypeId, AppenderCreator creator);
+
+	AppenderSharedPtr create(const Appender::Id& appenderId);
 
 private:
 
 	typedef design_pattern::factory::Factory<
-		Appender::Id,
+		AppenderTypeId,
 		Appender,
-		design_pattern::PermanentStorage,
+		design_pattern::NoStorage,
 		design_pattern::FunctorCreator<Appender>,
 		design_pattern::NoLockingPolicy,
-		design_pattern::IgnoringErrorPolicy
-		> Super;
+		design_pattern::ExceptionThrowingErrorPolicy
+		> AppenderTypeFactory;
+
+	AppenderTypeFactory typeFactory_;
+
+	design_pattern::PermanentStorage<Appender::Id, Appender> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

@@ -79,18 +79,30 @@ public:
 
 	typedef std::string AppenderId;
 
+	typedef std::string AppenderTypeId;
+
 	typedef std::string LayoutId;
+
+	LoggerConfiguration(
+		coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr config) :
+		configuration_(config)
+	{
+	}
 
 	virtual ~LoggerConfiguration() {
 	}
 
 	Level loggerLevel(const LoggerId& loggerId) const;
 
+	AppenderId appenderId(const LoggerId& loggerId) const;
+
 	LayoutId layoutId(const AppenderId& appenderId) const;
+
+	AppenderTypeId appenderTypeId(const AppenderId& appenderId) const;
 
 private:
 
-	coconut_tools::configuration::hierarchical::HierarchicalConfigurationSharedPtr configuration_;
+	coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr configuration_;
 
 };
 
