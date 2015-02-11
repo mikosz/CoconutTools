@@ -138,4 +138,45 @@ BOOST_AUTO_TEST_CASE(NodePathIsSelectsApplicableNode) {
 	BOOST_CHECK_EQUAL(*father2, *found);
 }
 
+BOOST_AUTO_TEST_CASE(ParentPathCanContainSelectorsWhenAdding) {
+	auto configuration = HierarchicalConfiguration::create();
+	configuration->set("grandfather", HierarchicalConfiguration::create());
+
+	auto father1 = HierarchicalConfiguration::create();
+	auto child1 = HierarchicalConfiguration::create();
+	child1->add("id", HierarchicalConfiguration::create("id-1"));
+	father1->add("child", child1);
+
+	configuration->add("grandfather/father", father1);
+
+	auto father2 = HierarchicalConfiguration::create();
+	auto child2 = HierarchicalConfiguration::create();
+	child2->add("id", HierarchicalConfiguration::create("id-2"));
+	father2->add("child", child2);
+
+	configuration->add("grandfather/father", father2);
+
+	auto path = (node::Path() / "grandfather/father")[node::Path("child/id").is("id-2")] / "child";
+
+	configuration->add(path / "name", HierarchicalConfiguration::create("Johnny"));
+
+	BOOST_CHECK_EQUAL(configuration->get(path / "name")->text(), "Johnny");
+}
+
+BOOST_AUTO_TEST_CASE(AddedNodePathCantContainSelectorsWhenAdding) {
+	auto configuration = HierarchicalConfiguration::create();
+	BOOST_CHECK_THROW(
+		configuration->add((node::Path() / "node").is("text"), HierarchicalConfiguration::create()),
+		AddOrSetNodePathChildHasSelector
+		);
+}
+
+BOOST_AUTO_TEST_CASE(AddedNodePathCantContainSelectorsWhenSetting) {
+	auto configuration = HierarchicalConfiguration::create();
+	BOOST_CHECK_THROW(
+		configuration->set((node::Path() / "node").is("text"), HierarchicalConfiguration::create()),
+		AddOrSetNodePathChildHasSelector
+		);
+}
+
 BOOST_AUTO_TEST_SUITE_END(/* HierachicalConfigurationTestSuite */);

@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <string>
 
 #include <boost/operators.hpp>
 
@@ -15,6 +16,24 @@
 namespace coconut_tools {
 namespace configuration {
 namespace hierarchical {
+
+class AddOrSetNodePathChildHasSelector : public ConfigurationException {
+public:
+
+	AddOrSetNodePathChildHasSelector(const std::string& key) :
+		key_(key)
+	{
+	}
+
+	const std::string& key() const {
+		return key_;
+	}
+
+private:
+
+	std::string key_;
+
+};
 
 class HierarchicalConfiguration :
     public Configuration<node::Path, std::shared_ptr<HierarchicalConfiguration> >,

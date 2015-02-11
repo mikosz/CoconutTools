@@ -94,13 +94,21 @@ void HierarchicalConfiguration::getAll(const node::Path& key, Nodes* valuesParam
 }
 
 void HierarchicalConfiguration::set(const node::Path& key, ValueParam value) {
-    node::Path parent = key.parentPath();
+	if (!key.child().selectors.empty()) {
+		throw AddOrSetNodePathChildHasSelector(key.string());
+	}
+
+	node::Path parent = key.parentPath();
     Node parentNode = findSingle_(parent);
     erase_(parentNode, key.child());
     add_(parentNode, key.child(), value);
 }
 
 void HierarchicalConfiguration::add(const node::Path& key, ValueParam value) {
+	if (!key.child().selectors.empty()) {
+		throw AddOrSetNodePathChildHasSelector(key.string());
+	}
+
     node::Path parent = key.parentPath();
     Node parentNode = findSingle_(parent);
     add_(parentNode, key.child(), value);

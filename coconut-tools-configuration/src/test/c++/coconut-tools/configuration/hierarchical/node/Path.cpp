@@ -9,6 +9,10 @@ using namespace coconut_tools::configuration::hierarchical::node;
 
 BOOST_AUTO_TEST_SUITE(PathTestSuite);
 
+BOOST_AUTO_TEST_CASE(EmptyPathIsEmpty) {
+	BOOST_CHECK(Path().empty());
+}
+
 BOOST_AUTO_TEST_CASE(EmptyStringYieldsEmptyPath) {
     Path nodePath("");
     BOOST_CHECK(nodePath.empty());
@@ -19,6 +23,43 @@ BOOST_AUTO_TEST_CASE(OperatorDivideAppendsPath) {
 	BOOST_CHECK_EQUAL(nodePath.root(), "a");
 	BOOST_CHECK_EQUAL(nodePath.childPath().root(), "b");
 	BOOST_CHECK_EQUAL(nodePath.childPath().childPath().root(), "c");
+}
+
+BOOST_AUTO_TEST_CASE(AppendedPathIsParsedAndDivided) {
+	auto nodePath = Path("a/b") / "c/d";
+	BOOST_CHECK_EQUAL(nodePath.root(), "a");
+	BOOST_CHECK_EQUAL(nodePath.childPath().root(), "b");
+	BOOST_CHECK_EQUAL(nodePath.childPath().childPath().root(), "c");
+	BOOST_CHECK_EQUAL(nodePath.childPath().childPath().childPath().root(), "d");
+}
+
+BOOST_AUTO_TEST_CASE(SamePathsYieldEqual) {
+	// deilberately added empty nodes, which should be removed automatically
+	BOOST_CHECK_EQUAL(Path("/a/b/c"), Path("a/b//c/"));
+}
+
+BOOST_AUTO_TEST_CASE(DifferentPathsYieldUnequal) {
+	// deilberately added empty nodes, which should be removed automatically
+	BOOST_CHECK_NE(Path("a/b/c"), Path("a/d/c"));
+}
+
+BOOST_AUTO_TEST_CASE(AppendingSelectorWithoutPathAddsToLastNode) {
+	auto original = Path("a/b/c")["selector"];
+	auto appended = Path().is("text");
+
+	auto expected = Path("a/b/c")["selector"].is("text");
+
+	BOOST_CHECK_EQUAL(original / appended, expected);
+}
+
+BOOST_AUTO_TEST_CASE(PrependingSelectorWithoutPathAddsEmptyNodePath) {
+	auto original = Path("a/b/c")["selector"];
+	auto prepended = Path().is("text");
+
+	auto expected = Path().is("text") / Path("a/b/c")["selector"];
+
+	BOOST_CHECK_EQUAL(prepended / original, expected);
+	BOOST_CHECK_EQUAL((prepended / original).root(), Path().is("text"));
 }
 
 BOOST_AUTO_TEST_CASE(DifferentValueSelectorsYieldUnequal) {

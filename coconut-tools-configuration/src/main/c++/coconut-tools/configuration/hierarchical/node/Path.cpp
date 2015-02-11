@@ -96,7 +96,26 @@ bool Path::operator==(const Path& other) const {
 }
 
 Path& Path::operator/=(const Path& other) {
-    std::copy(other.path_.begin(), other.path_.end(), std::back_inserter(path_));
+	if (other.empty()) {
+		return *this;
+	}
+
+	auto otherBegin = other.path_.begin();
+
+	if (otherBegin->name.empty()) {
+		assert(!otherBegin->selectors.empty());
+		if (path_.empty()) {
+			path_.push_back(Element(""));
+		}
+		std::copy(
+			otherBegin->selectors.begin(),
+			otherBegin->selectors.end(),
+			std::back_inserter(path_.back().selectors)
+			);
+		++otherBegin;
+	}
+
+    std::copy(otherBegin, other.path_.end(), std::back_inserter(path_));
 	path_.erase(
 		std::remove_if(
 			path_.begin(),
