@@ -17,16 +17,17 @@ public:
 
 	typedef std::string AppenderTypeId;
 
-	typedef design_pattern::NewCreator<
-		Appender,
-		const Appender::Id&,
-		const logger::configuration::LoggerConfiguration&,
-		layout::LayoutFactory*
-		> AppenderCreator;
-
 	AppenderFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
-	void registerCreator(const AppenderTypeId& appenderTypeId, AppenderCreator creator);
+	template <class ConcreteAppenderType>
+	void registerType(const AppenderTypeId& appenderTypeId) {
+		typeFactory_.registerCreator(
+			appenderTypeId,
+			design_pattern::FunctorCreator<Appender::Initialiser>(
+				&Appender::Initialiser::createInitialisable<ConcreteAppenderType>
+				)
+			);
+	}
 
 	AppenderSharedPtr create(const Appender::Id& appenderId);
 
@@ -34,9 +35,9 @@ private:
 
 	typedef design_pattern::factory::Factory<
 		AppenderTypeId,
-		Appender,
+		Appender::Initialiser,
 		design_pattern::NoStorage,
-		design_pattern::FunctorCreator<Appender>,
+		design_pattern::FunctorCreator<Appender::Initialiser>,
 		design_pattern::NoLockingPolicy,
 		design_pattern::ExceptionThrowingErrorPolicy
 		> AppenderTypeFactory;

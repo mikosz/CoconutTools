@@ -36,14 +36,17 @@ public:
 
 protected:
 
-	void doAppend(const std::string& message) {
+	void doAppend(const std::string& message) override {
 		std::clog << message;
 		std::clog.flush();
 	}
 
 private:
 
-	friend class design_pattern::creator::NewCreator<Appender>;
+	ConsoleAppender() {
+	}
+
+	friend class Initialiser;
 
 };
 

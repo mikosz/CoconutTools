@@ -32,11 +32,14 @@ public:
 
 protected:
 
-	void doAppend(const std::string& message);
+	void doAppend(const std::string& message) override;
 
 private:
 
-	friend class design_pattern::creator::NewCreator<Appender>;
+	DebugWindowAppender() {
+	}
+
+	friend class Initialiser;
 
 };
 

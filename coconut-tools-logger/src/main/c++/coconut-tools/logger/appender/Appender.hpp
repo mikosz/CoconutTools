@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
+#include "coconut-tools/utils/Initialisable.hpp"
 
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 #include "coconut-tools/logger/layout/LayoutFactory.hpp"
@@ -16,7 +17,14 @@ namespace coconut_tools {
 namespace logger {
 namespace appender {
 
-class Appender {
+class Appender :
+	public utils::Initialisable<
+		Appender,
+		const std::string&,
+		const logger::configuration::LoggerConfiguration&,
+		layout::LayoutFactory*
+		>
+{
 public:
 
 	typedef std::string Id;
@@ -30,6 +38,9 @@ protected:
 
     virtual void doAppend(const std::string& message) = 0;
 
+	Appender() {
+	}
+
 	Appender(layout::LayoutPtr layout) :
 		layout_(layout) {
 	}
@@ -39,6 +50,12 @@ protected:
 		const logger::configuration::LoggerConfiguration& configuration,
 		layout::LayoutFactory* layoutFactory
 		);
+
+	void doInitialise(
+		const Id& id,
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		) override;
 
 private:
 

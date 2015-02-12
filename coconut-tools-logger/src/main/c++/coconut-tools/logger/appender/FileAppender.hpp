@@ -7,6 +7,9 @@
 #include "Appender.hpp"
 
 #include "coconut-tools/design-pattern/creator/NewCreator.hpp"
+
+#include "coconut-tools/utils/pointee.hpp"
+
 #include "coconut-tools/logger/log-file/LogFile.hpp"
 
 namespace coconut_tools {
@@ -27,23 +30,34 @@ public:
 	FileAppender(
 		const Id& id,
 		const logger::configuration::LoggerConfiguration& configuration,
-		layout::LayoutFactory* layoutFactory
+		layout::LayoutFactory* layoutFactoryPtr
 		) :
-		Appender(id, configuration, layoutFactory)
+		Appender(id, configuration, layoutFactoryPtr)
 	{
+		layout::LayoutFactory& layoutFactory = utils::pointee(layoutFactoryPtr);
+		doInitialise(id, configuration, &layoutFactory);
 	}
 
 protected:
 
-	void doAppend(const std::string& message) {
+	void doAppend(const std::string& message) override {
 		return logFile_->write(message);
 	}
 
+	void doInitialise(
+		const Id& id,
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		) override;
+
 private:
+
+	FileAppender() {
+	}
 
 	log_file::LogFileSharedPtr logFile_;
 
-	friend class design_pattern::creator::NewCreator<Appender>;
+	friend class Initialiser;
 
 };
 
