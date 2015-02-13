@@ -24,7 +24,9 @@ public:
 		typeFactory_.registerCreator(
 			appenderTypeId,
 			design_pattern::FunctorCreator<Appender::Initialiser>(
-				&Appender::Initialiser::createInitialisable<ConcreteAppenderType>
+				[]() {
+					return Appender::Initialiser::createInitialisable<ConcreteAppenderType>();
+				}
 				)
 			);
 	}

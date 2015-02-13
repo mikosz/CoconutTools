@@ -14,16 +14,16 @@ template <class IdentifierType, class InstanceType>
 class VolatileStorage :
     public MappingStorage<
         IdentifierType,
-        std::weak_ptr<InstanceType>,
-        std::shared_ptr<InstanceType>
+        std::weak_ptr<typename InstanceType::element_type>,
+        std::shared_ptr<typename InstanceType::element_type>
         >
 {
 private:
 
     typedef MappingStorage<
                 IdentifierType,
-                std::weak_ptr<InstanceType>,
-                std::shared_ptr<InstanceType>
+				std::weak_ptr<typename InstanceType::element_type>,
+				std::shared_ptr<typename InstanceType::element_type>
                 >
             Super;
 

@@ -37,14 +37,12 @@ public:
     typedef ErrorPolicyType<Identifier, Instance> ErrorPolicy;
 
     StoredInstance create(const IdentifierParam id) {
-        typename Storage::Permanent stored = storage_.get(id);
-        if (stored.get()) {
-            return stored;
+        if (storage_.isStored(id)) {
+            return storage_.get(id);
         } else {
             typename Creators::iterator it = creators_.find(id);
             if (it == creators_.end()) {
-                ErrorPolicy::noSuchType(id);
-                return StoredInstance();
+                return ErrorPolicy::noSuchType(id);
             }
             return storage_.store(id, it->second.create());
         }

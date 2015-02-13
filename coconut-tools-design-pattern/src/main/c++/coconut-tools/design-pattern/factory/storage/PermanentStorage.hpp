@@ -14,8 +14,8 @@ template <class IdentifierType, class InstanceType>
 class PermanentStorage :
     public MappingStorage<
         IdentifierType,
-        std::shared_ptr<InstanceType>,
-        std::shared_ptr<InstanceType>
+        std::shared_ptr<typename InstanceType::element_type>,
+        std::shared_ptr<typename InstanceType::element_type>
         >
 {
 };

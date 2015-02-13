@@ -92,7 +92,7 @@ public:
         throw CreatorAlreadyRegistered<Identifier>(id);
     }
 
-    static void noSuchType(const IdentifierParam id) {
+    static InstanceType&& noSuchType(const IdentifierParam id) {
         throw NoSuchType<Identifier>(id);
     }
 

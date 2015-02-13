@@ -23,11 +23,11 @@ public:
 
 	template <class ConcreteType>
 	static Initialiser createInitialisable() {
-		return Initialiser(Ptr(new ConcreteType));
+		return Ptr(new ConcreteType);
 	}
 
-	Initialiser(Ptr&& initialisable) :
-		initialisable_(initialisable)
+	Initialiser(Initialiser&& other) :
+		initialisable_(std::move(other.initialisable_))
 	{
 	}
 
@@ -43,6 +43,11 @@ public:
 private:
 
 	Ptr initialisable_;
+
+	Initialiser(Ptr&& initialisable) :
+		initialisable_(std::move(initialisable))
+	{
+	}
 
 };
 

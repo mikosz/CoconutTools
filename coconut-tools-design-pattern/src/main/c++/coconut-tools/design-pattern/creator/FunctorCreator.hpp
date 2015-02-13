@@ -14,13 +14,13 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef std::function<std::unique_ptr<Instance>()> Creator;
+    typedef std::function<Instance ()> Creator;
 
     FunctorCreator(Creator creator) :
         creator_(creator) {
     }
 
-    std::unique_ptr<Instance> create() {
+    Instance create() {
         return creator_();
     }
 

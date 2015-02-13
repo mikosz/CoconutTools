@@ -162,7 +162,7 @@ BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
 BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
     Factory<
         std::string,
-        int,
+        std::unique_ptr<int>,
         NoStorage,
         CopyableMockCreatorAdapter,
         UniqueMutexLockingPolicy,
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
 
     Factory<
         std::string,
-        int,
+        std::unique_ptr<int>,
         NoStorage,
         CopyableMockCreatorAdapter,
         UniqueMutexLockingPolicy,

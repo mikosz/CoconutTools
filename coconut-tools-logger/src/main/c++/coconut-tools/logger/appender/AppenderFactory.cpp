@@ -35,6 +35,6 @@ AppenderSharedPtr AppenderFactory::create(const Appender::Id& appenderId) {
 	}
 
 	auto initialiser = typeFactory_.create(loggerConfiguration_->appenderTypeId(appenderId));
-	instanceStorage_.store(appenderId, initialiser->initialise(appenderId, *loggerConfiguration_, &layoutFactory_));
+	instanceStorage_.store(appenderId, initialiser.initialise(appenderId, *loggerConfiguration_, &layoutFactory_));
 	return instanceStorage_.get(appenderId);
 }

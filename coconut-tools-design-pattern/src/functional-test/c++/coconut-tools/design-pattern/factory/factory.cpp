@@ -44,17 +44,13 @@ public:
 
 const std::string ConcreteClass2::ID("ConcreteClass2");
 
-std::unique_ptr<int> createInt(int value) {
-	return std::unique_ptr<int>(new int(value));
-}
-
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_AUTO_TEST_SUITE(FactoryFunctionalTestSuite);
 
 BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 	typedef Factory<
 				std::string,
-				AbstractClass,
+				std::unique_ptr<AbstractClass>,
 				NoStorage,
 				NewCreator<AbstractClass>,
 				NoLockingPolicy,
@@ -98,15 +94,16 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(std::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<int>([]() { return 1; }));
+	f.registerCreator(2, FunctorCreator<int>([]() { return 2; }));
 
 	BOOST_CHECK_THROW(
-			f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1))),
-			CreatorAlreadyRegistered<int>);
+			f.registerCreator(1, FunctorCreator<int>([]() { return 1; })),
+			CreatorAlreadyRegistered<int>
+			);
 
-	BOOST_CHECK_EQUAL(*f.create(1), 1);
-	BOOST_CHECK_EQUAL(*f.create(2), 2);
+	BOOST_CHECK_EQUAL(f.create(1), 1);
+	BOOST_CHECK_EQUAL(f.create(2), 2);
 
 	f.unregisterCreator(1);
 	f.unregisterCreator(2);
@@ -118,17 +115,17 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 BOOST_AUTO_TEST_CASE(CachingFactory) {
 	typedef Factory<
 				int,
-				int,
+				std::unique_ptr<int>,
 				PermanentStorage,
-				FunctorCreator<int>,
+				FunctorCreator<std::unique_ptr<int> >,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(std::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(1)); }));
+	f.registerCreator(2, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(2)); }));
 
 	std::shared_ptr<int> one = f.create(1);
 	std::shared_ptr<int> two = f.create(2);
@@ -144,17 +141,17 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
 	typedef volatile Factory<
 				int,
-				int,
+				std::unique_ptr<int>,
 				PermanentStorage,
-				FunctorCreator<int>,
+				FunctorCreator<std::unique_ptr<int> >,
 				UniqueMutexLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(std::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(std::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(1)); }));
+	f.registerCreator(2, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(2)); }));
 
 	std::shared_ptr<int> one = f.create(1);
 	std::shared_ptr<int> two = f.create(2);

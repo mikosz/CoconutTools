@@ -20,7 +20,7 @@ class LayoutFactory :
 			design_pattern::PermanentStorage,
 			design_pattern::NewCreator<Layout>,
 			design_pattern::NoLockingPolicy,
-			design_pattern::IgnoringErrorPolicy
+			design_pattern::ExceptionThrowingErrorPolicy
 			>
 {
 public:
