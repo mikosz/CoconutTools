@@ -57,7 +57,12 @@ private:
 
 	log_file::LogFileSharedPtr logFile_;
 
-	friend class Initialiser;
+	friend class utils::Initialiser<
+		Appender,
+		const Id&,
+		const logger::configuration::LoggerConfiguration&,
+		layout::LayoutFactory*
+		>;
 
 };
 

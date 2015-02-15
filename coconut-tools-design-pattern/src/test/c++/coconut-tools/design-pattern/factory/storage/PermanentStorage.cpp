@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_SUITE(TestSuite);
 BOOST_AUTO_TEST_SUITE(PermanentStorageTestSuite);
 
 BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     int* instance = new int;
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
 }
 
 BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     int* instance = new int;
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
 }
 
 BOOST_AUTO_TEST_CASE(RetainsInstanceWhenUnused) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     int* instance = new int;
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(RetainsInstanceWhenUnused) {
 }
 
 BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     int* instance = new int;
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     storage.erase("instance");
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     int* instance = new int;
@@ -85,14 +85,14 @@ BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsFalseIfInstanceNotPresent) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     BOOST_CHECK(!storage.isStored("instance"));
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstanceRemoved) {
-    typedef PermanentStorage<std::string, int> PermanentStorage;
+    typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
     PermanentStorage storage;
 
     int* instance = new int;

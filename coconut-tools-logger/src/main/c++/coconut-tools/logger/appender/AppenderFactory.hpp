@@ -23,9 +23,11 @@ public:
 	void registerType(const AppenderTypeId& appenderTypeId) {
 		typeFactory_.registerCreator(
 			appenderTypeId,
-			design_pattern::FunctorCreator<Appender::Initialiser>(
+			design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >(
 				[]() {
-					return Appender::Initialiser::createInitialisable<ConcreteAppenderType>();
+					return std::unique_ptr<Appender::Initialiser>(
+							new Appender::Initialiser(Appender::Initialiser::createInitialisable<ConcreteAppenderType>())
+							);
 				}
 				)
 			);
@@ -37,16 +39,16 @@ private:
 
 	typedef design_pattern::factory::Factory<
 		AppenderTypeId,
-		Appender::Initialiser,
+		std::unique_ptr<Appender::Initialiser>,
 		design_pattern::NoStorage,
-		design_pattern::FunctorCreator<Appender::Initialiser>,
+		design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >,
 		design_pattern::NoLockingPolicy,
 		design_pattern::ExceptionThrowingErrorPolicy
 		> AppenderTypeFactory;
 
 	AppenderTypeFactory typeFactory_;
 
-	design_pattern::PermanentStorage<Appender::Id, Appender> instanceStorage_;
+	design_pattern::PermanentStorage<Appender::Id, AppenderSharedPtr> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

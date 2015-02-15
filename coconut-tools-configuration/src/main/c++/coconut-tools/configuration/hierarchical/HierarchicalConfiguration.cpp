@@ -84,13 +84,11 @@ size_t HierarchicalConfiguration::count(const node::Path& key) const {
 HierarchicalConfiguration::Value HierarchicalConfiguration::get(
         const node::Path& key
         ) const {
-    return findSingle_(key);
-}
-
-HierarchicalConfiguration::Value HierarchicalConfiguration::getRequired(
-	const node::Path& key
-	) const {
-	return findRequired_(key);
+    auto element = findSingle_(key);
+    if (!element) {
+    	throw MissingRequiredValue(key.string());
+    }
+    return element;
 }
 
 void HierarchicalConfiguration::getAll(const node::Path& key, Nodes* valuesParam) const {

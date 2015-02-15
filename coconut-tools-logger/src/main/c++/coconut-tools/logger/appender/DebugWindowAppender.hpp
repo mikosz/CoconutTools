@@ -1,6 +1,10 @@
 #ifndef COCONUTTOOLS_LOGGER_APPENDER_DEBUGWINDOWAPPENDER_HPP_
 #define COCONUTTOOLS_LOGGER_APPENDER_DEBUGWINDOWAPPENDER_HPP_
 
+#include "coconut-tools/system/platform.hpp"
+
+#if defined(COMPILER_VISUAL_CXX)
+
 #include "Appender.hpp"
 
 #include <string>
@@ -39,12 +43,19 @@ private:
 	DebugWindowAppender() {
 	}
 
-	friend class Initialiser;
+	friend class utils::Initialiser<
+		Appender,
+		const Id&,
+		const logger::configuration::LoggerConfiguration&,
+		layout::LayoutFactory*
+		>;
 
 };
 
 } // namespace appender
 } // namespace logger
 } // namespace coconut_tools
+
+#endif /* COMPILER_VISUAL_CXX */
 
 #endif /* COCONUTTOOLS_LOGGER_APPENDER_DEBUGWINDOWAPPENDER_HPP_ */

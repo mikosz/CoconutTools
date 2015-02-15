@@ -16,7 +16,7 @@ namespace layout {
 class LayoutFactory :
 		public design_pattern::factory::Factory<
 			std::string,
-			Layout,
+			LayoutPtr,
 			design_pattern::PermanentStorage,
 			design_pattern::NewCreator<Layout>,
 			design_pattern::NoLockingPolicy,

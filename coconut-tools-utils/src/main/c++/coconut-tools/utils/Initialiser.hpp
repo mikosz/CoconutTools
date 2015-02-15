@@ -40,6 +40,10 @@ public:
 		return Ptr(initialisable_.release());
 	}
 
+	bool empty() const {
+		return initialisable_;
+	}
+
 private:
 
 	Ptr initialisable_;

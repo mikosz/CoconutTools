@@ -15,7 +15,7 @@ template <
     template<class /* IdentifierType */, class /* InstanceType */> class StorageType,
     class CreatorType,
     class LockingPolicyType,
-    template<class /* IdentifierType */, class /* InstanceType */> class ErrorPolicyType
+    template<class /* IdentifierType */> class ErrorPolicyType
     >
 class Factory {
 public:
@@ -34,7 +34,7 @@ public:
 
     typedef typename Storage::Permanent StoredInstance;
 
-    typedef ErrorPolicyType<Identifier, Instance> ErrorPolicy;
+    typedef ErrorPolicyType<Identifier> ErrorPolicy;
 
     StoredInstance create(const IdentifierParam id) {
         if (storage_.isStored(id)) {
@@ -42,7 +42,8 @@ public:
         } else {
             typename Creators::iterator it = creators_.find(id);
             if (it == creators_.end()) {
-                return ErrorPolicy::noSuchType(id);
+                ErrorPolicy::noSuchType(id);
+                return StoredInstance();
             }
             return storage_.store(id, it->second.create());
         }

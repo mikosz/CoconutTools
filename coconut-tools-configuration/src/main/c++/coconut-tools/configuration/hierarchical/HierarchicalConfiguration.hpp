@@ -56,25 +56,23 @@ public:
 
     std::ostream& print(std::ostream& os) const;
 
-    void clear();
+    void clear() override;
 
-    bool empty() const;
+    bool empty() const override;
 
-    size_t count(const node::Path& key) const;
+    size_t count(const node::Path& key) const override;
 
-    Value get(const node::Path& key) const;
+    Value get(const node::Path& key) const override;
 
-	Value getRequired(const node::Path& key) const;
+    void getAll(const node::Path& key, Nodes* values) const override;
 
-    void getAll(const node::Path& key, Nodes* values) const;
+    void set(const node::Path& key, ValueParam value) override;
 
-    void set(const node::Path& key, ValueParam value);
+    void add(const node::Path& key, ValueParam value) override;
 
-    void add(const node::Path& key, ValueParam value);
+    void erase(const node::Path& key) override;
 
-    void erase(const node::Path& key);
-
-    void keys(Keys* k) const;
+    void keys(Keys* k) const override;
 
     bool is(const std::string& name) const;
 

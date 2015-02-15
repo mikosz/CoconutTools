@@ -5,6 +5,8 @@
 
 #include "Initialiser.hpp"
 
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+
 namespace coconut_tools {
 namespace utils {
 
@@ -30,7 +32,7 @@ protected:
 
 	virtual void doInitialise(InitialiseArguments... arguments) = 0;
 
-	friend class Initialiser;
+	friend class utils::Initialiser<Value, InitialiseArguments...>;
 
 };
 

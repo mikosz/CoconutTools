@@ -4,9 +4,10 @@
 
 #include "coconut-tools/design-pattern/factory.hpp"
 
+using namespace coconut_tools;
 using namespace coconut_tools::design_pattern;
 
-namespace {
+namespace /* anonymous */ {
 
 class AbstractClass {
 public:
@@ -23,7 +24,7 @@ public:
 
 	static const std::string ID;
 
-	const std::string& id() const {
+	const std::string& id() const override {
 		return ID;
 	}
 
@@ -36,7 +37,7 @@ public:
 
 	static const std::string ID;
 
-	const std::string& id() const {
+	const std::string& id() const override {
 		return ID;
 	}
 

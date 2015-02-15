@@ -27,7 +27,7 @@ public:
 
     typedef Instance InstanceParam;
 
-    typedef Instance&& Permanent;
+    typedef Instance Permanent;
 
     Permanent get(const IdentifierParam) const {
         throw GetCalledOnNoStorage();

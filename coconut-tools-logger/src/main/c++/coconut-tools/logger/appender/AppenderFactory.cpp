@@ -6,6 +6,8 @@
 
 #include "coconut-tools/utils/pointee.hpp"
 
+#include "coconut-tools/system/platform.hpp"
+
 using namespace coconut_tools;
 using namespace coconut_tools::logger;
 using namespace coconut_tools::logger::appender;
@@ -17,7 +19,9 @@ void registerBuiltins(AppenderFactory* factoryPtr) {
 
 	factory.registerType<ConsoleAppender>(ConsoleAppender::CLASS_NAME);
 	factory.registerType<FileAppender>(FileAppender::CLASS_NAME);
+#if defined(COMPILER_VISUAL_CXX)
 	factory.registerType<DebugWindowAppender>(DebugWindowAppender::CLASS_NAME);
+#endif /* COMPILER_VISUAL_CXX */
 }
 
 } // anonymous namespace
@@ -35,6 +39,6 @@ AppenderSharedPtr AppenderFactory::create(const Appender::Id& appenderId) {
 	}
 
 	auto initialiser = typeFactory_.create(loggerConfiguration_->appenderTypeId(appenderId));
-	instanceStorage_.store(appenderId, initialiser.initialise(appenderId, *loggerConfiguration_, &layoutFactory_));
+	instanceStorage_.store(appenderId, initialiser->initialise(appenderId, *loggerConfiguration_, &layoutFactory_));
 	return instanceStorage_.get(appenderId);
 }

@@ -37,19 +37,19 @@ public:
         values_(values) {
     }
 
-    void clear() {
+    void clear() override {
         values_.clear();
     }
 
-    bool empty() const {
+    bool empty() const override {
         return values_.empty();
     }
 
-    size_t count(const typename Super::KeyParam key) const {
+    size_t count(const typename Super::KeyParam key) const override {
         return values_.count(key);
     }
 
-    typename Super::Value get(const typename Super::KeyParam key) const {
+    typename Super::Value get(const typename Super::KeyParam key) const override {
         utils::Sequence<typename Storage::const_iterator> range = values_.equal_range(key);
         if (range.atEnd()) {
             throw MissingRequiredValue(boost::lexical_cast<std::string>(key));
@@ -65,7 +65,7 @@ public:
     void getAll(
             const typename Super::KeyParam key,
             typename Super::Values* valuesParam
-            ) const {
+            ) const override {
         typename Super::Values& values = *valuesParam;
         utils::Sequence<typename Storage::const_iterator> range = values_.equal_range(key);
         std::transform(
@@ -76,20 +76,20 @@ public:
         );
     }
 
-    void set(const typename Super::KeyParam key, const typename Super::ValueParam value) {
+    void set(const typename Super::KeyParam key, const typename Super::ValueParam value) override {
         erase(key);
         add(key, value);
     }
 
-    void add(const typename Super::KeyParam key, const typename Super::ValueParam value) {
+    void add(const typename Super::KeyParam key, const typename Super::ValueParam value) override {
         values_.insert(std::make_pair(key, value));
     }
 
-    void erase(const typename Super::KeyParam key) {
+    void erase(const typename Super::KeyParam key) override {
         values_.erase(key);
     }
 
-    void keys(typename Super::Keys* keysParam) const {
+    void keys(typename Super::Keys* keysParam) const override {
         typename Super::Keys& k = utils::pointee(keysParam);
         std::transform(
                 values_.begin(),

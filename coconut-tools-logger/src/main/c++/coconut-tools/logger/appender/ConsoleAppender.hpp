@@ -46,7 +46,12 @@ private:
 	ConsoleAppender() {
 	}
 
-	friend class Initialiser;
+	friend class utils::Initialiser<
+		Appender,
+		const Id&,
+		const logger::configuration::LoggerConfiguration&,
+		layout::LayoutFactory*
+		>;
 
 };
 

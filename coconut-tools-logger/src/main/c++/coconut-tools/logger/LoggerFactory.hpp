@@ -32,7 +32,7 @@ private:
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
-	design_pattern::factory::storage::PermanentStorage<LoggerId, Logger> storage_;
+	design_pattern::factory::storage::PermanentStorage<LoggerId, LoggerSharedPtr> storage_;
 
 	appender::AppenderFactory appenderFactory_;
 

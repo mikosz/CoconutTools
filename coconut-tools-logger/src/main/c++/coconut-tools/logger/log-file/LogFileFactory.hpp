@@ -22,9 +22,9 @@ private:
 
 	typedef design_pattern::Factory<
 		std::string,
-		LogFile,
+		LogFileSharedPtr,
 		design_pattern::PermanentStorage,
-		design_pattern::FunctorCreator<LogFile>,
+		design_pattern::FunctorCreator<LogFileUniquePtr>,
 		design_pattern::NoLockingPolicy,
 		design_pattern::ExceptionThrowingErrorPolicy
 		> Factory;

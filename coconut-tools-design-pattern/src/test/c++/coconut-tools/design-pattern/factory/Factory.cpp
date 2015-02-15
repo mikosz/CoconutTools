@@ -1,6 +1,7 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include <string>
+#include <memory>
 
 #include <gmock/gmock.h>
 
@@ -122,7 +123,7 @@ public:
 
 };
 
-template <class, class>
+template <class>
 class StaticFunctionMockErrorPolicyAdapter {
 public:
 
@@ -153,8 +154,8 @@ private:
 
 };
 
-template<class T1, class T2>
-std::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T1, T2>::Delegate> StaticFunctionMockErrorPolicyAdapter<T1, T2>::delegate_;
+template<class T>
+std::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T>::Delegate> StaticFunctionMockErrorPolicyAdapter<T>::delegate_;
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
@@ -189,7 +190,7 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 
     Factory<
         std::string,
-        int,
+        std::unique_ptr<int>,
         SingletonMockStorageAdapter,
         CopyableMockCreatorAdapter,
         UniqueMutexLockingPolicy,
@@ -225,7 +226,7 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
 
     ErrorPolicy::reset();
 
@@ -246,7 +247,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
 
     ErrorPolicy::reset();
 
@@ -267,7 +268,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
 
     ErrorPolicy::reset();
 
