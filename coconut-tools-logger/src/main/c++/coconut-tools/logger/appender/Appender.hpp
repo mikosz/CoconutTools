@@ -41,7 +41,7 @@ protected:
 	Appender() {
 	}
 
-	Appender(layout::LayoutPtr layout) :
+	Appender(layout::LayoutSharedPtr layout) :
 		layout_(layout) {
 	}
 
@@ -59,7 +59,7 @@ protected:
 
 private:
 
-    layout::LayoutPtr layout_;
+    layout::LayoutSharedPtr layout_;
 
 };
 

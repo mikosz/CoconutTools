@@ -16,7 +16,7 @@ namespace layout {
 class LayoutFactory :
 		public design_pattern::factory::Factory<
 			std::string,
-			LayoutPtr,
+			LayoutSharedPtr,
 			design_pattern::PermanentStorage,
 			design_pattern::NewCreator<Layout>,
 			design_pattern::NoLockingPolicy,
@@ -25,9 +25,40 @@ class LayoutFactory :
 {
 public:
 
+	typedef std::string LayoutTypeId;
+
 	LayoutFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
+	template <class ConcreteLayoutType>
+	void registerType(const LayoutTypeId& layoutTypeId) {
+		typeFactory_.registerCreator(
+			layoutTypeId,
+			design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >(
+				[]() {
+					return std::unique_ptr<Layout::Initialiser>(
+						new Layout::Initialiser(Layout::Initialiser::createInitialisable<ConcreteLayoutType>())
+						);
+				}
+				)
+			);
+		}
+
+	LayoutSharedPtr create(const Layout::Id& layoutId);
+
 private:
+
+	typedef design_pattern::factory::Factory<
+		LayoutTypeId,
+		std::unique_ptr<Layout::Initialiser>,
+		design_pattern::NoStorage,
+		design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >,
+		design_pattern::NoLockingPolicy,
+		design_pattern::ExceptionThrowingErrorPolicy
+	> LayoutTypeFactory;
+
+	LayoutTypeFactory typeFactory_;
+
+	design_pattern::PermanentStorage<Layout::Id, LayoutSharedPtr> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

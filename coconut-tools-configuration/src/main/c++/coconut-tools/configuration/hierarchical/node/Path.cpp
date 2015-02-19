@@ -187,8 +187,14 @@ bool Path::empty() const {
 }
 
 std::string Path::string() const {
-	std::ostringstream oss;
+	std::ostringstream oss; // TODO: boost::join compilation issues here, but I want it!
+	bool first = true;
 	for (auto element : path_) {
+		if (first) {
+			first = false;
+		} else {
+			oss << '/';
+		}
 		oss << element;
 	}
     return oss.str();

@@ -9,6 +9,6 @@ using namespace coconut_tools::logger;
 SystemLogger::SystemLogger() :
 	Logger(Level::INFO)
 {
-	layout::LayoutPtr layout(new layout::EmptyLayout());
+	layout::LayoutSharedPtr layout(new layout::EmptyLayout());
 	addAppender(std::make_shared<appender::ConsoleAppender>(layout));
 }

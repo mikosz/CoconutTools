@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
 
         L logger(logger::Level::INFO);
 
-        layout::LayoutPtr layout(new layout::EmptyLayout);
+        layout::LayoutSharedPtr layout(new layout::EmptyLayout);
         logger.addAppender(appender::AppenderSharedPtr(new appender::ConsoleAppender(layout)));
 
         logger.log(logger::Level::CRITICAL) << "critical";

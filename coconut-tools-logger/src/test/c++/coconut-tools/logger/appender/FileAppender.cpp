@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_SUITE(FileAppenderTestSuite, test_utils::GMockFixture);
 BOOST_FIXTURE_TEST_CASE(WritesToFile, test_utils::ResourcesDirFixture) {
 	const std::string testString("test string");
 
-	layout::LayoutPtr layout(new layout::EmptyLayout);
+	layout::LayoutSharedPtr layout(new layout::EmptyLayout);
 	log_file::LogFileSharedPtr logFile(new MockLogFile(resourcesDir() / "log-file.txt"));
 	FileAppender appender(layout, logFile);
 

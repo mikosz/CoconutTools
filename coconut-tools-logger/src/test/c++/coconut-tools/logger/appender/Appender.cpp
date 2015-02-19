@@ -13,7 +13,7 @@ namespace {
 class ConcreteAppender : public Appender {
 public:
 
-	ConcreteAppender(layout::LayoutPtr layout) :
+	ConcreteAppender(layout::LayoutSharedPtr layout) :
 		Appender(layout) {
 	}
 
@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_SUITE(AppenderTestSuite, test_utils::GMockFixture);
 BOOST_AUTO_TEST_CASE(CallsSubclassDoAppend) {
 	const std::string testString("test string");
 
-	layout::LayoutPtr layout(new layout::EmptyLayout);
+	layout::LayoutSharedPtr layout(new layout::EmptyLayout);
 	ConcreteAppender appender(layout);
 
 	EXPECT_CALL(appender, doAppend(testString + '\n'));
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(UsesProvidedLayout) {
 	const std::string testString("test string");
 	const std::string layoutApplicationResult("test string lain out");
 
-	layout::LayoutPtr layout(new ConcreteLayout);
+	layout::LayoutSharedPtr layout(new ConcreteLayout);
 	ConcreteAppender appender(layout);
 
 	EXPECT_CALL(

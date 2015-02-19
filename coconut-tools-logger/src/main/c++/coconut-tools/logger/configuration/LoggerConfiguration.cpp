@@ -14,126 +14,95 @@ using coconut_tools::configuration::hierarchical::ConstHierarchicalConfiguration
 
 namespace /* anonymous */ {
 
+const ConstHierarchicalConfigurationSharedPtr EMPTY_NODE;
+
+ConstHierarchicalConfigurationSharedPtr getNode(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& basePath,
+	const std::string& id,
+	const Path& childPath
+	) {
+	return configuration->getOptional(basePath[Path("id").is(id)] / childPath, EMPTY_NODE);
+}
+
+ConstHierarchicalConfigurationSharedPtr getDerivedNode(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& basePath,
+	const std::string& id,
+	const Path& childPath
+	) {
+	std::vector<std::string> elements;
+	boost::split(elements, id, boost::is_any_of("."));
+
+	while (!elements.empty()) {
+		auto nodeId = boost::join(elements, ".");
+		auto node = getNode(configuration, basePath, nodeId, childPath);
+
+		if (node) {
+			return node;
+		}
+
+		elements.pop_back();
+	}
+
+	return EMPTY_NODE;
+}
+
+ConstHierarchicalConfigurationSharedPtr getRootLoggerNode(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& childPath
+	) {
+	return configuration->getOptional("root-logger" / childPath, EMPTY_NODE);
+}
+
 ConstHierarchicalConfigurationSharedPtr getLoggerNode(
 	ConstHierarchicalConfigurationSharedPtr configuration,
-	const std::string& loggerId
+	const Path& basePath,
+	const std::string& id,
+	const Path& childPath
 	) {
-	return configuration->get((Path() / "loggers" / "logger")[Path("id").is(loggerId)]);
-}
+	auto node = getDerivedNode(configuration, basePath, id, childPath);
+	if (!node) {
+		node = getRootLoggerNode(configuration, childPath);
+	}
 
-ConstHierarchicalConfigurationSharedPtr getRootNode(ConstHierarchicalConfigurationSharedPtr configuration) {
-	return configuration->get(Path() / "root-logger");
-}
-
-ConstHierarchicalConfigurationSharedPtr getAppenderNode(
-	ConstHierarchicalConfigurationSharedPtr configuration,
-	const std::string& appenderId
-	) {
-	return configuration->get((Path() / "appenders" / "appender")[Path("id").is(appenderId)]);
+	return node;
 }
 
 } // anonymous namespace
 
 Level LoggerConfiguration::loggerLevel(const LoggerId& loggerId) const {
-	std::vector<LoggerId> elements;
-	boost::split(elements, loggerId, boost::is_any_of("."));
-
-	while (!elements.empty()) {
-		LoggerId nodeId = boost::join(elements, ".");
-
-		auto node = getLoggerNode(configuration_, nodeId);
-
-		if (node) {
-			auto levelNode = node->get("level");
-			if (levelNode) {
-				return boost::lexical_cast<Level>(levelNode->text());
-			}
-		}
-
-		elements.pop_back();
+	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "level");
+	if (!node) {
+		throw LoggerConfigurationError("level option not specified for logger \"" + loggerId + '"');
 	}
 
-	auto rootNode = getRootNode(configuration_);
-	if (rootNode) {
-		auto levelNode = rootNode->get("level");
-		if (levelNode) {
-			return boost::lexical_cast<Level>(levelNode->text());
-		}
-	}
-
-	throw LoggerConfigurationError("level option not specified for logger \"" + loggerId + '"');
+	return boost::lexical_cast<Level>(node->text());
 }
 
 LoggerConfiguration::AppenderId LoggerConfiguration::appenderId(const LoggerId& loggerId) const {
-	std::vector<LoggerId> elements;
-	boost::split(elements, loggerId, boost::is_any_of("."));
-
-	while (!elements.empty()) {
-		LoggerId nodeId = boost::join(elements, ".");
-
-		auto node = getLoggerNode(configuration_, nodeId);
-
-		if (node) {
-			auto appenderNode = node->get("appender");
-			if (appenderNode) {
-				return appenderNode->text();
-			}
-		}
-
-		elements.pop_back();
+	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "appender-id");
+	if (!node) {
+		throw LoggerConfigurationError("appender option not specified for logger \"" + loggerId + '"');
 	}
 
-	auto rootNode = getRootNode(configuration_);
-	if (rootNode) {
-		auto appenderNode = rootNode->get("appender");
-		if (appenderNode) {
-			return appenderNode->text();
-		}
-	}
-
-	throw LoggerConfigurationError("appender option not specified for logger \"" + loggerId + '"');
+	return node->text();
 }
 
 LoggerConfiguration::LayoutId LoggerConfiguration::layoutId(const AppenderId& appenderId) const {
-	std::vector<LoggerId> elements;
-	boost::split(elements, appenderId, boost::is_any_of("."));
-
-	while (!elements.empty()) {
-		AppenderId nodeId = boost::join(elements, ".");
-
-		auto node = getAppenderNode(configuration_, nodeId);
-
-		if (node) {
-			auto layoutNode = node->get("layout");
-			if (layoutNode) {
-				return layoutNode->text();
-			}
-		}
-
-		elements.pop_back();
+	auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "layout-id");
+	if (!node) {
+		throw LoggerConfigurationError("layout option not specified for appender \"" + appenderId + '"');
 	}
 
-	throw LoggerConfigurationError("layout option not specified for appender \"" + appenderId + '"');
+	return node->text();
 }
 
 LoggerConfiguration::AppenderTypeId LoggerConfiguration::appenderTypeId(const AppenderId& appenderId) const {
-	std::vector<AppenderId> elements;
-	boost::split(elements, appenderId, boost::is_any_of("."));
-
-	while (!elements.empty()) {
-		AppenderId nodeId = boost::join(elements, ".");
-
-		auto node = getAppenderNode(configuration_, nodeId);
-
-		if (node) {
-			auto typeNode = node->get("type");
-			if (typeNode) {
-				return typeNode->text();
-			}
-		}
-
-		elements.pop_back();
+	auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "type");
+	if (!node) {
+		throw LoggerConfigurationError("type option not specified for appender \"" + appenderId + '"');
 	}
 
-	throw LoggerConfigurationError("type option not specified for appender \"" + appenderId + '"');
+	return node->text();
 }

@@ -122,10 +122,11 @@ public:
      * @return boost::optional<Value> - the value specified for key, or defaultValue if count(key) == 0
      * @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
      */
-    boost::optional<Value> getOptional(
+	template <class OptionalType = boost::optional<Value> >
+    OptionalType getOptional(
             KeyParam key,
-            boost::optional<Value> defaultValue = boost::optional<Value>()
-            ) {
+            OptionalType defaultValue = OptionalType()
+            ) const {
         return count(key) ? get(key) : defaultValue;
     }
 

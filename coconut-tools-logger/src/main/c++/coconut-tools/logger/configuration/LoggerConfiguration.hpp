@@ -100,6 +100,8 @@ public:
 
 	AppenderTypeId appenderTypeId(const AppenderId& appenderId) const;
 
+	LayoutId layoutTypeId(const LayoutId& layoutId) const;
+
 private:
 
 	coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr configuration_;

@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(WritesToClog) {
 			[&]() { std::clog.rdbuf(clogRdbuf); }
 			);
 
-        layout::LayoutPtr layout(new layout::EmptyLayout);
+        layout::LayoutSharedPtr layout(new layout::EmptyLayout);
     	ConsoleAppender appender(layout);
 
     	appender.append(Level::INFO, Context(), testString);
