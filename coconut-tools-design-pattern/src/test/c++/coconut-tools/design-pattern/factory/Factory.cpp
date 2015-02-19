@@ -85,7 +85,7 @@ public:
     }
 
     std::unique_ptr<int> get(const std::string& id) {
-        int value = delegate_->get(id);
+        int value = delegate()->get(id);
         if (value) {
             return std::unique_ptr<int>(new int(value));
         } else {
@@ -93,16 +93,16 @@ public:
         }
     }
 
-    std::unique_ptr<int> isStored(const std::string& id) {
-        return std::unique_ptr<int>(new int(delegate_->isStored(id)));
+    bool isStored(const std::string& id) {
+        return delegate()->isStored(id);
     }
 
     std::unique_ptr<int> store(const std::string& id, std::unique_ptr<int> instance) {
-        return std::unique_ptr<int>(new int(delegate_->store(id, *instance)));
+        return std::unique_ptr<int>(new int(delegate()->store(id, *instance)));
     }
 
     void erase(const std::string& id) {
-        delegate_->erase(id);
+        delegate()->erase(id);
     }
 
 private:
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
 }
 
 BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
-    typedef SingletonMockStorageAdapter<std::string, int> Storage;
+    typedef SingletonMockStorageAdapter<std::string, std::unique_ptr<int> > Storage;
 
     Storage::reset();
 
@@ -197,17 +197,19 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
         ExceptionThrowingErrorPolicy
         > f;
 
-    Storage storage;
+    // Storage storage;
     {
         testing::InSequence inSequence;
 
-        EXPECT_CALL(*Storage::delegate(), get(std::string("1"))).WillOnce(testing::Return(0));
+        EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(false));
         EXPECT_CALL(*Storage::delegate(), store(std::string("1"), testing::_)).WillOnce(testing::Return(1));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(true));
         EXPECT_CALL(*Storage::delegate(), get(std::string("1"))).WillOnce(testing::Return(1));
 
-        EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(0));
-        EXPECT_CALL(*Storage::delegate(), store(std::string("2"), testing::_)).WillOnce(testing::Return(2));
-        EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(2));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("2"))).WillOnce(testing::Return(false));
+		EXPECT_CALL(*Storage::delegate(), store(std::string("2"), testing::_)).WillOnce(testing::Return(2));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("2"))).WillOnce(testing::Return(true));
+		EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(2));
     }
 
     CopyableMockCreatorAdapter creator1;
@@ -219,10 +221,20 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
     f.registerCreator("1", creator1);
     f.registerCreator("2", creator2);
 
-    BOOST_CHECK_EQUAL(*f.create("1"), 1);
-    BOOST_CHECK_EQUAL(*f.create("1"), 1);
-    BOOST_CHECK_EQUAL(*f.create("2"), 2);
-    BOOST_CHECK_EQUAL(*f.create("2"), 2);
+	auto one1 = f.create("1");
+	auto one2 = f.create("1");
+	auto two1 = f.create("2");
+	auto two2 = f.create("2");
+
+	BOOST_REQUIRE(one1);
+	BOOST_REQUIRE(one2);
+	BOOST_REQUIRE(two1);
+	BOOST_REQUIRE(two1);
+
+    BOOST_CHECK_EQUAL(*one1, 1);
+	BOOST_CHECK_EQUAL(*one2, 1);
+	BOOST_CHECK_EQUAL(*two1, 2);
+	BOOST_CHECK_EQUAL(*two2, 2);
 }
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
