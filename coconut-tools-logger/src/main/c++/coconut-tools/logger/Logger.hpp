@@ -23,8 +23,6 @@ namespace logger {
 class Logger : public concurrent::Lockable<Logger> {
 private:
 
-    friend class concurrent::Lockable<Logger>;
-
     class Stream {
     public:
 
@@ -220,6 +218,8 @@ private:
     Level level_;
 
     Stream stream_;
+
+	friend class concurrent::Lockable<Logger>;
 
 };
 

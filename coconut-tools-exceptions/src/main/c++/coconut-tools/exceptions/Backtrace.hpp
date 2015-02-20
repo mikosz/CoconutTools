@@ -5,7 +5,7 @@
 
 #include "coconut-tools/system/platform.hpp"
 
-#if defined(COMPILER_GCC) && !defined(NO_BACKTRACE)
+#if defined(CT_COMPILER_GCC) && !defined(CT_NO_BACKTRACE)
 #	include "gcc/Backtrace.hpp"
 namespace coconut_tools { namespace exceptions { using gcc::Backtrace; } }
 #else

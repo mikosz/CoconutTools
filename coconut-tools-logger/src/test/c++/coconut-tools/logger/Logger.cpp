@@ -10,6 +10,7 @@
 #include "coconut-tools/logger/macros.hpp"
 #include "coconut-tools/logger/appender/ConsoleAppender.hpp"
 #include "coconut-tools/logger/layout/EmptyLayout.hpp"
+
 #include "coconut-tools/utils/raii-helper.hpp"
 
 namespace {
@@ -17,7 +18,7 @@ namespace {
 using namespace coconut_tools;
 using namespace coconut_tools::logger;
 
-typedef boost::mpl::list</*Logger,*/ volatile Logger> LoggerTypes;
+typedef boost::mpl::list<Logger, volatile Logger> LoggerTypes;
 
 BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
 
@@ -28,17 +29,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
     	auto clogRdbuf = std::clog.rdbuf(output.rdbuf());
         utils::RaiiHelper clogReset([&]() { std::clog.rdbuf(clogRdbuf); });
 
-        L logger(logger::Level::INFO);
+        L logger(Level::INFO);
 
         layout::LayoutSharedPtr layout(new layout::EmptyLayout);
         logger.addAppender(appender::AppenderSharedPtr(new appender::ConsoleAppender(Level::TRACE, layout)));
 
-        logger.log(logger::Level::CRITICAL) << "critical";
-        logger.log(logger::Level::ERROR) << "error";
-        logger.log(logger::Level::WARNING) << "warning";
-        logger.log(logger::Level::INFO) << "info";
-        logger.log(logger::Level::DEBUG) << "debug";
-        logger.log(logger::Level::TRACE) << "trace";
+        logger.log(Level::CRITICAL) << "critical";
+        logger.log(Level::ERROR) << "error";
+        logger.log(Level::WARNING) << "warning";
+        logger.log(Level::INFO) << "info";
+        logger.log(Level::DEBUG) << "debug";
+        logger.log(Level::TRACE) << "trace";
 
         logger.critical() << "critical";
         logger.error() << "error";
@@ -58,6 +59,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
     BOOST_CHECK_EQUAL(output.str(), EXPECTED + EXPECTED);
 }
 
-BOOST_AUTO_TEST_SUITE_END();
+BOOST_AUTO_TEST_SUITE_END(/* LoggerTestSuite */);
 
 } // anonymous namespace

@@ -1,6 +1,6 @@
 #include "../platform.hpp"
 
-#if defined(PLATFORM_WINDOWS)
+#if defined(CT_PLATFORM_WINDOWS)
 
 #include "create-new-file.hpp"
 
@@ -31,4 +31,4 @@ bool coconut_tools::system::windows::createNewFile(const boost::filesystem::path
 	}
 }
 
-#endif /* PLATFORM_WINDOWS */
+#endif /* CT_PLATFORM_WINDOWS */

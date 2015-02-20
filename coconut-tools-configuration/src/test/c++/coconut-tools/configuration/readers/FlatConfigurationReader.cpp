@@ -15,9 +15,9 @@ using namespace coconut_tools;
 using namespace coconut_tools::configuration;
 using namespace coconut_tools::configuration::readers;
 
-#if defined(COMPILER_VISUAL_CXX)
+#if defined(CT_COMPILER_VISUAL_CXX)
 #	pragma warning(disable: 4373) // gmock const param warning
-#endif /* COMPILER_VISUAL_CXX */
+#endif /* CT_COMPILER_VISUAL_CXX */
 
 namespace {
 

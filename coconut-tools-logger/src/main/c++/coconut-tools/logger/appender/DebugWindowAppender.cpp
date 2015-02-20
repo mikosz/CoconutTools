@@ -1,6 +1,6 @@
 #include "coconut-tools/system/platform.hpp"
 
-#if defined(COMPILER_VISUAL_CXX)
+#if defined(CT_COMPILER_VISUAL_CXX)
 
 #include "DebugWindowAppender.hpp"
 
@@ -20,4 +20,4 @@ void DebugWindowAppender::doAppend(const std::string& message) {
 	OutputDebugString(message.c_str());
 }
 
-#endif /* COMPILER_VISUAL_CXX */
+#endif /* CT_COMPILER_VISUAL_CXX */

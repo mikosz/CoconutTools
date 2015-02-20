@@ -6,6 +6,7 @@
 #include "coconut-tools/system/platform.hpp"
 
 #include "Level.hpp"
+#include "Category.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -19,12 +20,15 @@ struct Context {
     {
     }
 
-    Context(const std::string& file, size_t line, const std::string& function) :
+    Context(const Category& category, const std::string& file, size_t line, const std::string& function) :
+		category(category),
         file(file),
         line(line),
         function(function)
     {
     }
+
+	Category category;
 
     std::string file;
 
@@ -37,10 +41,10 @@ struct Context {
 }  // namespace logger
 }  // namespace coconut_tools
 
-#if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
-#	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
-#elif defined(COMPILER_VISUAL_CXX)
-#	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __FUNCSIG__)
+#if defined(CT_COMPILER_GCC) || defined(CT_COMPILER_CLANG)
+#	define CT_LOGGER_CONTEXT() coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __PRETTY_FUNCTION__)
+#elif defined(CT_COMPILER_VISUAL_CXX)
+#	define CT_LOGGER_CONTEXT() coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __FUNCSIG__)
 #else
 #	error "Unsupported compiler"
 #endif

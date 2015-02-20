@@ -1,6 +1,6 @@
 #include "coconut-tools/system/platform.hpp"
 
-#if defined(COMPILER_GCC)
+#if defined(CT_COMPILER_GCC)
 
 #include "Backtrace.hpp"
 
@@ -98,4 +98,4 @@ std::ostream& Backtrace::print(std::ostream& os) const {
     return os << oss.str();
 }
 
-#endif /* COMPILER_GCC */
+#endif /* CT_COMPILER_GCC */

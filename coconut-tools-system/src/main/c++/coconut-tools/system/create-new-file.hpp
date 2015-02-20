@@ -3,10 +3,10 @@
 
 #include "platform.hpp"
 
-#if defined(PLATFORM_WINDOWS)
+#if defined(CT_PLATFORM_WINDOWS)
 #	include "windows/create-new-file.hpp"
 using coconut_tools::system::windows::createNewFile;
-#elif defined(PLATFORM_LINUX)
+#elif defined(CT_PLATFORM_LINUX)
 #	include "linux/create-new-file.hpp"
 using coconut_tools::system::linux::createNewFile;
 #else

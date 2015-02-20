@@ -39,16 +39,22 @@ BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
 		logger.log(Level::DEBUG) << "Debug level hidden";
 		logger.log(Level::INFO) << "Log on level info with implicit context";
 		logger.log(Level::WARNING, Context()) << "Log on level info with default context";
-		logger.log(Level::ERROR, Context("file", 123, "function")) << "Log on level error with full context";
-		logger.log(Level::CRITICAL, LOGGER_CONTEXT()) << "Log on level critical with context from macro";
+		logger.log(Level::ERROR, Context("category", "file", 123, "function")) << "Log on level error with full context";
+		{
+			CT_LOGGER_LOCAL_CATEGORY("category");
+			logger.log(Level::CRITICAL, CT_LOGGER_CONTEXT()) << "Log on level critical with context from macro";
+		}
 
 		// Example of API logging using level specific functions
 		logger.trace() << "Trace level hidden";
 		logger.debug() << "Debug level hidden";
 		logger.info() << "Log on level info with implicit context";
 		logger.warning(Context()) << "Log on level info with default context";
-		logger.error(Context("file", 123, "function")) << "Log on level error with full context";
-		logger.critical(LOGGER_CONTEXT()) << "Log on level critical with context from macro";
+		logger.error(Context("category", "file", 123, "function")) << "Log on level error with full context";
+		{
+			CT_LOGGER_LOCAL_CATEGORY("category");
+			logger.critical(CT_LOGGER_CONTEXT()) << "Log on level critical with context from macro";
+		}
 	}
 
 	const std::string EXPECTED =

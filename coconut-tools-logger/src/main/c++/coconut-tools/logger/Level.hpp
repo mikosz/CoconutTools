@@ -19,6 +19,8 @@ enum class Level {
 
 std::istream& operator>>(std::istream& is, Level& level);
 
+std::ostream& operator<<(std::ostream& os, Level level);
+
 }  // namespace logger
 }  // namespace CoconutTools
 

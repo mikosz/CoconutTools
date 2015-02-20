@@ -1,6 +1,6 @@
 #include "../platform.hpp"
 
-#if defined(PLATFORM_LINUX)
+#if defined(CT_PLATFORM_LINUX)
 
 #include "create-new-file.hpp"
 
@@ -27,4 +27,4 @@ bool coconut_tools::system::linux::createNewFile(const boost::filesystem::path& 
 	}
 }
 
-#endif /* PLATFORM_LINUX */
+#endif /* CT_PLATFORM_LINUX */

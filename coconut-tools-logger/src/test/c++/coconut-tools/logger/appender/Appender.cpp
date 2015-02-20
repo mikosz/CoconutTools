@@ -8,7 +8,7 @@ using namespace coconut_tools;
 using namespace coconut_tools::logger;
 using namespace coconut_tools::logger::appender;
 
-namespace {
+namespace /* anonymous */ {
 
 class ConcreteAppender : public Appender {
 public:

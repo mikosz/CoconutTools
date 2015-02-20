@@ -10,10 +10,10 @@ enum class Platform {
 };
 
 #if defined(_WIN32)
-#	define PLATFORM_WINDOWS
+#	define CT_PLATFORM_WINDOWS
 const Platform PLATFORM = Platform::WINDOWS;
 #elif defined(__linux__)
-#	define PLATFORM_LINUX
+#	define CT_PLATFORM_LINUX
 const Platform PLATFORM = Platform::LINUX;
 #else
 #	error "Failed to discover the system platform"
@@ -26,13 +26,13 @@ enum class Compiler {
 };
 
 #if defined(_MSC_VER)
-#	define COMPILER_VISUAL_CXX
+#	define CT_COMPILER_VISUAL_CXX
 const Compiler COMPILER = Compiler::VISUAL_CXX;
 #elif defined(__GCC__)
-#	define COMPILER_GCC
+#	define CT_COMPILER_GCC
 const Compiler COMPILER = Compiler::GCC;
 #elif defined(__clang__)
-#	define COMPILER_CLANG
+#	define CT_COMPILER_CLANG
 const Compiler COMPILER = Compiler::CLANG;
 #endif
 

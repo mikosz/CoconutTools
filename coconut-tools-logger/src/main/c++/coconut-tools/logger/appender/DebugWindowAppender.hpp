@@ -3,7 +3,7 @@
 
 #include "coconut-tools/system/platform.hpp"
 
-#if defined(COMPILER_VISUAL_CXX)
+#if defined(CT_COMPILER_VISUAL_CXX)
 
 #include "Appender.hpp"
 
@@ -56,6 +56,6 @@ private:
 } // namespace logger
 } // namespace coconut_tools
 
-#endif /* COMPILER_VISUAL_CXX */
+#endif /* CT_COMPILER_VISUAL_CXX */
 
 #endif /* COCONUTTOOLS_LOGGER_APPENDER_DEBUGWINDOWAPPENDER_HPP_ */

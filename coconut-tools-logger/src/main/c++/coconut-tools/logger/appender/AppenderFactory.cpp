@@ -19,9 +19,9 @@ void registerBuiltins(AppenderFactory* factoryPtr) {
 
 	factory.registerType<ConsoleAppender>(ConsoleAppender::CLASS_NAME);
 	factory.registerType<FileAppender>(FileAppender::CLASS_NAME);
-#if defined(COMPILER_VISUAL_CXX)
+#if defined(CT_COMPILER_VISUAL_CXX)
 	factory.registerType<DebugWindowAppender>(DebugWindowAppender::CLASS_NAME);
-#endif /* COMPILER_VISUAL_CXX */
+#endif /* CT_COMPILER_VISUAL_CXX */
 }
 
 } // anonymous namespace
