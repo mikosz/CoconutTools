@@ -5,10 +5,15 @@
 
 #include <boost/call_traits.hpp>
 
+#include "coconut-tools/exceptions/LogicError.hpp"
+
 namespace coconut_tools {
 namespace design_pattern {
 namespace factory {
 namespace storage {
+
+class GetCalledOnNoStorage : public exceptions::LogicError {
+};
 
 template <class IdentifierType, class InstanceType>
 class NoStorage {
@@ -20,20 +25,20 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef std::unique_ptr<Instance> InstanceParam;
+    typedef Instance InstanceParam;
 
-    typedef std::unique_ptr<Instance> Permanent;
+    typedef Instance Permanent;
 
     Permanent get(const IdentifierParam) const {
-        return Permanent();
+        throw GetCalledOnNoStorage();
     }
 
     bool isStored(const IdentifierParam) const {
         return false;
     }
 
-    Permanent store(const IdentifierParam, InstanceParam instance) {
-        return instance;
+    Permanent store(const IdentifierParam, InstanceParam&& instance) {
+        return std::move(instance);
     }
 
     void erase(const IdentifierParam) {

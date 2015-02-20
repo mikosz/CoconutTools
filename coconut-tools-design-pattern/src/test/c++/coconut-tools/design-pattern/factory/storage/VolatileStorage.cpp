@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_SUITE(StorageTestSuite);
 BOOST_AUTO_TEST_SUITE(VolatileStorageTestSuite);
 
 BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     int* instance = new int;
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
 }
 
 BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     int* instance = new int;
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
 }
 
 BOOST_AUTO_TEST_CASE(InvalidatesInstanceWhenUnused) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     int* instance = new int;
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(InvalidatesInstanceWhenUnused) {
 }
 
 BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     int* instance = new int;
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     storage.erase("instance");
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     int* instance = new int;
@@ -87,14 +87,14 @@ BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsFalseIfInstanceNotPresent) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     BOOST_CHECK(!storage.isStored("instance"));
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstanceRemoved) {
-    typedef VolatileStorage<std::string, int> VolatileStorage;
+    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;
 
     int* instance = new int;

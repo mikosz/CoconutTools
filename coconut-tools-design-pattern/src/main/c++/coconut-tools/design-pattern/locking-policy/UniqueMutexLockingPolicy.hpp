@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_UNIQUEMUTEXLOCKINGPOLICY_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_UNIQUEMUTEXLOCKINGPOLICY_HPP_
+#ifndef COCONUT_TOOLS_DESIGN_PATTERN_UNIQUEMUTEXLOCKINGPOLICY_HPP_
+#define COCONUT_TOOLS_DESIGN_PATTERN_UNIQUEMUTEXLOCKINGPOLICY_HPP_
 
 #include <boost/thread/mutex.hpp>
 
@@ -8,7 +8,6 @@
 
 namespace coconut_tools {
 namespace design_pattern {
-namespace factory {
 namespace locking_policy {
 
 class UniqueMutexLockingPolicy {
@@ -27,8 +26,7 @@ private:
 };
 
 } // namespace locking_policy
-} // namespace factory
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_UNIQUEMUTEXLOCKINGPOLICY_HPP_ */
+#endif /* COCONUT_TOOLS_DESIGN_PATTERN_UNIQUEMUTEXLOCKINGPOLICY_HPP_ */

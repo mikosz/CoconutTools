@@ -3,18 +3,31 @@
 
 #include <iosfwd>
 #include <string>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+#include "coconut-tools/utils/Initialisable.hpp"
 
-#include "../layout/Layout.hpp"
-#include "../Context.hpp"
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/logger/layout/LayoutFactory.hpp"
+#include "coconut-tools/logger/layout/Layout.hpp"
+#include "coconut-tools/logger/Context.hpp"
 
 namespace coconut_tools {
 namespace logger {
 namespace appender {
 
-class Appender {
+class Appender :
+	public utils::Initialisable<
+		Appender,
+		const std::string&,
+		const logger::configuration::LoggerConfiguration&,
+		layout::LayoutFactory*
+		>
+{
 public:
+
+	typedef std::string Id;
 
     virtual ~Appender() {
     }
@@ -25,20 +38,32 @@ protected:
 
     virtual void doAppend(const std::string& message) = 0;
 
-    Appender() {
-    }
+	Appender() {
+	}
 
-	Appender(layout::LayoutPtr layout) :
+	Appender(layout::LayoutSharedPtr layout) :
 		layout_(layout) {
 	}
 
+	Appender(
+		const Id& id,
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		);
+
+	void doInitialise(
+		const Id& id,
+		const logger::configuration::LoggerConfiguration& configuration,
+		layout::LayoutFactory* layoutFactory
+		) override;
+
 private:
 
-    layout::LayoutPtr layout_;
+    layout::LayoutSharedPtr layout_;
 
 };
 
-typedef boost::shared_ptr<Appender> AppenderPtr;
+CT_SMART_POINTER_DEFINITONS(Appender);
 
 } // namespace appender
 } // namespace logger

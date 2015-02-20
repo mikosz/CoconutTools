@@ -1,7 +1,8 @@
 #ifndef COCONUT_TOOLS_CONFIUGRATION_READERS_SIMPLECONFIGURATIONREADER_HPP_
 #define COCONUT_TOOLS_CONFIUGRATION_READERS_SIMPLECONFIGURATIONREADER_HPP_
 
-#include <boost/bind.hpp>
+#include <functional>
+
 #include <boost/lexical_cast.hpp>
 
 #include "coconut-tools/utils/pointee.hpp"
@@ -24,7 +25,7 @@ public:
             ) const {
         Configuration<Key, Value>& configuration = utils::pointee(configurationParam);
 
-        parser.parse(is, boost::bind(&add_, _1, _2, &configuration));
+        parser.parse(is, std::bind(&add_, std::placeholders::_1, std::placeholders::_2, &configuration));
     }
 
     void read(
@@ -34,7 +35,7 @@ public:
             ) const {
         Configuration<Key, Value>& configuration = utils::pointee(configurationParam);
 
-        parser.parse(path, boost::bind(&add_, _1, _2, &configuration));
+        parser.parse(path, std::bind(&add_, std::placeholders::_1, std::placeholders::_2, &configuration));
     }
 
 private:

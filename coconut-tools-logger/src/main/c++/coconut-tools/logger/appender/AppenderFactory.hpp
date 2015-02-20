@@ -1,29 +1,58 @@
 #ifndef COCONUT_TOOLS_APPENDER_APPENDERFACTORY_HPP_
 #define COCONUT_TOOLS_APPENDER_APPENDERFACTORY_HPP_
 
-#include <string>
-
 #include "Appender.hpp"
 
 #include "coconut-tools/design-pattern/factory.hpp"
+
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/logger/layout/LayoutFactory.hpp"
 
 namespace coconut_tools {
 namespace logger {
 namespace appender {
 
-class AppenderFactory :
-		public design_pattern::factory::Factory<
-			std::string,
-			Appender,
-			design_pattern::factory::PermanentStorage,
-			design_pattern::factory::NewCreator,
-			design_pattern::factory::NoLockingPolicy,
-			design_pattern::factory::IgnoringErrorPolicy
-			>
-{
+class AppenderFactory {
 public:
 
-	AppenderFactory();
+	typedef std::string AppenderTypeId;
+
+	AppenderFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+
+	template <class ConcreteAppenderType>
+	void registerType(const AppenderTypeId& appenderTypeId) {
+		typeFactory_.registerCreator(
+			appenderTypeId,
+			design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >(
+				[]() {
+					return std::unique_ptr<Appender::Initialiser>(
+							new Appender::Initialiser(Appender::Initialiser::createInitialisable<ConcreteAppenderType>())
+							);
+				}
+				)
+			);
+	}
+
+	AppenderSharedPtr create(const Appender::Id& appenderId);
+
+private:
+
+	typedef design_pattern::factory::Factory<
+		AppenderTypeId,
+		std::unique_ptr<Appender::Initialiser>,
+		design_pattern::NoStorage,
+		design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >,
+		design_pattern::NoLockingPolicy,
+		design_pattern::ExceptionThrowingErrorPolicy
+		> AppenderTypeFactory;
+
+	AppenderTypeFactory typeFactory_;
+
+	design_pattern::PermanentStorage<Appender::Id, AppenderSharedPtr> instanceStorage_;
+
+	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
+
+	layout::LayoutFactory layoutFactory_;
 
 };
 

@@ -1,38 +1,23 @@
 #ifndef COCONUTTOOLS_LOGGER_LEVEL_HPP_
 #define COCONUTTOOLS_LOGGER_LEVEL_HPP_
 
+#include <iosfwd>
+
+#include <boost/algorithm/string/case_conv.hpp>
+
 namespace coconut_tools {
 namespace logger {
 
-class Level {
-public:
-
-    enum Value {
-        TRACE,
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR,
-        CRITICAL
-    };
-
-    Level(Value value) :
-        value_(value) {
-    }
-
-    operator Value() const {
-        return value_;
-    }
-
-    operator Value&() {
-        return value_;
-    }
-
-private:
-
-    Value value_;
-
+enum class Level {
+    TRACE,
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR,
+    CRITICAL,
 };
+
+std::istream& operator>>(std::istream& is, Level& level);
 
 }  // namespace logger
 }  // namespace CoconutTools

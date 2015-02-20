@@ -1,12 +1,13 @@
 #include <boost/test/auto_unit_test.hpp>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/design-pattern/factory.hpp"
 
+using namespace coconut_tools;
 using namespace coconut_tools::design_pattern;
 
-namespace {
+namespace /* anonymous */ {
 
 class AbstractClass {
 public:
@@ -23,7 +24,7 @@ public:
 
 	static const std::string ID;
 
-	const std::string& id() const {
+	const std::string& id() const override {
 		return ID;
 	}
 
@@ -36,7 +37,7 @@ public:
 
 	static const std::string ID;
 
-	const std::string& id() const {
+	const std::string& id() const override {
 		return ID;
 	}
 
@@ -44,19 +45,15 @@ public:
 
 const std::string ConcreteClass2::ID("ConcreteClass2");
 
-std::unique_ptr<int> createInt(int value) {
-	return std::unique_ptr<int>(new int(value));
-}
-
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_AUTO_TEST_SUITE(FactoryFunctionalTestSuite);
 
 BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 	typedef Factory<
 				std::string,
-				AbstractClass,
+				std::unique_ptr<AbstractClass>,
 				NoStorage,
-				NewCreator,
+				NewCreator<AbstractClass>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
@@ -91,22 +88,23 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 				int,
 				int,
 				NoStorage,
-				FunctorCreator,
+				FunctorCreator<int>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<int>([]() { return 1; }));
+	f.registerCreator(2, FunctorCreator<int>([]() { return 2; }));
 
 	BOOST_CHECK_THROW(
-			f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1))),
-			CreatorAlreadyRegistered<int>);
+			f.registerCreator(1, FunctorCreator<int>([]() { return 1; })),
+			CreatorAlreadyRegistered<int>
+			);
 
-	BOOST_CHECK_EQUAL(*f.create(1), 1);
-	BOOST_CHECK_EQUAL(*f.create(2), 2);
+	BOOST_CHECK_EQUAL(f.create(1), 1);
+	BOOST_CHECK_EQUAL(f.create(2), 2);
 
 	f.unregisterCreator(1);
 	f.unregisterCreator(2);
@@ -118,23 +116,23 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 BOOST_AUTO_TEST_CASE(CachingFactory) {
 	typedef Factory<
 				int,
-				int,
+				std::unique_ptr<int>,
 				PermanentStorage,
-				FunctorCreator,
+				FunctorCreator<std::unique_ptr<int> >,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(1)); }));
+	f.registerCreator(2, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(2)); }));
 
-	boost::shared_ptr<int> one = f.create(1);
-	boost::shared_ptr<int> two = f.create(2);
+	std::shared_ptr<int> one = f.create(1);
+	std::shared_ptr<int> two = f.create(2);
 
-	boost::shared_ptr<int> oneCopy = f.create(1);
-	boost::shared_ptr<int> twoCopy = f.create(2);
+	std::shared_ptr<int> oneCopy = f.create(1);
+	std::shared_ptr<int> twoCopy = f.create(2);
 
 	BOOST_CHECK_EQUAL(one.get(), oneCopy.get());
 	BOOST_CHECK_EQUAL(two.get(), twoCopy.get());
@@ -144,23 +142,23 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
 	typedef volatile Factory<
 				int,
-				int,
+				std::unique_ptr<int>,
 				PermanentStorage,
-				FunctorCreator,
+				FunctorCreator<std::unique_ptr<int> >,
 				UniqueMutexLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
 
 	Factory f;
 
-	f.registerCreator(1, FunctorCreator<int>(boost::bind(&createInt, 1)));
-	f.registerCreator(2, FunctorCreator<int>(boost::bind(&createInt, 2)));
+	f.registerCreator(1, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(1)); }));
+	f.registerCreator(2, FunctorCreator<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(2)); }));
 
-	boost::shared_ptr<int> one = f.create(1);
-	boost::shared_ptr<int> two = f.create(2);
+	std::shared_ptr<int> one = f.create(1);
+	std::shared_ptr<int> two = f.create(2);
 
-	boost::shared_ptr<int> oneCopy = f.create(1);
-	boost::shared_ptr<int> twoCopy = f.create(2);
+	std::shared_ptr<int> oneCopy = f.create(1);
+	std::shared_ptr<int> twoCopy = f.create(2);
 
 	BOOST_CHECK_EQUAL(one.get(), oneCopy.get());
 	BOOST_CHECK_EQUAL(two.get(), twoCopy.get());

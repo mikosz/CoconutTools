@@ -78,15 +78,13 @@ private:
 
 };
 
-template <class IdentifierType, class InstanceType>
+template <class IdentifierType>
 class ExceptionThrowingErrorPolicy {
 public:
 
     typedef IdentifierType Identifier;
 
     typedef typename boost::call_traits<Identifier>::param_type IdentifierParam;
-
-    typedef InstanceType Instance;
 
     static void alreadyRegistered(const IdentifierParam id) {
         throw CreatorAlreadyRegistered<Identifier>(id);

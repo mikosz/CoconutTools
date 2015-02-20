@@ -2,8 +2,7 @@
 
 #include <sstream>
 #include <iostream>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/logger/appender/ConsoleAppender.hpp"
 #include "coconut-tools/logger/layout/EmptyLayout.hpp"
@@ -25,10 +24,12 @@ BOOST_AUTO_TEST_CASE(WritesToClog) {
     std::ostringstream output;
 
     {
+		auto clogRdbuf = std::clog.rdbuf(output.rdbuf());
         utils::RaiiHelper clogReset(
-                boost::bind(&std::ostream::rdbuf, boost::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
+			[&]() { std::clog.rdbuf(clogRdbuf); }
+			);
 
-        layout::LayoutPtr layout(new layout::EmptyLayout);
+        layout::LayoutSharedPtr layout(new layout::EmptyLayout);
     	ConsoleAppender appender(layout);
 
     	appender.append(Level::INFO, Context(), testString);

@@ -4,7 +4,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include "coconut-tools/configuration/parsers/HierarchicalParser.hpp"
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 
 namespace coconut_tools {
 namespace configuration {
@@ -16,13 +16,13 @@ public:
     void read(
             const parsers::HierarchicalParser& parser,
             std::istream& is,
-            HierarchicalConfiguration* configuration
+            hierarchical::HierarchicalConfiguration* configuration
             ) const;
 
     void read(
             const parsers::HierarchicalParser& parser,
             const boost::filesystem::path& path,
-            HierarchicalConfiguration* configuration
+            hierarchical::HierarchicalConfiguration* configuration
             ) const;
 
 };

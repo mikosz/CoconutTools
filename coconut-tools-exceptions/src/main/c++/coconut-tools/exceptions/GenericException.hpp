@@ -83,9 +83,6 @@ private:
         PARENT(message, cause) { \
     } \
     \
-    ~TYPE() throw() { \
-    } \
-    \
     const std::string& name() const { \
         static const std::string& NAME = #TYPE; \
         return NAME; \

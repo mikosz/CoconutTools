@@ -1,28 +1,40 @@
 #ifndef COCONUTTOOLS_LOGGER_LOGGERFACTORY_HPP_
 #define COCONUTTOOLS_LOGGER_LOGGERFACTORY_HPP_
 
-#include "Logger.hpp"
+#include <string>
+
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+
+#include "coconut-tools/design-pattern/factory/storage/PermanentStorage.hpp"
+
+#include "coconut-tools/concurrent/Lockable.hpp"
+
 #include "appender/ConsoleAppender.hpp"
-#include "layout/EmptyLayout.hpp"
+#include "appender/AppenderFactory.hpp"
+#include "layout/LayoutFactory.hpp"
+#include "Logger.hpp"
 
 namespace coconut_tools {
 namespace logger {
 
-class LoggerFactory {
+class LoggerFactory : public concurrent::Lockable<LoggerFactory> {
 public:
 
-	Logger& getSystemLogger() const {
-		static bool initialised = false;
-		static Logger logger(Level::INFO);
-		static layout::LayoutPtr layout(new layout::EmptyLayout());
-		static appender::AppenderPtr appender(new appender::ConsoleAppender(layout));
-		if (!initialised) {
-			logger.addAppender(appender);
-			initialised = true;
-		}
+	typedef std::string LoggerId;
 
-		return logger;
-	}
+	LoggerFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+
+	LoggerSharedPtr create(const LoggerId& loggerId);
+
+	VolatileLoggerSharedPtr create(const LoggerId& loggerId) volatile;
+
+private:
+
+	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
+
+	design_pattern::factory::storage::PermanentStorage<LoggerId, LoggerSharedPtr> storage_;
+
+	appender::AppenderFactory appenderFactory_;
 
 };
 

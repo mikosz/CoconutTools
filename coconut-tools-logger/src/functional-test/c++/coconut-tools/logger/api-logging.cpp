@@ -2,11 +2,19 @@
 
 #include <iostream>
 #include <sstream>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/utils/raii-helper.hpp"
+
+#include "coconut-tools/configuration/readers/HierarchicalConfigurationReader.hpp"
+#include "coconut-tools/configuration/parsers/XMLParser.hpp"
+
+#include "coconut-tools/logger/LoggerFactory.hpp"
+#include "coconut-tools/logger/SystemLogger.hpp"
+
 #include "coconut-tools/logger.hpp"
+
+#include "coconut-tools/logger/appender/DebugWindowAppender.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::logger;
@@ -16,13 +24,15 @@ namespace {
 BOOST_AUTO_TEST_SUITE(LoggerFunctionalTestSuite);
 
 BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
-	Logger& logger = LoggerFactory().getSystemLogger();
-
+	Logger& logger = *SystemLogger::instance();
+	
 	std::ostringstream output;
 
 	{
+		auto clogBuf = std::clog.rdbuf(output.rdbuf());
 		utils::RaiiHelper clogReset(
-				boost::bind(&std::ostream::rdbuf, boost::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
+			[&]() { std::clog.rdbuf(clogBuf); }
+			);
 
 		// Example of API logging using the log function
 		logger.log(Level::TRACE) << "Trace level hidden";
@@ -49,6 +59,67 @@ BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
 			;
 
 	BOOST_CHECK_EQUAL(output.str(), EXPECTED + EXPECTED);
+}
+
+BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
+	auto configurationData = coconut_tools::configuration::hierarchical::HierarchicalConfiguration::create();
+
+	std::istringstream iss(
+		"<root-logger>"
+		"  <level>error</level>"
+		"  <appender>appender-id</appender>"
+		"</root-logger>"
+		"<appenders>"
+		"  <appender>"
+		"    <id>appender-id</id>"
+		"    <type>coconut_tools::logger::appender::ConsoleAppender</type>"
+		"    <layout>layout-id</layout>"
+		"  </appender>"
+		"</appenders>"
+		"<layouts>"
+		"  <layout>"
+		"    <id>layout-id</id>"
+		"    <type>coconut_tools::logger::layout::EmptyLayout</type>"
+		"  </layout>"
+		"</layouts>"
+		);
+
+	coconut_tools::configuration::readers::HierarchicalConfigurationReader().read(
+		coconut_tools::configuration::parsers::XMLParser(),
+		iss,
+		configurationData.get()
+		);
+
+	logger::configuration::LoggerConfigurationSharedPtr config(
+		std::make_shared<logger::configuration::LoggerConfiguration>(configurationData));
+
+	LoggerFactory loggerFactory(config);
+
+	std::ostringstream output;
+
+	{
+		auto clogBuf = std::clog.rdbuf(output.rdbuf());
+		utils::RaiiHelper clogReset(
+			[&]() { std::clog.rdbuf(clogBuf); }
+		);
+
+		Logger& logger = *loggerFactory.create("id");
+
+		// Example of API logging using level specific functions
+		logger.trace() << "Trace level hidden";
+		logger.debug() << "Debug level hidden";
+		logger.info() << "Info level hidden";
+		logger.warning() << "Warning level hidden";
+		logger.error() << "Log on level error with implicit context";
+		logger.critical() << "Log on level critical with implicit context";
+	}
+
+	const std::string EXPECTED =
+		"Log on level error with implicit context\n"
+		"Log on level critical with implicit context\n"
+		;
+
+	BOOST_CHECK_EQUAL(output.str(), EXPECTED);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* LoggerFunctionalTestSuite */);

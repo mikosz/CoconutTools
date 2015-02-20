@@ -5,12 +5,19 @@
 
 #include "coconut-tools/configuration/readers/FlatConfigurationReader.hpp"
 #include "coconut-tools/configuration/parsers/PropertiesParser.hpp"
+
 #include "coconut-tools/test-utils/test-utils.hpp"
 #include "coconut-tools/test-utils/GMockFixture.hpp"
+
+#include "coconut-tools/system/platform.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
 using namespace coconut_tools::configuration::readers;
+
+#if defined(COMPILER_VISUAL_CXX)
+#	pragma warning(disable: 4373) // gmock const param warning
+#endif /* COMPILER_VISUAL_CXX */
 
 namespace {
 
@@ -52,6 +59,8 @@ BOOST_AUTO_TEST_CASE(AddsKeyValuePairsParsedFromStream) {
 
     FlatConfigurationReader<int, float> reader;
     reader.read(parsers::PropertiesParser(), configurationStream, &configuration);
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test_utils::ResourcesDirFixture) {
@@ -68,6 +77,8 @@ BOOST_FIXTURE_TEST_CASE(AddsKeyValuePairsParsedFromFile, test_utils::ResourcesDi
 
     FlatConfigurationReader<int, float> reader;
     reader.read(parsers::PropertiesParser(), CONFIGURATION_PATH, &configuration);
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* SimpleConfigurationReaderTestSuite */)

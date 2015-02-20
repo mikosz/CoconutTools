@@ -2,9 +2,8 @@
 
 #include <sstream>
 #include <deque>
-
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
+#include <functional>
+#include <memory>
 
 #include "coconut-tools/configuration/parsers/XMLParser.hpp"
 #include "coconut-tools/utils/pointee.hpp"
@@ -21,7 +20,7 @@ struct ParserCallbackCall {
 
 };
 
-typedef std::deque<boost::shared_ptr<ParserCallbackCall> > ExpectedCalls;
+typedef std::deque<std::shared_ptr<ParserCallbackCall> > ExpectedCalls;
 
 struct NewChildCall : ParserCallbackCall {
 
@@ -76,9 +75,11 @@ BOOST_AUTO_TEST_CASE(EmptyConfigurationDoesntCallCallbacks) {
     XMLParser parser;
     parser.parse(
             configurationStream,
-            boost::bind(&newChild, &expectedCalls, _1, _2),
-            boost::bind(&childEnd, &expectedCalls)
+            std::bind(&newChild, &expectedCalls, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&childEnd, &expectedCalls)
     );
+
+    BOOST_CHECK(true); // to omit the "test did not check any assertions" warning
 }
 
 BOOST_AUTO_TEST_CASE(ReadsValues) {
@@ -95,22 +96,22 @@ BOOST_AUTO_TEST_CASE(ReadsValues) {
     std::istringstream configurationStream(CONFIGURATION_CONTENTS);
 
     ExpectedCalls expectedCalls;
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new NewChildCall("grandparent", std::string())));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new NewChildCall("parent", std::string())));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new NewChildCall("child", std::string())));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new NewChildCall("key1", "value of key 1")));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new ChildEndCall));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new NewChildCall("key2", "value of key 2")));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new ChildEndCall));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new ChildEndCall));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new ChildEndCall));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new ChildEndCall));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new NewChildCall("grandparent", std::string())));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new NewChildCall("parent", std::string())));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new NewChildCall("child", std::string())));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new NewChildCall("key1", "value of key 1")));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new ChildEndCall));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new NewChildCall("key2", "value of key 2")));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new ChildEndCall));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new ChildEndCall));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new ChildEndCall));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new ChildEndCall));
 
     XMLParser parser;
     parser.parse(
             configurationStream,
-            boost::bind(&newChild, &expectedCalls, _1, _2),
-            boost::bind(&childEnd, &expectedCalls)
+            std::bind(&newChild, &expectedCalls, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&childEnd, &expectedCalls)
     );
 }
 
@@ -124,14 +125,14 @@ BOOST_AUTO_TEST_CASE(TrimsValues) {
     std::istringstream configurationStream(CONFIGURATION_CONTENTS);
 
     ExpectedCalls expectedCalls;
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new NewChildCall("child", "trimmed value")));
-    expectedCalls.push_back(boost::shared_ptr<ParserCallbackCall>(new ChildEndCall));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new NewChildCall("child", "trimmed value")));
+    expectedCalls.push_back(std::shared_ptr<ParserCallbackCall>(new ChildEndCall));
 
     XMLParser parser;
     parser.parse(
             configurationStream,
-            boost::bind(&newChild, &expectedCalls, _1, _2),
-            boost::bind(&childEnd, &expectedCalls)
+            std::bind(&newChild, &expectedCalls, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&childEnd, &expectedCalls)
     );
 }
 

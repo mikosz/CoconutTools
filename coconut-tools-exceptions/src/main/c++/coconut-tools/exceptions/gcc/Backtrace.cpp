@@ -13,8 +13,7 @@
 #include <algorithm>
 #include <iterator>
 #include <iomanip>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "coconut-tools/utils/raii-helper.hpp"
 
@@ -44,7 +43,7 @@ void constructBacktrace(Backtrace::Stack& stack) {
     addressStack(addrStack);
 
     char** stackSymbols = backtrace_symbols(&addrStack.front(), addrStack.size());
-    coconut_tools::utils::RaiiHelper freeStackSymbols(boost::bind(&std::free, stackSymbols));
+    coconut_tools::utils::RaiiHelper freeStackSymbols(std::bind(&std::free, stackSymbols));
 
     if (stackSymbols) {
         for (size_t i = 0; i < addrStack.size(); ++i) {
@@ -67,7 +66,7 @@ std::string demangle(const std::string& mangledName) {
 
     int status;
     char* demangled = abi::__cxa_demangle(mangledName.substr(start, end - start).c_str(), 0, 0, &status);
-    coconut_tools::utils::RaiiHelper freeDemangled(boost::bind(&std::free, demangled));
+    coconut_tools::utils::RaiiHelper freeDemangled(std::bind(&std::free, demangled));
     if (status != 0) {
         return mangledName;
     }
@@ -95,7 +94,7 @@ std::ostream& Backtrace::print(std::ostream& os) const {
     std::ostringstream oss;
     size_t index = 0;
     std::transform(stack_.begin(), stack_.end(), std::ostream_iterator<std::string>(os, "\n"),
-            boost::bind(&printFrame, _1, boost::ref(index)));
+            std::bind(&printFrame, std::placeholders::_1, std::ref(index)));
     return os << oss.str();
 }
 

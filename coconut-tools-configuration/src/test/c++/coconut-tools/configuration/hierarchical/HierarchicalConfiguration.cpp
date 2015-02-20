@@ -3,17 +3,18 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
+#include <functional>
 
-#include <boost/bind.hpp>
+#include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 
-#include "coconut-tools/configuration/HierarchicalConfiguration.hpp"
-
+using namespace coconut_tools;
 using namespace coconut_tools::configuration;
+using namespace coconut_tools::configuration::hierarchical;
 
 BOOST_AUTO_TEST_SUITE(HierachicalConfigurationTestSuite);
 
 BOOST_AUTO_TEST_CASE(BuildsAConfigurationHierarchy) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
 
     HierarchicalConfiguration::Node father1(HierarchicalConfiguration::create());
     father1->add("child", HierarchicalConfiguration::create("son1-1"));
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE(BuildsAConfigurationHierarchy) {
             children.begin(),
             children.end(),
             std::inserter(childrenGot, childrenGot.end()),
-            boost::bind(&HierarchicalConfiguration::text, _1)
+            std::bind(&HierarchicalConfiguration::text, std::placeholders::_1)
             );
     std::set<std::string> childrenExpected;
     childrenExpected.insert("son1-1");
@@ -59,7 +60,7 @@ BOOST_AUTO_TEST_CASE(BuildsAConfigurationHierarchy) {
 }
 
 BOOST_AUTO_TEST_CASE(CantAddANodeWithNonUniqueParent) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     configuration->set("grandfather", HierarchicalConfiguration::create());
     configuration->set("grandfather/parent", HierarchicalConfiguration::create());
     configuration->add("grandfather/parent", HierarchicalConfiguration::create());
@@ -70,15 +71,15 @@ BOOST_AUTO_TEST_CASE(CantAddANodeWithNonUniqueParent) {
 }
 
 BOOST_AUTO_TEST_CASE(CantAddANodeWithEmptyPath) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->add("", HierarchicalConfiguration::create()),
-            hierarchical::NonEmptyNodeSpecifierExpected
+            node::NonEmptyPathExpected
             );
 }
 
 BOOST_AUTO_TEST_CASE(CantSetNodeWithNonUniqueParent) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     configuration->set("grandfather", HierarchicalConfiguration::create());
 
     HierarchicalConfiguration::Node father1(HierarchicalConfiguration::create());
@@ -100,16 +101,82 @@ BOOST_AUTO_TEST_CASE(CantSetNodeWithNonUniqueParent) {
 }
 
 BOOST_AUTO_TEST_CASE(CantSetNodeWithEmptyPath) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
     BOOST_CHECK_THROW(
             configuration->set("", HierarchicalConfiguration::create()),
-            hierarchical::NonEmptyNodeSpecifierExpected
+            node::NonEmptyPathExpected
             );
 }
 
 BOOST_AUTO_TEST_CASE(CantEraseNodeWithEmptyPath) {
-    HierarchicalConfigurationPtr configuration = HierarchicalConfiguration::create();
-    BOOST_CHECK_THROW(configuration->erase(""), hierarchical::NonEmptyNodeSpecifierExpected);
+    HierarchicalConfigurationSharedPtr configuration = HierarchicalConfiguration::create();
+    BOOST_CHECK_THROW(configuration->erase(""), node::NonEmptyPathExpected);
+}
+
+BOOST_AUTO_TEST_CASE(NodePathIsSelectsApplicableNode) {
+	auto configuration = HierarchicalConfiguration::create();
+	configuration->set("grandfather", HierarchicalConfiguration::create());
+
+	auto father1 = HierarchicalConfiguration::create();
+	auto child1 = HierarchicalConfiguration::create();
+	child1->add("id", HierarchicalConfiguration::create("id-1"));
+	father1->add("child", child1);
+
+	configuration->add("grandfather/father", father1);
+
+	auto father2 = HierarchicalConfiguration::create();
+	auto child2 = HierarchicalConfiguration::create();
+	child2->add("id", HierarchicalConfiguration::create("id-2"));
+	father2->add("child", child2);
+
+	configuration->add("grandfather/father", father2);
+
+	auto found = configuration->get(
+		(node::Path() / "grandfather/father")[node::Path("child/id").is("id-2")]
+		);
+
+	BOOST_CHECK_EQUAL(*father2, *found);
+}
+
+BOOST_AUTO_TEST_CASE(ParentPathCanContainSelectorsWhenAdding) {
+	auto configuration = HierarchicalConfiguration::create();
+	configuration->set("grandfather", HierarchicalConfiguration::create());
+
+	auto father1 = HierarchicalConfiguration::create();
+	auto child1 = HierarchicalConfiguration::create();
+	child1->add("id", HierarchicalConfiguration::create("id-1"));
+	father1->add("child", child1);
+
+	configuration->add("grandfather/father", father1);
+
+	auto father2 = HierarchicalConfiguration::create();
+	auto child2 = HierarchicalConfiguration::create();
+	child2->add("id", HierarchicalConfiguration::create("id-2"));
+	father2->add("child", child2);
+
+	configuration->add("grandfather/father", father2);
+
+	auto path = (node::Path() / "grandfather/father")[node::Path("child/id").is("id-2")] / "child";
+
+	configuration->add(path / "name", HierarchicalConfiguration::create("Johnny"));
+
+	BOOST_CHECK_EQUAL(configuration->get(path / "name")->text(), "Johnny");
+}
+
+BOOST_AUTO_TEST_CASE(AddedNodePathCantContainSelectorsWhenAdding) {
+	auto configuration = HierarchicalConfiguration::create();
+	BOOST_CHECK_THROW(
+		configuration->add((node::Path() / "node").is("text"), HierarchicalConfiguration::create()),
+		AddOrSetNodePathChildHasSelector
+		);
+}
+
+BOOST_AUTO_TEST_CASE(AddedNodePathCantContainSelectorsWhenSetting) {
+	auto configuration = HierarchicalConfiguration::create();
+	BOOST_CHECK_THROW(
+		configuration->set((node::Path() / "node").is("text"), HierarchicalConfiguration::create()),
+		AddOrSetNodePathChildHasSelector
+		);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* HierachicalConfigurationTestSuite */);

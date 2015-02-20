@@ -37,7 +37,7 @@ struct Context {
 }  // namespace logger
 }  // namespace coconut_tools
 
-#if defined(COMPILER_GCC)
+#if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
 #	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __PRETTY_FUNCTION__)
 #elif defined(COMPILER_VISUAL_CXX)
 #	define LOGGER_CONTEXT() coconut_tools::logger::Context(__FILE__, __LINE__, __FUNCSIG__)

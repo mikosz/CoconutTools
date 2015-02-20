@@ -3,9 +3,9 @@
 
 #include <deque>
 
+#include <functional>
+
 #include <boost/unordered_set.hpp>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
 
 #include "coconut-tools/utils/pointee.hpp"
 #include "StringConfiguration.hpp"
@@ -41,7 +41,7 @@ public:
     void flatten(typename Super::Ptr target) {
         typename Super::Keys k;
         keys(&k);
-        std::for_each(k.begin(), k.end(), boost::bind(&copyAll, this, _1, target));
+        std::for_each(k.begin(), k.end(), std::bind(&copyAll, this, std::placeholders::_1, target));
         stack_.clear();
         push(target);
     }
@@ -64,7 +64,7 @@ public:
         return firstWith<size_t>(
                 key,
                 0,
-                boost::bind(&Configuration<typename Super::Key, typename Super::Value>::count, _1, key)
+                std::bind(&Configuration<typename Super::Key, typename Super::Value>::count, std::placeholders::_1, key)
         );
     }
 
@@ -86,10 +86,10 @@ public:
             ) const {
         firstWith(
                 key,
-                boost::bind(
+                std::bind(
                         &Configuration<typename Super::Key, typename Super::Value>::getAll,
-                        _1,
-                        boost::cref(key),
+                        std::placeholders::_1,
+                        std::cref(key),
                         values
                         )
         );
@@ -151,7 +151,7 @@ private:
     ReturnType firstWith(
             const typename Super::KeyParam key,
             ReturnType defaultValue,
-            boost::function<ReturnType(typename Super::Ptr)> f
+            std::function<ReturnType(typename Super::Ptr)> f
     ) const {
         typename Stack::const_iterator it, end = stack_.end();
         for (it = stack_.begin(); it != end; ++it) {
@@ -166,7 +166,7 @@ private:
 
     void firstWith(
             const typename Super::KeyParam key,
-            boost::function<void(typename Super::Ptr)> f
+            std::function<void(typename Super::Ptr)> f
     ) const {
         typename Stack::const_iterator it, end = stack_.end();
         for (it = stack_.begin(); it != end; ++it) {
@@ -185,7 +185,7 @@ private:
         std::for_each(
                 values.begin(),
                 values.end(),
-                boost::bind(&Configuration<typename Super::Key, typename Super::Value>::add, target, _1)
+                std::bind(&Configuration<typename Super::Key, typename Super::Value>::add, target, std::placeholders::_1)
         );
     }
 

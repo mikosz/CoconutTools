@@ -12,9 +12,20 @@ public:
 
 	static const std::string CLASS_NAME;
 
+	EmptyLayout() {
+	}
+
 	std::string format(Level /* level */, const Context& /* context */, const std::string& message) {
 		return message + '\n';
 	}
+
+private:
+
+	friend class utils::Initialiser<
+		Layout,
+		const Id&,
+		const logger::configuration::LoggerConfiguration&
+	>;
 
 };
 

@@ -4,11 +4,15 @@
 #include <sstream>
 #include <cassert>
 #include <vector>
+#include <functional>
 
 #include <boost/call_traits.hpp>
-#include <boost/bind.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "coconut-tools/concurrent/Lockable.hpp"
+
+#include "coconut-tools/utils/smart-pointer-definitions.hpp"
+
 #include "appender/Appender.hpp"
 #include "Level.hpp"
 #include "Context.hpp"
@@ -36,7 +40,7 @@ private:
             std::for_each(
             		appenders_.begin(),
             		appenders_.end(),
-            		boost::bind(&appender::Appender::append, _1, level_, *context_, oss_.str())
+            		std::bind(&appender::Appender::append, std::placeholders::_1, level_, *context_, oss_.str())
             );
 
             oss_.rdbuf()->str("");
@@ -51,7 +55,7 @@ private:
 
         friend class Logger;
 
-        typedef std::vector<appender::AppenderPtr> Appenders;
+        typedef std::vector<appender::AppenderSharedPtr> Appenders;
 
         Stream() :
         	level_(Level::INFO),
@@ -70,7 +74,7 @@ private:
 
 public:
 
-    class StreamRef {
+    class StreamRef : boost::noncopyable {
     public:
 
         StreamRef() :
@@ -84,6 +88,14 @@ public:
         {
             stream_->reset(level, context);
         }
+
+		StreamRef(StreamRef&& other) :
+			stream_(other.stream_),
+			loggerLock_(other.loggerLock_)
+		{
+			other.stream_ = 0;
+			other.loggerLock_.reset();
+		}
 
         ~StreamRef() {
             if (stream_) {
@@ -107,7 +119,7 @@ public:
 
         Stream* stream_;
 
-        boost::shared_ptr<WriteLock> loggerLock_;
+        std::shared_ptr<WriteLock> loggerLock_;
 
     };
 
@@ -179,11 +191,11 @@ public:
     	return log(Level::CRITICAL, context);
     }
 
-    void addAppender(appender::AppenderPtr appender) {
+    void addAppender(appender::AppenderSharedPtr appender) {
     	stream_.appenders_.push_back(appender);
     }
 
-    void addAppender(appender::AppenderPtr appender) volatile {
+    void addAppender(appender::AppenderSharedPtr appender) volatile {
     	lock()->addAppender(appender);
     }
 
@@ -211,7 +223,9 @@ private:
 
 };
 
+CT_SMART_POINTER_DEFINITONS(Logger);
+
 }  // namespace logger
-}  // namespace CoconutTools {
+}  // namespace CoconutTools
 
 #endif /* COCONUTTOOLS_LOGGER_LOGGER_HPP_ */

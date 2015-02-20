@@ -22,10 +22,10 @@ public:
 
     template <class C>
     void getAllAs(C* values, const typename Super::KeyParam key) const {
-        std::vector<boost::reference_wrapper<const typename Super::Value> > sourceValues;
+        std::vector<std::reference_wrapper<const typename Super::Value> > sourceValues;
         getAll(&sourceValues, key);
         std::transform(sourceValues.begin(), sourceValues.end(), std::inserter(*values, values->end()),
-                boost::bind(&as<typename C::value_type>, key, _1));
+                std::bind(&as<typename C::value_type>, key, std::placeholders::_1));
     }
 
 private:

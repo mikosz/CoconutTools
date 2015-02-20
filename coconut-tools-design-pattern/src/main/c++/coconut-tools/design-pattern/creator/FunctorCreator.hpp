@@ -1,13 +1,11 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_
+#ifndef COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_FUNCTORCREATOR_HPP_
+#define COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_FUNCTORCREATOR_HPP_
 
 #include <memory>
-
-#include <boost/function.hpp>
+#include <functional>
 
 namespace coconut_tools {
 namespace design_pattern {
-namespace factory {
 namespace creator {
 
 template <class InstanceType>
@@ -16,13 +14,13 @@ public:
 
     typedef InstanceType Instance;
 
-    typedef boost::function<std::unique_ptr<Instance>()> Creator;
+    typedef std::function<Instance ()> Creator;
 
     FunctorCreator(Creator creator) :
         creator_(creator) {
     }
 
-    std::unique_ptr<Instance> create() {
+    Instance create() {
         return creator_();
     }
 
@@ -33,8 +31,7 @@ private:
 };
 
 } // namespace creator
-} // namespace factory
 } // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_CREATOR_FUNCTORCREATOR_HPP_ */
+#endif /* COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_FUNCTORCREATOR_HPP_ */

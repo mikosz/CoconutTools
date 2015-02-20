@@ -22,6 +22,7 @@ const Platform PLATFORM = Platform::LINUX;
 enum class Compiler {
 	VISUAL_CXX,
 	GCC,
+	CLANG,
 };
 
 #if defined(_MSC_VER)
@@ -30,6 +31,9 @@ const Compiler COMPILER = Compiler::VISUAL_CXX;
 #elif defined(__GCC__)
 #	define COMPILER_GCC
 const Compiler COMPILER = Compiler::GCC;
+#elif defined(__clang__)
+#	define COMPILER_CLANG
+const Compiler COMPILER = Compiler::CLANG;
 #endif
 
 }  // namespace system

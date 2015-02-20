@@ -1,11 +1,12 @@
-#ifndef COCONUT_TOOLS_LAYOUT_LAYOUTFACTORY_HPP_
-#define COCONUT_TOOLS_LAYOUT_LAYOUTFACTORY_HPP_
+#ifndef COCONUT_TOOLS_LOGGER_LAYOUT_LAYOUTFACTORY_HPP_
+#define COCONUT_TOOLS_LOGGER_LAYOUT_LAYOUTFACTORY_HPP_
 
 #include <string>
 
 #include "Layout.hpp"
 
 #include "coconut-tools/design-pattern/factory.hpp"
+
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 
 namespace coconut_tools {
@@ -15,20 +16,51 @@ namespace layout {
 class LayoutFactory :
 		public design_pattern::factory::Factory<
 			std::string,
-			Layout,
-			design_pattern::factory::PermanentStorage,
-			design_pattern::factory::NewCreator,
-			design_pattern::factory::NoLockingPolicy,
-			design_pattern::factory::IgnoringErrorPolicy
+			LayoutSharedPtr,
+			design_pattern::PermanentStorage,
+			design_pattern::NewCreator<Layout>,
+			design_pattern::NoLockingPolicy,
+			design_pattern::ExceptionThrowingErrorPolicy
 			>
 {
 public:
 
-	LayoutFactory(configuration::ConstLoggerConfigurationPtr loggerConfiguration);
+	typedef std::string LayoutTypeId;
+
+	LayoutFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+
+	template <class ConcreteLayoutType>
+	void registerType(const LayoutTypeId& layoutTypeId) {
+		typeFactory_.registerCreator(
+			layoutTypeId,
+			design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >(
+				[]() {
+					return std::unique_ptr<Layout::Initialiser>(
+						new Layout::Initialiser(Layout::Initialiser::createInitialisable<ConcreteLayoutType>())
+						);
+				}
+				)
+			);
+		}
+
+	LayoutSharedPtr create(const Layout::Id& layoutId);
 
 private:
 
-	configuration::ConstLoggerConfigurationPtr loggerConfiguration_;
+	typedef design_pattern::factory::Factory<
+		LayoutTypeId,
+		std::unique_ptr<Layout::Initialiser>,
+		design_pattern::NoStorage,
+		design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >,
+		design_pattern::NoLockingPolicy,
+		design_pattern::ExceptionThrowingErrorPolicy
+	> LayoutTypeFactory;
+
+	LayoutTypeFactory typeFactory_;
+
+	design_pattern::PermanentStorage<Layout::Id, LayoutSharedPtr> instanceStorage_;
+
+	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
 };
 
@@ -36,4 +68,4 @@ private:
 }  // namespace logger
 }  // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_LAYOUT_LAYOUTFACTORY_HPP_ */
+#endif /* COCONUT_TOOLS_LOGGER_LAYOUT_LAYOUTFACTORY_HPP_ */

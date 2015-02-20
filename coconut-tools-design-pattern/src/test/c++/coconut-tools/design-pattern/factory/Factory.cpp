@@ -1,15 +1,15 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include <string>
-
-#include <boost/function.hpp>
+#include <memory>
 
 #include <gmock/gmock.h>
 
 #include "coconut-tools/design-pattern/factory/Factory.hpp"
 #include "coconut-tools/design-pattern/factory/storage.hpp"
-#include "coconut-tools/design-pattern/factory/locking-policy.hpp"
 #include "coconut-tools/design-pattern/factory/error-policy.hpp"
+#include "coconut-tools/design-pattern/locking-policy.hpp"
+
 #include "coconut-tools/test-utils/GMockFixture.hpp"
 
 namespace {
@@ -25,7 +25,6 @@ public:
 
 };
 
-template <class>
 class CopyableMockCreatorAdapter {
 public:
 
@@ -35,7 +34,7 @@ public:
         delegate_(new Delegate) {
     }
 
-    boost::shared_ptr<Delegate> delegate() const {
+    std::shared_ptr<Delegate> delegate() const {
         return delegate_;
     }
 
@@ -45,7 +44,7 @@ public:
 
 private:
 
-    boost::shared_ptr<Delegate> delegate_;
+    std::shared_ptr<Delegate> delegate_;
 
 };
 
@@ -78,7 +77,7 @@ public:
         delegate_.reset();
     }
 
-    static boost::shared_ptr<Delegate> delegate() {
+    static std::shared_ptr<Delegate> delegate() {
         if (!delegate_) {
             delegate_.reset(new Delegate);
         }
@@ -86,7 +85,7 @@ public:
     }
 
     std::unique_ptr<int> get(const std::string& id) {
-        int value = delegate_->get(id);
+        int value = delegate()->get(id);
         if (value) {
             return std::unique_ptr<int>(new int(value));
         } else {
@@ -94,26 +93,26 @@ public:
         }
     }
 
-    std::unique_ptr<int> isStored(const std::string& id) {
-        return std::unique_ptr<int>(new int(delegate_->isStored(id)));
+    bool isStored(const std::string& id) {
+        return delegate()->isStored(id);
     }
 
     std::unique_ptr<int> store(const std::string& id, std::unique_ptr<int> instance) {
-        return std::unique_ptr<int>(new int(delegate_->store(id, *instance)));
+        return std::unique_ptr<int>(new int(delegate()->store(id, *instance)));
     }
 
     void erase(const std::string& id) {
-        delegate_->erase(id);
+        delegate()->erase(id);
     }
 
 private:
 
-    static boost::shared_ptr<Delegate> delegate_;
+    static std::shared_ptr<Delegate> delegate_;
 
 };
 
 template<class T1, class T2>
-boost::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
+std::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
 
 class MockErrorPolicy {
 public:
@@ -124,7 +123,7 @@ public:
 
 };
 
-template <class, class>
+template <class>
 class StaticFunctionMockErrorPolicyAdapter {
 public:
 
@@ -134,7 +133,7 @@ public:
         delegate_.reset();
     }
 
-    static boost::shared_ptr<Delegate> delegate() {
+    static std::shared_ptr<Delegate> delegate() {
         if (!delegate_) {
             delegate_.reset(new Delegate);
         }
@@ -151,12 +150,12 @@ public:
 
 private:
 
-    static boost::shared_ptr<Delegate> delegate_;
+    static std::shared_ptr<Delegate> delegate_;
 
 };
 
-template<class T1, class T2>
-boost::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T1, T2>::Delegate> StaticFunctionMockErrorPolicyAdapter<T1, T2>::delegate_;
+template<class T>
+std::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T>::Delegate> StaticFunctionMockErrorPolicyAdapter<T>::delegate_;
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
@@ -164,17 +163,17 @@ BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
 BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
     Factory<
         std::string,
-        int,
+        std::unique_ptr<int>,
         NoStorage,
         CopyableMockCreatorAdapter,
         UniqueMutexLockingPolicy,
         ExceptionThrowingErrorPolicy
         > f;
 
-    CopyableMockCreatorAdapter<int> creator1;
+    CopyableMockCreatorAdapter creator1;
     EXPECT_CALL(*creator1.delegate(), create()).WillOnce(testing::Return(1));
 
-    CopyableMockCreatorAdapter<int> creator2;
+    CopyableMockCreatorAdapter creator2;
     EXPECT_CALL(*creator2.delegate(), create()).WillOnce(testing::Return(2));
 
     f.registerCreator("1", creator1);
@@ -185,55 +184,67 @@ BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
 }
 
 BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
-    typedef SingletonMockStorageAdapter<std::string, int> Storage;
+    typedef SingletonMockStorageAdapter<std::string, std::unique_ptr<int> > Storage;
 
     Storage::reset();
 
     Factory<
         std::string,
-        int,
+        std::unique_ptr<int>,
         SingletonMockStorageAdapter,
         CopyableMockCreatorAdapter,
         UniqueMutexLockingPolicy,
         ExceptionThrowingErrorPolicy
         > f;
 
-    Storage storage;
+    // Storage storage;
     {
         testing::InSequence inSequence;
 
-        EXPECT_CALL(*Storage::delegate(), get(std::string("1"))).WillOnce(testing::Return(0));
+        EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(false));
         EXPECT_CALL(*Storage::delegate(), store(std::string("1"), testing::_)).WillOnce(testing::Return(1));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(true));
         EXPECT_CALL(*Storage::delegate(), get(std::string("1"))).WillOnce(testing::Return(1));
 
-        EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(0));
-        EXPECT_CALL(*Storage::delegate(), store(std::string("2"), testing::_)).WillOnce(testing::Return(2));
-        EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(2));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("2"))).WillOnce(testing::Return(false));
+		EXPECT_CALL(*Storage::delegate(), store(std::string("2"), testing::_)).WillOnce(testing::Return(2));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("2"))).WillOnce(testing::Return(true));
+		EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(2));
     }
 
-    CopyableMockCreatorAdapter<int> creator1;
+    CopyableMockCreatorAdapter creator1;
     EXPECT_CALL(*creator1.delegate(), create()).WillOnce(testing::Return(1));
 
-    CopyableMockCreatorAdapter<int> creator2;
+    CopyableMockCreatorAdapter creator2;
     EXPECT_CALL(*creator2.delegate(), create()).WillOnce(testing::Return(2));
 
     f.registerCreator("1", creator1);
     f.registerCreator("2", creator2);
 
-    BOOST_CHECK_EQUAL(*f.create("1"), 1);
-    BOOST_CHECK_EQUAL(*f.create("1"), 1);
-    BOOST_CHECK_EQUAL(*f.create("2"), 2);
-    BOOST_CHECK_EQUAL(*f.create("2"), 2);
+	auto one1 = f.create("1");
+	auto one2 = f.create("1");
+	auto two1 = f.create("2");
+	auto two2 = f.create("2");
+
+	BOOST_REQUIRE(one1);
+	BOOST_REQUIRE(one2);
+	BOOST_REQUIRE(two1);
+	BOOST_REQUIRE(two1);
+
+    BOOST_CHECK_EQUAL(*one1, 1);
+	BOOST_CHECK_EQUAL(*one2, 1);
+	BOOST_CHECK_EQUAL(*two1, 2);
+	BOOST_CHECK_EQUAL(*two2, 2);
 }
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
 
     ErrorPolicy::reset();
 
     Factory<
         std::string,
-        int,
+        std::unique_ptr<int>,
         NoStorage,
         CopyableMockCreatorAdapter,
         UniqueMutexLockingPolicy,
@@ -248,7 +259,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
 
     ErrorPolicy::reset();
 
@@ -269,7 +280,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string, int> ErrorPolicy;
+    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
 
     ErrorPolicy::reset();
 
@@ -284,7 +295,7 @@ BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegiste
 
     EXPECT_CALL(*ErrorPolicy::delegate(), alreadyRegistered(std::string("1")));
 
-    CopyableMockCreatorAdapter<int> creator;
+    CopyableMockCreatorAdapter creator;
 
     f.registerCreator("1", creator);
     f.registerCreator("1", creator);

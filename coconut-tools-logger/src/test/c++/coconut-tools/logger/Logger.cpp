@@ -2,8 +2,8 @@
 
 #include <sstream>
 #include <iostream>
+#include <functional>
 
-#include <boost/bind.hpp>
 #include <boost/mpl/list.hpp>
 
 #include "coconut-tools/logger/Logger.hpp"
@@ -17,7 +17,7 @@ namespace {
 using namespace coconut_tools;
 using namespace coconut_tools::logger;
 
-typedef boost::mpl::list<Logger, volatile Logger> LoggerTypes;
+typedef boost::mpl::list</*Logger,*/ volatile Logger> LoggerTypes;
 
 BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
 
@@ -25,13 +25,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(LogsOnRequiredLevelsTest, L, LoggerTypes) {
     std::ostringstream output;
 
     {
-        utils::RaiiHelper clogReset(
-                boost::bind(&std::ostream::rdbuf, boost::ref(std::clog), std::clog.rdbuf(output.rdbuf())));
+    	auto clogRdbuf = std::clog.rdbuf(output.rdbuf());
+        utils::RaiiHelper clogReset([&]() { std::clog.rdbuf(clogRdbuf); });
 
         L logger(logger::Level::INFO);
 
-        layout::LayoutPtr layout(new layout::EmptyLayout);
-        logger.addAppender(appender::AppenderPtr(new appender::ConsoleAppender(layout)));
+        layout::LayoutSharedPtr layout(new layout::EmptyLayout);
+        logger.addAppender(appender::AppenderSharedPtr(new appender::ConsoleAppender(layout)));
 
         logger.log(logger::Level::CRITICAL) << "critical";
         logger.log(logger::Level::ERROR) << "error";

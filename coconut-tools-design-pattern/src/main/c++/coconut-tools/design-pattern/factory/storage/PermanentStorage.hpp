@@ -1,7 +1,7 @@
 #ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_PERMANENTSTORAGE_HPP_
 #define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_PERMANENTSTORAGE_HPP_
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "MappingStorage.hpp"
 
@@ -14,8 +14,8 @@ template <class IdentifierType, class InstanceType>
 class PermanentStorage :
     public MappingStorage<
         IdentifierType,
-        boost::shared_ptr<InstanceType>,
-        boost::shared_ptr<InstanceType>
+        std::shared_ptr<typename InstanceType::element_type>,
+        std::shared_ptr<typename InstanceType::element_type>
         >
 {
 };

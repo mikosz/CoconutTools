@@ -6,15 +6,13 @@ namespace design_pattern {
 namespace factory {
 namespace error_policy {
 
-template <class IdentifierType, class InstanceType>
+template <class IdentifierType>
 class IgnoringErrorPolicy {
 public:
 
     typedef IdentifierType Identifier;
 
     typedef typename boost::call_traits<Identifier>::param_type IdentifierParam;
-
-    typedef InstanceType Instance;
 
     static void alreadyRegistered(const IdentifierParam) {
     }
