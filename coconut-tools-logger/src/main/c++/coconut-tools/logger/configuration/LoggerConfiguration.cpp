@@ -81,7 +81,7 @@ Level LoggerConfiguration::loggerLevel(const LoggerId& loggerId) const {
 }
 
 LoggerConfiguration::AppenderId LoggerConfiguration::appenderId(const LoggerId& loggerId) const {
-	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "appender-id");
+	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "appender");
 	if (!node) {
 		throw LoggerConfigurationError("appender option not specified for logger \"" + loggerId + '"');
 	}
@@ -90,7 +90,7 @@ LoggerConfiguration::AppenderId LoggerConfiguration::appenderId(const LoggerId& 
 }
 
 LoggerConfiguration::LayoutId LoggerConfiguration::layoutId(const AppenderId& appenderId) const {
-	auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "layout-id");
+	auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "layout");
 	if (!node) {
 		throw LoggerConfigurationError("layout option not specified for appender \"" + appenderId + '"');
 	}
@@ -102,6 +102,15 @@ LoggerConfiguration::AppenderTypeId LoggerConfiguration::appenderTypeId(const Ap
 	auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "type");
 	if (!node) {
 		throw LoggerConfigurationError("type option not specified for appender \"" + appenderId + '"');
+	}
+
+	return node->text();
+}
+
+LoggerConfiguration::LayoutId LoggerConfiguration::layoutTypeId(const LayoutId& layoutId) const {
+	auto node = getDerivedNode(configuration_, "layouts/layout", layoutId, "type");
+	if (!node) {
+		throw LoggerConfigurationError("type option not specified for layout \"" + layoutId + '"');
 	}
 
 	return node->text();

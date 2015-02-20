@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
 
 	std::istringstream iss(
 		"<root-logger>"
-		"  <level>trace</level>"
+		"  <level>error</level>"
 		"  <appender>appender-id</appender>"
 		"</root-logger>"
 		"<appenders>"
@@ -76,6 +76,12 @@ BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
 		"    <layout>layout-id</layout>"
 		"  </appender>"
 		"</appenders>"
+		"<layouts>"
+		"  <layout>"
+		"    <id>layout-id</id>"
+		"    <type>coconut_tools::logger::layout::EmptyLayout</type>"
+		"  </layout>"
+		"</layouts>"
 		);
 
 	coconut_tools::configuration::readers::HierarchicalConfigurationReader().read(
@@ -109,10 +115,8 @@ BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
 	}
 
 	const std::string EXPECTED =
-		"Log on level info with implicit context\n"
-		"Log on level info with default context\n"
-		"Log on level error with full context\n"
-		"Log on level critical with context from macro\n"
+		"Log on level error with implicit context\n"
+		"Log on level critical with implicit context\n"
 		;
 
 	BOOST_CHECK_EQUAL(output.str(), EXPECTED);
