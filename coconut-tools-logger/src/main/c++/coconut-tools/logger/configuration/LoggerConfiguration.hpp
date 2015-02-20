@@ -94,6 +94,8 @@ public:
 
 	Level loggerLevel(const LoggerId& loggerId) const;
 
+	Level appenderLevel(const AppenderId& appenderId) const;
+
 	AppenderId appenderId(const LoggerId& loggerId) const;
 
 	LayoutId layoutId(const AppenderId& appenderId) const;

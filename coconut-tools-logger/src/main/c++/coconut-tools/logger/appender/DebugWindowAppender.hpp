@@ -20,8 +20,8 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	DebugWindowAppender(layout::LayoutSharedPtr layout) :
-		Appender(layout)
+	DebugWindowAppender(Level level, layout::LayoutSharedPtr layout) :
+		Appender(level, layout)
 	{
 	}
 

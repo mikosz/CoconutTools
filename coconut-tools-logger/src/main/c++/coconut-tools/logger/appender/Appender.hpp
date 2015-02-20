@@ -41,8 +41,10 @@ protected:
 	Appender() {
 	}
 
-	Appender(layout::LayoutSharedPtr layout) :
-		layout_(layout) {
+	Appender(Level level, layout::LayoutSharedPtr layout) :
+		level_(level),
+		layout_(layout)
+	{
 	}
 
 	Appender(
@@ -58,6 +60,8 @@ protected:
 		) override;
 
 private:
+
+	Level level_;
 
     layout::LayoutSharedPtr layout_;
 

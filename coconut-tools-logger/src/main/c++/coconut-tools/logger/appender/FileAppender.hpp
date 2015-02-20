@@ -21,8 +21,8 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	FileAppender(layout::LayoutSharedPtr layout, log_file::LogFileSharedPtr logFile) :
-		Appender(layout),
+	FileAppender(Level level, layout::LayoutSharedPtr layout, log_file::LogFileSharedPtr logFile) :
+		Appender(level, layout),
 		logFile_(logFile)
 	{
 	}

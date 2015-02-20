@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_CASE(WritesToFile, test_utils::ResourcesDirFixture) {
 
 	layout::LayoutSharedPtr layout(new layout::EmptyLayout);
 	log_file::LogFileSharedPtr logFile(new MockLogFile(resourcesDir() / "log-file.txt"));
-	FileAppender appender(layout, logFile);
+	FileAppender appender(Level::TRACE, layout, logFile);
 
 	EXPECT_CALL(
 			dynamic_cast<MockLogFile&>(*logFile),

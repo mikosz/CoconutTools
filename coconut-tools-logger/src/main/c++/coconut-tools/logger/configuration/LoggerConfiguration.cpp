@@ -80,6 +80,15 @@ Level LoggerConfiguration::loggerLevel(const LoggerId& loggerId) const {
 	return boost::lexical_cast<Level>(node->text());
 }
 
+Level LoggerConfiguration::appenderLevel(const AppenderId& appenderId) const {
+	auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "level");
+	if (!node) {
+		return Level::TRACE;
+	}
+
+	return boost::lexical_cast<Level>(node->text());
+}
+
 LoggerConfiguration::AppenderId LoggerConfiguration::appenderId(const LoggerId& loggerId) const {
 	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "appender");
 	if (!node) {

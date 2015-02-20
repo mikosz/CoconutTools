@@ -20,8 +20,8 @@ public:
 
 	static const std::string CLASS_NAME;
 
-	ConsoleAppender(layout::LayoutSharedPtr layout) :
-		Appender(layout)
+	ConsoleAppender(Level level, layout::LayoutSharedPtr layout) :
+		Appender(level, layout)
 	{
 	}
 

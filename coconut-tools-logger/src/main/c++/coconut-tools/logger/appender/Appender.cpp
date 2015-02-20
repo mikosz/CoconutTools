@@ -22,9 +22,12 @@ void Appender::doInitialise(
 	) {
 	layout::LayoutFactory& layoutFactory = utils::pointee(layoutFactoryPtr);
 
+	level_ = configuration.appenderLevel(id);
 	layout_ = layoutFactory.create(configuration.layoutId(id));
 }
 
 void Appender::append(Level level, const Context& context, const std::string& message) {
-	doAppend(layout_->format(level, context, message));
+	if (level_ <= level) {
+		doAppend(layout_->format(level, context, message));
+	}
 }

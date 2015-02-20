@@ -13,8 +13,8 @@ namespace {
 class ConcreteAppender : public Appender {
 public:
 
-	ConcreteAppender(layout::LayoutSharedPtr layout) :
-		Appender(layout) {
+	ConcreteAppender(Level level, layout::LayoutSharedPtr layout) :
+		Appender(level, layout) {
 	}
 
 	MOCK_METHOD1(doAppend, void (const std::string&));
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(CallsSubclassDoAppend) {
 	const std::string testString("test string");
 
 	layout::LayoutSharedPtr layout(new layout::EmptyLayout);
-	ConcreteAppender appender(layout);
+	ConcreteAppender appender(Level::INFO, layout);
 
 	EXPECT_CALL(appender, doAppend(testString + '\n'));
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(UsesProvidedLayout) {
 	const std::string layoutApplicationResult("test string lain out");
 
 	layout::LayoutSharedPtr layout(new ConcreteLayout);
-	ConcreteAppender appender(layout);
+	ConcreteAppender appender(Level::INFO, layout);
 
 	EXPECT_CALL(
 			dynamic_cast<ConcreteLayout&>(*layout),
@@ -57,6 +57,22 @@ BOOST_AUTO_TEST_CASE(UsesProvidedLayout) {
 	EXPECT_CALL(appender, doAppend(layoutApplicationResult));
 
 	appender.append(Level::INFO, Context(), testString);
+}
+
+BOOST_AUTO_TEST_CASE(DoesntLogUnderLevel) {
+	const std::string debugTestString("debug test string");
+	const std::string infoTestString("info test string");
+	const std::string warningTestString("warning test string");
+
+	layout::LayoutSharedPtr layout(new layout::EmptyLayout);
+	ConcreteAppender appender(Level::INFO, layout);
+
+	EXPECT_CALL(appender, doAppend(infoTestString + '\n')).Times(1);
+	EXPECT_CALL(appender, doAppend(warningTestString + '\n')).Times(1);
+
+	appender.append(Level::DEBUG, Context(), debugTestString);
+	appender.append(Level::INFO, Context(), infoTestString);
+	appender.append(Level::WARNING, Context(), warningTestString);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* AppenderTestSuite */);

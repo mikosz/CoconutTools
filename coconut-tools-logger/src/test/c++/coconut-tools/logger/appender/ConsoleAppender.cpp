@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(WritesToClog) {
 			);
 
         layout::LayoutSharedPtr layout(new layout::EmptyLayout);
-    	ConsoleAppender appender(layout);
+    	ConsoleAppender appender(Level::TRACE, layout);
 
     	appender.append(Level::INFO, Context(), testString);
 
