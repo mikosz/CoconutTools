@@ -39,8 +39,14 @@ private:
             std::for_each(
             		appenders_.begin(),
             		appenders_.end(),
-            		std::bind(&appender::Appender::append, std::placeholders::_1, level_, *context_, oss_.str())
+					[&](appender::AppenderSharedPtr appender) { appender->append(level_, *context_, oss_.str()); }
             );
+
+			std::for_each(
+				volatileAppenders_.begin(),
+				volatileAppenders_.end(),
+				[&](appender::VolatileAppenderSharedPtr appender) { appender->append(level_, *context_, oss_.str()); }
+			);
 
             oss_.rdbuf()->str("");
         }
@@ -56,6 +62,8 @@ private:
 
         typedef std::vector<appender::AppenderSharedPtr> Appenders;
 
+		typedef std::vector<appender::VolatileAppenderSharedPtr> VolatileAppenders;
+
         Stream() :
         	level_(Level::INFO),
             context_(0) {
@@ -68,6 +76,8 @@ private:
         const Context* context_;
 
         Appenders appenders_;
+
+		VolatileAppenders volatileAppenders_;
 
     };
 
@@ -197,6 +207,14 @@ public:
     void addAppender(appender::AppenderSharedPtr appender) volatile {
     	lock()->addAppender(appender);
     }
+
+	void addAppender(appender::VolatileAppenderSharedPtr appender) {
+		stream_.volatileAppenders_.push_back(appender);
+	}
+
+	void addAppender(appender::VolatileAppenderSharedPtr appender) volatile {
+		lock()->addAppender(appender);
+	}
 
     Level getLevel() const {
     	return level_;

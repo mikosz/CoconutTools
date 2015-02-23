@@ -37,6 +37,8 @@ public:
 
 	AppenderSharedPtr create(const Appender::Id& appenderId);
 
+	VolatileAppenderSharedPtr create
+
 	layout::LayoutFactory& layoutFactory() {
 		return layoutFactory_;
 	}

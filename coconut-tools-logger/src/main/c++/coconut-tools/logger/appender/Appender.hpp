@@ -5,6 +5,8 @@
 #include <string>
 #include <memory>
 
+#include "coconut-tools/concurrent/Lockable.hpp"
+
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
 #include "coconut-tools/utils/Initialisable.hpp"
 
@@ -23,7 +25,8 @@ class Appender :
 		const std::string&,
 		const logger::configuration::LoggerConfiguration&,
 		layout::LayoutFactory*
-		>
+		>,
+	public concurrent::Lockable<Appender>
 {
 public:
 
@@ -33,6 +36,10 @@ public:
     }
 
     void append(Level level, const Context& context, const std::string& message);
+
+	void append(Level level, const Context& context, const std::string& message) volatile {
+		lock()->append(level, context, message);
+	}
 
 protected:
 
