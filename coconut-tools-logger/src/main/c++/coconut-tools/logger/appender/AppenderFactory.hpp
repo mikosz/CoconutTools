@@ -8,11 +8,13 @@
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 #include "coconut-tools/logger/layout/LayoutFactory.hpp"
 
+#include "coconut-tools/concurrent/Lockable.hpp"
+
 namespace coconut_tools {
 namespace logger {
 namespace appender {
 
-class AppenderFactory {
+class AppenderFactory : concurrent::Lockable<AppenderFactory> {
 public:
 
 	typedef std::string AppenderTypeId;
@@ -37,7 +39,9 @@ public:
 
 	AppenderSharedPtr create(const Appender::Id& appenderId);
 
-	VolatileAppenderSharedPtr create
+	VolatileAppenderSharedPtr create(const Appender::Id& appenderId) volatile {
+		return lock()->create(appenderId);
+	}
 
 	layout::LayoutFactory& layoutFactory() {
 		return layoutFactory_;
