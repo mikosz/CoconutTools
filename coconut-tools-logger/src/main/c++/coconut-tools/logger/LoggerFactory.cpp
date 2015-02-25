@@ -40,5 +40,14 @@ LoggerSharedPtr LoggerFactory::create(const LoggerId& loggerId) {
 }
 
 VolatileLoggerSharedPtr LoggerFactory::create(const LoggerId& loggerId) volatile {
-	return lock()->create(loggerId);
+	auto locked = lock();
+
+	auto logger = locked->storage_.get(loggerId);
+	if (logger) {
+		return logger;
+	}
+
+	VolatileLoggerUniquePtr newLogger(new Logger(locked->loggerConfiguration_->loggerLevel(loggerId)));
+	newLogger->addAppender(appenderFactory_.create(locked->loggerConfiguration_->appenderId(loggerId)));
+	return locked->volatileStorage_.store(loggerId, std::move(newLogger));
 }

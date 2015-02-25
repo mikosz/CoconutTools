@@ -42,6 +42,8 @@ private:
 
 	design_pattern::factory::storage::PermanentStorage<LoggerId, LoggerSharedPtr> storage_;
 
+	design_pattern::factory::storage::PermanentStorage<LoggerId, VolatileLoggerSharedPtr> volatileStorage_;
+
 	appender::AppenderFactory appenderFactory_;
 
 };
