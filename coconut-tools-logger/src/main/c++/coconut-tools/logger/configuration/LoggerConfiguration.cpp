@@ -124,3 +124,12 @@ LoggerConfiguration::LayoutId LoggerConfiguration::layoutTypeId(const LayoutId& 
 
 	return node->text();
 }
+
+LoggerConfiguration::Configuration LoggerConfiguration::layoutConfiguration(const LayoutId& layoutId) const {
+	auto node = getDerivedNode(configuration_, "layouts/layout", layoutId, "configuration");
+	if (!node) {
+		throw LoggerConfigurationError("configuration option not specified for layout \"" + layoutId + '"');
+	}
+
+	return node;
+}

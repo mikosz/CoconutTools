@@ -54,8 +54,10 @@ public:
  *     <appender>
  *       <id>file-appender</id>
  *       <type>coconut_tools::logger::appender::FileAppender</type>
- *       <log-file-id>file-id</log-file-id>
- *       <layout-id>layout-id</layout-id>
+ *       <configuration>
+ *         <log-file-id>file-id</log-file-id>
+ *         <layout-id>layout-id</layout-id>
+ *       </configuration>
  *     </appender>
  *     <layouts>
  *       <layout>
@@ -83,8 +85,9 @@ public:
 
 	typedef std::string LayoutId;
 
-	LoggerConfiguration(
-		coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr config) :
+	typedef coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr Configuration;
+
+	LoggerConfiguration(Configuration config) :
 		configuration_(config)
 	{
 	}
@@ -104,9 +107,11 @@ public:
 
 	LayoutId layoutTypeId(const LayoutId& layoutId) const;
 
+	Configuration layoutConfiguration(const LayoutId& layoutId) const;
+
 private:
 
-	coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr configuration_;
+	Configuration configuration_;
 
 };
 

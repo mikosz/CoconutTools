@@ -548,6 +548,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GetOptionalThowsWhenMultipleKeysPresent, Configura
             );
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE(GetAsCastsToTargetType, ConfigurationImpl, ConfigurationImpls) {
+	ConfigurationTestSetup<ConfigurationImpl> setup;
+	std::shared_ptr<ConfigurationImpl> configuration = setup.create();
+
+	BOOST_CHECK(!configuration->getOptional(setup.singleEntry().first));
+}
+
 BOOST_AUTO_TEST_SUITE_END(/* ConfigurationTestSuite */);
 
 } // anonymous namespace

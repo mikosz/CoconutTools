@@ -130,6 +130,20 @@ public:
         return count(key) ? get(key) : defaultValue;
     }
 
+	/**
+	* Returns the value specified for the given key lexical cast to the required type.
+	*
+	* @param Target - the target type
+	* @param key - the key to look for in the configuration
+	* @return Target - the value specified for key parsed as Target
+	* @throws MissingRequiredValue - iff count(key) == 0
+	* @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
+	*/
+	template <class Target>
+	Target getAs(KeyParam key) const {
+		return boost::lexical_cast<Target>(get(key));
+	}
+
 };
 
 } // namespace configuration
