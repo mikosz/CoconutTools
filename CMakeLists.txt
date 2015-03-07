@@ -5,6 +5,7 @@ project(CoconutTools)
 include("cmake.cfg")
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+install(DIRECTORY "cmake/" DESTINATION cmake)
 include("library-module")
 
 set(CoconutTools_VERSION_MAJOR 1)
