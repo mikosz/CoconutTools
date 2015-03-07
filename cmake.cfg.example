@@ -1,2 +1,4 @@
 set(GMOCK_ROOT "/home/mradwan/tools/gmock/")
 set(GTEST_ROOT "/home/mradwan/tools/gmock/gtest/")
+
+set(CMAKE_INSTALL_PREFIX "/usr/")
