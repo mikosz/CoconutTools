@@ -46,10 +46,14 @@ void Clock::formatNow(std::ostream* osPtr) const {
 	auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 	auto totalMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
 
-	char formattedTimeBuf[FORMATTED_TIME_LENGTH + 1];
-	if (std::strftime(formattedTimeBuf, FORMATTED_TIME_LENGTH + 1, "%d.%m.%Y %H:%M:%S", &tm) == 0) {
+	std::string formattedTimeBuf;
+	formattedTimeBuf.resize(FORMATTED_TIME_LENGTH + 1);
+	size_t charsWritten =
+		std::strftime(&formattedTimeBuf.front(), FORMATTED_TIME_LENGTH + 1, "%d.%m.%Y %H:%M:%S", &tm);
+	if (charsWritten == 0) {
 		throw exceptions::LogicError("Failed to format time - buffer too small?");
 	}
+	formattedTimeBuf.resize(charsWritten);
 	os << formattedTimeBuf;
 
 	auto microseconds = (totalMicroseconds - (totalSeconds * MICROSECONDS_IN_SECOND));
