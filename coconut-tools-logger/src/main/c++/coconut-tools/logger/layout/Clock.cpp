@@ -4,6 +4,7 @@
 #include <sstream>
 #include <chrono>
 #include <array>
+#include <ctime>
 
 #include <boost/algorithm/string/case_conv.hpp>
 
@@ -24,6 +25,8 @@ const std::array<const std::string, static_cast<size_t>(Clock::Precision::SECOND
 	"seconds",
 	};
 
+const size_t FORMATTED_TIME_LENGTH = std::string("DD.MM.YYYY HH:MM:SS.UUUUUU").length();
+
 } // anonymous namespace
 
 void Clock::formatNow(std::ostream* osPtr) const {
@@ -43,7 +46,11 @@ void Clock::formatNow(std::ostream* osPtr) const {
 	auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 	auto totalMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
 
-	os << std::put_time(&tm, "%d.%m.%Y %H:%M:%S");
+	char formattedTimeBuf[FORMATTED_TIME_LENGTH + 1];
+	if (std::strftime(formattedTimeBuf, FORMATTED_TIME_LENGTH + 1, "%d.%m.%Y %H:%M:%S", &tm) == 0) {
+		throw exceptions::LogicError("Failed to format time - buffer too small?");
+	}
+	os << formattedTimeBuf;
 
 	auto microseconds = (totalMicroseconds - (totalSeconds * MICROSECONDS_IN_SECOND));
 
@@ -53,6 +60,8 @@ void Clock::formatNow(std::ostream* osPtr) const {
 		break;
 	case Clock::Precision::MICROSECONDS:
 		os << '.' << microseconds;
+		break;
+	default:
 		break;
 	}
 }
