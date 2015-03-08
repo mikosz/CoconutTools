@@ -68,3 +68,5 @@ set(MODULES
     )
 
 add_modules("${MODULES}")
+
+add_subdirectory("coconut-tools-version")

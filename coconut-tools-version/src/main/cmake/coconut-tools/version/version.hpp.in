@@ -9,7 +9,7 @@ namespace version {
 const size_t VERSION_MAJOR = @CoconutTools_VERSION_MAJOR@;
 const size_t VERSION_MINOR = @CoconutTools_VERSION_MINOR@;
 const size_t VERSION_BUGFIX = @CoconutTools_VERSION_BUGFIX@;
-const std::string VERSION_EXTRA(@CoconutTools_VERSION_EXTRA@);
+const std::string VERSION_EXTRA("@CoconutTools_VERSION_EXTRA@");
 const std::string VERSION("@CoconutTools_VERSION_MAJOR@.@CoconutTools_VERSION_MINOR@.@CoconutTools_VERSION_BUGFIX@@CoconutTools_VERSION_EXTRA@");
 
 } // namespace version
