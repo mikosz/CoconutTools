@@ -23,6 +23,30 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/resources")
   file(GLOB_RECURSE RESOURCES RELATIVE "${RESOURCES_DIR}" "${RESOURCES_DIR}/*")
 
+  if(${MSVC})
+    set(VERTEX_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/vertex")
+	file(GLOB_RECURSE VERTEX_SHADER_SRCS "${VERTEX_SHADER_DIR}/*.hlsl")
+	foreach(VERTEX_SHADER ${VERTEX_SHADER_SRCS})
+	  set_source_files_properties(
+		${VERTEX_SHADER}
+		PROPERTIES VS_SHADER_TYPE Vertex VS_SHADER_MODEL 5.0
+		VS_SHADER_ENTRYPOINT main
+		)
+	  set(SRCS ${SRCS} ${VERTEX_SHADER})
+	endforeach(VERTEX_SHADER)
+		
+	set(PIXEL_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/pixel")
+	file(GLOB_RECURSE PIXEL_SHADER_SRCS "${PIXEL_SHADER_DIR}/*.hlsl")
+	foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
+	  set_source_files_properties(
+		${PIXEL_SHADER}
+		PROPERTIES VS_SHADER_TYPE Pixel VS_SHADER_MODEL 5.0
+		VS_SHADER_ENTRYPOINT main
+		)
+	  set(SRCS ${SRCS} ${PIXEL_SHADER})
+	endforeach(PIXEL_SHADER)
+  endif(${MSVC})
+  
   if(SRCS)
     add_executable(${MODULE_NAME} ${SRCS} ${HEADERS})
 	install(TARGETS ${MODULE_NAME} DESTINATION bin)
