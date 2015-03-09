@@ -20,6 +20,9 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   file(GLOB_RECURSE FUNCTIONAL_TEST_SRCS "${FUNCTIONAL_TEST_SOURCE_DIR}/*.cpp")
   file(GLOB_RECURSE FUNCTIONAL_TEST_HEADERS "${FUNCTIONAL_TEST_SOURCE_DIR}/*.hpp" "${FUNCTIONAL_TEST_SOURCE_DIR}/*.h")
 
+  set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/resources")
+  file(GLOB_RECURSE RESOURCES RELATIVE "${RESOURCES_DIR}" "${RESOURCES_DIR}/*")
+
   if(SRCS)
     add_executable(${MODULE_NAME} ${SRCS} ${HEADERS})
 	install(TARGETS ${MODULE_NAME} DESTINATION bin)
@@ -52,4 +55,16 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
     add_test(${MODULE_NAME}-functional ${FUNCTIONAL_TEST_NAME})
   endif(FUNCTIONAL_TEST_SRCS)  
   
+  if(RESOURCES)
+    add_custom_target(copy-resources)
+    foreach(RESOURCE ${RESOURCES})
+      add_custom_command(
+	    TARGET copy-resources
+	    POST_BUILD
+	    COMMAND ${CMAKE_COMMAND} -E copy "${RESOURCES_DIR}/${RESOURCE}" "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
+	    )
+	endforeach(RESOURCE)
+	add_dependencies(${MODULE_NAME} copy-resources)
+  endif(RESOURCES)
+
 endfunction(executable_module)
