@@ -15,7 +15,7 @@ public:
 	EmptyLayout() {
 	}
 
-	std::string format(Level /* level */, const Context& /* context */, const std::string& message) {
+	std::string format(Level /* level */, const Context& /* context */, const std::string& message) const override {
 		return message + '\n';
 	}
 

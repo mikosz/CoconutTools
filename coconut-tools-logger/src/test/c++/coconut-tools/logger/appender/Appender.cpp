@@ -24,7 +24,7 @@ public:
 class ConcreteLayout : public layout::Layout {
 public:
 
-	MOCK_METHOD3(format, std::string (Level, const Context&, const std::string&));
+	MOCK_CONST_METHOD3(format, std::string (Level, const Context&, const std::string&));
 
 };
 

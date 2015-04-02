@@ -17,7 +17,7 @@ public:
 	BasicLayout() {
 	}
 
-	std::string format(Level level, const Context& context, const std::string& message) {
+	std::string format(Level level, const Context& context, const std::string& message) const override {
 		std::ostringstream oss;
 		oss << context.category << " [" << level << "] - " << message << '\n';
 		return oss.str();
