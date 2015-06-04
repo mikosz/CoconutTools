@@ -11,6 +11,7 @@
 
 #include "coconut-tools/logger/LoggerFactory.hpp"
 #include "coconut-tools/logger/SystemLogger.hpp"
+#include "coconut-tools/logger/macros.hpp"
 
 #include "coconut-tools/logger.hpp"
 
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
 		logger.log(Level::ERROR, Context("category", "file", 123, "function")) << "Log on level error with full context";
 		{
 			CT_LOGGER_LOCAL_CATEGORY("category");
-			logger.log(Level::CRITICAL, CT_LOGGER_CONTEXT()) << "Log on level critical with context from macro";
+			logger.log(Level::CRITICAL, CT_LOGGER_CONTEXT) << "Log on level critical with context from macro";
 		}
 
 		// Example of API logging using level specific functions
@@ -53,7 +54,7 @@ BOOST_AUTO_TEST_CASE(DefaultConfigurationPrintsInfoToStdlog) {
 		logger.error(Context("category", "file", 123, "function")) << "Log on level error with full context";
 		{
 			CT_LOGGER_LOCAL_CATEGORY("category");
-			logger.critical(CT_LOGGER_CONTEXT()) << "Log on level critical with context from macro";
+			logger.critical(CT_LOGGER_CONTEXT) << "Log on level critical with context from macro";
 		}
 	}
 

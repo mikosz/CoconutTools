@@ -3,9 +3,6 @@
 
 #include <string>
 
-#include "coconut-tools/system/platform.hpp"
-
-#include "Level.hpp"
 #include "Category.hpp"
 
 namespace coconut_tools {
@@ -40,13 +37,5 @@ struct Context {
 
 }  // namespace logger
 }  // namespace coconut_tools
-
-#if defined(CT_COMPILER_GCC) || defined(CT_COMPILER_CLANG)
-#	define CT_LOGGER_CONTEXT() coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __PRETTY_FUNCTION__)
-#elif defined(CT_COMPILER_VISUAL_CXX)
-#	define CT_LOGGER_CONTEXT() coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __FUNCSIG__)
-#else
-#	error "Unsupported compiler"
-#endif
 
 #endif /* COCONUTTOOLS_LOGGER_CONTEXT_HPP_ */
