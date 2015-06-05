@@ -26,6 +26,11 @@ LayoutFactory::LayoutFactory(logger::configuration::ConstLoggerConfigurationShar
 	registerBuiltins(this);
 }
 
+void LayoutFactory::reloadConfiguration(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration) {
+	instanceStorage_.clear();
+	loggerConfiguration_ = loggerConfiguration;
+}
+
 LayoutSharedPtr LayoutFactory::create(const Layout::Id& layoutId) {
 	if (instanceStorage_.isStored(layoutId)) {
 		return instanceStorage_.get(layoutId);

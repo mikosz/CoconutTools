@@ -20,6 +20,12 @@ public:
 
 	GlobalLoggerFactory();
 
+	using LoggerFactory::reloadConfiguration;
+
+	void reloadConfiguration();
+
+	void reloadConfiguration() volatile;
+
 };
 
 }  // namespace logger

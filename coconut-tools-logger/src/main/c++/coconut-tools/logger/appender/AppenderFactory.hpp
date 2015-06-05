@@ -33,7 +33,13 @@ public:
 			);
 	}
 
+	void reloadConfiguration(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+
 	AppenderSharedPtr create(const Appender::Id& appenderId);
+
+	layout::LayoutFactory& layoutFactory() {
+		return layoutFactory_;
+	}
 
 private:
 

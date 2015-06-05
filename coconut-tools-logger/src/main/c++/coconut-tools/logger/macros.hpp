@@ -8,14 +8,14 @@
 #include "Level.hpp"
 #include "GlobalLoggerFactory.hpp"
 
-#define CT_LOGGER_CATEGORY(name) \
+#define CT_LOGGER_CATEGORY(NAME) \
 	const Category& loggerCategory() { \
-		static Category category = #name; \
+		static Category category = (NAME); \
 		return category; \
 		}
 
-#define CT_LOGGER_LOCAL_CATEGORY(name) \
-	auto loggerCategory = []() { return #name; }
+#define CT_LOGGER_LOCAL_CATEGORY(NAME) \
+	auto loggerCategory = []() { return (NAME); }
 
 #if defined(CT_COMPILER_GCC) || defined(CT_COMPILER_CLANG)
 #	define CT_LOGGER_CONTEXT coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __PRETTY_FUNCTION__)

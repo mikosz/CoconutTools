@@ -6,8 +6,8 @@
 #include "Layout.hpp"
 
 #include "coconut-tools/design-pattern/factory.hpp"
-
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/utils/Null.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -30,7 +30,7 @@ public:
 	LayoutFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
 	template <class ConcreteLayoutType>
-	void registerType(const LayoutTypeId& layoutTypeId) {
+	utils::Null registerType(const LayoutTypeId& layoutTypeId) {
 		typeFactory_.registerCreator(
 			layoutTypeId,
 			design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >(
@@ -41,7 +41,11 @@ public:
 				}
 				)
 			);
-		}
+
+		return utils::Null::null;
+	}
+
+	void reloadConfiguration(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
 	LayoutSharedPtr create(const Layout::Id& layoutId);
 

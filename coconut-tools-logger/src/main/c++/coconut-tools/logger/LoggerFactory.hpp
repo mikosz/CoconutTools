@@ -22,11 +22,19 @@ public:
 
 	typedef std::string LoggerId;
 
-	LoggerFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+	LoggerFactory(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+
+	void reloadConfiguration(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
+
+	void reloadConfiguration(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration) volatile;
 
 	LoggerSharedPtr create(const LoggerId& loggerId);
 
 	VolatileLoggerSharedPtr create(const LoggerId& loggerId) volatile;
+
+	appender::AppenderFactory& appenderFactory() {
+		return appenderFactory_;
+	}
 
 private:
 

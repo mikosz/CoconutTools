@@ -33,6 +33,12 @@ AppenderFactory::AppenderFactory(logger::configuration::ConstLoggerConfiguration
 	registerBuiltins(this);
 }
 
+void AppenderFactory::reloadConfiguration(logger::configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration) {
+	instanceStorage_.clear();
+	loggerConfiguration_ = loggerConfiguration;
+	layoutFactory_.reloadConfiguration(loggerConfiguration_);
+}
+
 AppenderSharedPtr AppenderFactory::create(const Appender::Id& appenderId) {
 	if (instanceStorage_.isStored(appenderId)) {
 		return instanceStorage_.get(appenderId);
