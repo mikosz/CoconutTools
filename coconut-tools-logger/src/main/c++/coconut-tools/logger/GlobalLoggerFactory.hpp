@@ -1,6 +1,8 @@
 #ifndef COCONUTTOOLS_LOGGER_GLOBALLOGGERFACTORY_HPP_
 #define COCONUTTOOLS_LOGGER_GLOBALLOGGERFACTORY_HPP_
 
+#include <boost/filesystem/path.hpp>
+
 #include "coconut-tools/design-pattern/singleton.hpp"
 
 #include "LoggerFactory.hpp"
@@ -10,7 +12,7 @@ namespace logger {
 
 class GlobalLoggerFactory :
 	public design_pattern::Singleton<
-		LoggerFactory,
+		GlobalLoggerFactory,
 		design_pattern::UniqueMutexLockingPolicy,
 		design_pattern::NewCreator<GlobalLoggerFactory>
 		>,
@@ -18,13 +20,15 @@ class GlobalLoggerFactory :
 {
 public:
 
+	static const boost::filesystem::path DEFAULT_CONFIGURATION_PATH;
+
 	GlobalLoggerFactory();
 
 	using LoggerFactory::reloadConfiguration;
 
-	void reloadConfiguration();
+	void reloadConfiguration(const boost::filesystem::path& path = DEFAULT_CONFIGURATION_PATH);
 
-	void reloadConfiguration() volatile;
+	void reloadConfiguration(const boost::filesystem::path& path = DEFAULT_CONFIGURATION_PATH) volatile;
 
 };
 

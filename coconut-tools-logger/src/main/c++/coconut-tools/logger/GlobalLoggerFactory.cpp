@@ -10,14 +10,12 @@ using namespace coconut_tools::logger;
 
 namespace /* anonymous */ {
 
-const boost::filesystem::path DEFAULT_CONFIGURATION_PATH("coconut-tools-logger.cfg.xml");
-
-logger::configuration::ConstLoggerConfigurationSharedPtr globalConfiguration() {
-	if (boost::filesystem::exists(DEFAULT_CONFIGURATION_PATH)) {
+logger::configuration::ConstLoggerConfigurationSharedPtr globalConfiguration(const boost::filesystem::path& path) {
+	if (boost::filesystem::exists(path)) {
 		auto configuration = coconut_tools::configuration::hierarchical::HierarchicalConfiguration::create();
 		coconut_tools::configuration::parsers::XMLParser parser;
 		coconut_tools::configuration::readers::HierarchicalConfigurationReader reader;
-		reader.read(parser, DEFAULT_CONFIGURATION_PATH, configuration.get());
+		reader.read(parser, path, configuration.get());
 		return logger::configuration::LoggerConfigurationSharedPtr(new logger::configuration::LoggerConfiguration(configuration));
 	} else {
 		return logger::configuration::LoggerConfigurationSharedPtr();
@@ -26,15 +24,17 @@ logger::configuration::ConstLoggerConfigurationSharedPtr globalConfiguration() {
 
 } // anonymous namespace
 
+const boost::filesystem::path GlobalLoggerFactory::DEFAULT_CONFIGURATION_PATH("coconut-tools-logger.cfg.xml");
+
 GlobalLoggerFactory::GlobalLoggerFactory() :
-	LoggerFactory(globalConfiguration())
+	LoggerFactory(globalConfiguration(DEFAULT_CONFIGURATION_PATH))
 {
 }
 
-void GlobalLoggerFactory::reloadConfiguration() {
-	reloadConfiguration(globalConfiguration());
+void GlobalLoggerFactory::reloadConfiguration(const boost::filesystem::path& path) {
+	reloadConfiguration(globalConfiguration(path));
 }
 
-void GlobalLoggerFactory::reloadConfiguration() volatile {
-	reloadConfiguration(globalConfiguration());
+void GlobalLoggerFactory::reloadConfiguration(const boost::filesystem::path& path) volatile {
+	reloadConfiguration(globalConfiguration(path));
 }

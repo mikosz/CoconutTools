@@ -30,7 +30,7 @@ public:
 
     static InstancePtr instance() {
         if (!instance_) {
-            auto lock = lockingPolicy_->lock(&instance_);
+            auto lock = lockingPolicy().lock(&instance_);
             if (!instance_) {
 				Creator creator;
                 instance_.reset(creator.create().release());
@@ -41,7 +41,7 @@ public:
     }
 
     static void setInstance(std::unique_ptr<Instance>&& instance) {
-		auto lock = lockingPolicy_->lock(&instance_);
+		auto lock = lockingPolicy().lock(&instance_);
     	if (!instance_) {
     		std::atexit(&Singleton::destroy);
     	}
@@ -50,23 +50,23 @@ public:
 
 private:
 
-    static std::unique_ptr<LockingPolicy> lockingPolicy_;
-
     static InstancePtr instance_;
 
     static void destroy() {
         if (instance_) {
-			auto lock = lockingPolicy_->lock(&instance_);
+			auto lock = lockingPolicy().lock(&instance_);
             if (instance_) {
                 instance_.reset();
             }
         }
     }
 
-};
+	static LockingPolicy& lockingPolicy() {
+		static std::unique_ptr<LockingPolicy> lockingPolicy_(new LockingPolicy);
+		return *lockingPolicy_;
+	}
 
-template <class InstanceType, class LockingPolicy, class Creator>
-std::unique_ptr<LockingPolicy> Singleton<InstanceType, LockingPolicy, Creator>::lockingPolicy_(new LockingPolicy);
+};
 
 template <class InstanceType, class LockingPolicy, class Creator>
 typename Singleton<InstanceType, LockingPolicy, Creator>::InstancePtr Singleton<InstanceType, LockingPolicy, Creator>::instance_;

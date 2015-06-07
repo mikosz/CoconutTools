@@ -15,15 +15,15 @@ class CategoryPrintingLayout : public layout::Layout {
 public:
 
 	std::string format(Level, const Context& context, const std::string&) override {
-		return context.category;
+		return context.category + "\n";
 	}
 
 };
 
-const utils::Null CATEGORY_PRINTING_LAYOUT_REGISTRAR =
-	GlobalLoggerFactory::instance()->appenderFactory().layoutFactory().registerType<CategoryPrintingLayout>("CategoryPrintingLayout");
-
 void createCategoryPrintingLoggerConfigurationFile(const boost::filesystem::path& path) {
+	static const utils::Null CATEGORY_PRINTING_LAYOUT_REGISTRAR =
+		GlobalLoggerFactory::instance()->appenderFactory().layoutFactory().registerType<CategoryPrintingLayout>("CategoryPrintingLayout");
+
 	test_utils::writeToFile(
 		path,
 		"<root-logger>"
@@ -64,6 +64,8 @@ CT_LOGGER_CATEGORY("LOCAL");
 
 BOOST_FIXTURE_TEST_CASE(LogsUsingCategorySpecifiedInLocalContext, test_utils::ResourcesDirFixture) {
 	createCategoryPrintingLoggerConfigurationFile(resourcesDir() / "coconut-tools-logger.cfg.xml");
+	GlobalLoggerFactory::instance()->reloadConfiguration(resourcesDir() / "coconut-tools-logger.cfg.xml");
+	utils::RaiiHelper configurationResetter([]() { GlobalLoggerFactory::instance()->reloadConfiguration(); });
 
 	std::ostringstream output;
 
@@ -76,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE(LogsUsingCategorySpecifiedInLocalContext, test_utils::Re
 		CT_LOG_INFO << "";
 
 		BOOST_CHECK_EQUAL(output.str(),
-			"LOCALes\n"
+			"LOCAL\n"
 			);
 	}
 }

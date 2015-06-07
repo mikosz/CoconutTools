@@ -77,10 +77,8 @@ BOOST_AUTO_TEST_CASE(ClearErasesAll) {
 	typedef PermanentStorage<std::string, std::unique_ptr<int> > PermanentStorage;
 	PermanentStorage storage;
 
-	int* instance = new int;
-
-	storage.store("instance", std::unique_ptr<int>(instance));
-	storage.store("another", std::unique_ptr<int>(instance));
+	storage.store("instance", std::unique_ptr<int>(new int));
+	storage.store("another", std::unique_ptr<int>(new int));
 
 	storage.clear();
 
