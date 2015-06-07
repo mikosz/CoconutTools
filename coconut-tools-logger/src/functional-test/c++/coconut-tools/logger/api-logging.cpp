@@ -74,7 +74,9 @@ BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
 	std::istringstream iss(
 		"<root-logger>"
 		"  <level>error</level>"
-		"  <appender>appender-id</appender>"
+		"  <appenders>"
+		"    <appender>appender-id</appender>"
+		"  </apenders>"
 		"</root-logger>"
 		"<appenders>"
 		"  <appender>"

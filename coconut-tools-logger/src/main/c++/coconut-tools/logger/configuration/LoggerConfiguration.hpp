@@ -81,6 +81,8 @@ public:
 
 	typedef std::string AppenderId;
 
+	typedef std::vector<AppenderId> AppenderIds;
+
 	typedef std::string AppenderTypeId;
 
 	typedef std::string LayoutId;
@@ -99,7 +101,7 @@ public:
 
 	Level appenderLevel(const AppenderId& appenderId) const;
 
-	AppenderId appenderId(const LoggerId& loggerId) const;
+	AppenderIds appenderIds(const LoggerId& loggerId) const;
 
 	LayoutId layoutId(const AppenderId& appenderId) const;
 

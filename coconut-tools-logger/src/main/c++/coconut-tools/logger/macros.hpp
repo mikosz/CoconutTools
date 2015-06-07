@@ -9,23 +9,23 @@
 #include "GlobalLoggerFactory.hpp"
 
 #define CT_LOGGER_CATEGORY(NAME) \
-	const Category& loggerCategory() { \
+	const Category& loggerCategory(coconut_tools::logger::FakeParam) { \
 		static Category category = (NAME); \
 		return category; \
 		}
 
 #define CT_LOGGER_LOCAL_CATEGORY(NAME) \
-	auto loggerCategory = []() { return (NAME); }
+	auto loggerCategory = [](coconut_tools::logger::FakeParam) { return (NAME); }
 
 #if defined(CT_COMPILER_GCC) || defined(CT_COMPILER_CLANG)
-#	define CT_LOGGER_CONTEXT coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __PRETTY_FUNCTION__)
+#	define CT_LOGGER_CONTEXT coconut_tools::logger::Context(loggerCategory(coconut_tools::logger::FakeParam()), __FILE__, __LINE__, __PRETTY_FUNCTION__)
 #elif defined(CT_COMPILER_VISUAL_CXX)
-#	define CT_LOGGER_CONTEXT coconut_tools::logger::Context(loggerCategory(), __FILE__, __LINE__, __FUNCSIG__)
+#	define CT_LOGGER_CONTEXT coconut_tools::logger::Context(loggerCategory(coconut_tools::logger::FakeParam()), __FILE__, __LINE__, __FUNCSIG__)
 #else
 #	error "Unsupported compiler"
 #endif
 
-#define CT_LOGGER coconut_tools::logger::GlobalLoggerFactory::instance()->create(loggerCategory())
+#define CT_LOGGER coconut_tools::logger::GlobalLoggerFactory::instance()->create(loggerCategory(coconut_tools::logger::FakeParam()))
 
 #define CT_LOG(LEVEL) \
 	if ((LEVEL) < (CT_LOGGER)->getLevel()) { \

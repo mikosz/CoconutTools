@@ -28,7 +28,9 @@ void createCategoryPrintingLoggerConfigurationFile(const boost::filesystem::path
 		path,
 		"<root-logger>"
 		"  <level>info</level>"
-		"  <appender>appender-id</appender>"
+		"  <appenders>"
+		"    <appender>appender-id</appender>"
+		"  </appenders>"
 		"</root-logger>"
 		"<appenders>"
 		"  <appender>"
@@ -91,8 +93,6 @@ BOOST_AUTO_TEST_CASE(LogsUsingCategorySpecifiedInScopedContext) {
 } // namespace external_context
 
 BOOST_AUTO_TEST_CASE(ExpressionsInLoggingInstructionsAreNotEvaluatedIfLevelUnderLoggerLevel) {
-	CT_LOGGER_LOCAL_CATEGORY(""); // TODO: w00t w00t w00t czy da sie zrobic, zeby nie podawac kategorii jak sie nie chce?
-
 	BOOST_ASSERT((CT_LOGGER)->getLevel() == Level::INFO);
 
 	std::ostringstream output;

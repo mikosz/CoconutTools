@@ -11,6 +11,7 @@ using namespace coconut_tools::logger::configuration;
 
 using coconut_tools::configuration::hierarchical::node::Path;
 using coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr;
+using coconut_tools::configuration::hierarchical::HierarchicalConfiguration;
 
 namespace /* anonymous */ {
 
@@ -23,6 +24,17 @@ ConstHierarchicalConfigurationSharedPtr getNode(
 	const Path& childPath
 	) {
 	return configuration->getOptional(basePath[Path("id").is(id)] / childPath, EMPTY_NODE);
+}
+
+HierarchicalConfiguration::Nodes getNodes(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& basePath,
+	const std::string& id,
+	const Path& childPath
+	) {
+	HierarchicalConfiguration::Nodes nodes;
+	configuration->getAll(basePath[Path("id").is(id)] / childPath, &nodes);
+	return nodes;
 }
 
 ConstHierarchicalConfigurationSharedPtr getDerivedNode(
@@ -48,11 +60,51 @@ ConstHierarchicalConfigurationSharedPtr getDerivedNode(
 	return EMPTY_NODE;
 }
 
+HierarchicalConfiguration::Nodes getDerivedNodes(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& basePath,
+	const std::string& id,
+	const Path& childPath,
+	const Path& aggregateWithParentPath
+	) {
+	std::vector<std::string> elements;
+	boost::split(elements, id, boost::is_any_of("."));
+
+	HierarchicalConfiguration::Nodes result;
+
+	while (!elements.empty()) {
+		auto nodeId = boost::join(elements, ".");
+		auto nodes = getNodes(configuration, basePath, nodeId, childPath);
+
+		if (!nodes.empty()) {
+			std::copy(nodes.begin(), nodes.end(), std::back_inserter(result));
+			
+			auto aggregateWithParentPathNode = getNode(configuration, basePath, nodeId, aggregateWithParentPath);
+			if (aggregateWithParentPathNode && !boost::lexical_cast<bool>(aggregateWithParentPathNode->text())) {
+				break;
+			}
+		}
+
+		elements.pop_back();
+	}
+
+	return result;
+}
+
 ConstHierarchicalConfigurationSharedPtr getRootLoggerNode(
 	ConstHierarchicalConfigurationSharedPtr configuration,
 	const Path& childPath
 	) {
 	return configuration->getOptional("root-logger" / childPath, EMPTY_NODE);
+}
+
+HierarchicalConfiguration::Nodes getRootLoggerNodes(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& childPath
+	) {
+	HierarchicalConfiguration::Nodes result;
+	configuration->getAll("root-logger" / childPath, &result);
+	return result;
 }
 
 ConstHierarchicalConfigurationSharedPtr getLoggerNode(
@@ -67,6 +119,22 @@ ConstHierarchicalConfigurationSharedPtr getLoggerNode(
 	}
 
 	return node;
+}
+
+HierarchicalConfiguration::Nodes getLoggerNodes(
+	ConstHierarchicalConfigurationSharedPtr configuration,
+	const Path& basePath,
+	const std::string& id,
+	const Path& childPath,
+	const Path& aggregateWithParentPath
+	) {
+	auto nodes = getDerivedNodes(configuration, basePath, id, childPath, aggregateWithParentPath);
+	
+	if (nodes.empty()) {
+		nodes = getRootLoggerNodes(configuration, childPath);
+	}
+
+	return nodes;
 }
 
 } // anonymous namespace
@@ -89,13 +157,17 @@ Level LoggerConfiguration::appenderLevel(const AppenderId& appenderId) const {
 	return boost::lexical_cast<Level>(node->text());
 }
 
-LoggerConfiguration::AppenderId LoggerConfiguration::appenderId(const LoggerId& loggerId) const {
-	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "appender");
-	if (!node) {
-		throw LoggerConfigurationError("appender option not specified for logger \"" + loggerId + '"');
+LoggerConfiguration::AppenderIds LoggerConfiguration::appenderIds(const LoggerId& loggerId) const {
+	auto nodes =
+		getLoggerNodes(configuration_, "loggers/logger", loggerId, "appenders/appender", "aggregate-with-parent");
+
+	AppenderIds result;
+
+	for (auto node : nodes) {
+		result.push_back(node->text());
 	}
 
-	return node->text();
+	return result;
 }
 
 LoggerConfiguration::LayoutId LoggerConfiguration::layoutId(const AppenderId& appenderId) const {

@@ -12,6 +12,7 @@ void FileAppender::doInitialise(
 	layout::LayoutFactory* layoutFactoryPtr
 	) {
 	layout::LayoutFactory& layoutFactory = utils::pointee(layoutFactoryPtr);
+	Appender::doInitialise(id, configuration, &layoutFactory);
 
-	// TODO: initialise log file
+	logFile_ = 
 }
