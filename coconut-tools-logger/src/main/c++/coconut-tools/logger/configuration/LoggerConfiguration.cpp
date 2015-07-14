@@ -137,7 +137,31 @@ HierarchicalConfiguration::Nodes getLoggerNodes(
 	return nodes;
 }
 
+void registerLogFiles(log_file::LogFileFactory& logFileFactory, ConstHierarchicalConfigurationSharedPtr configuration) {
+	HierarchicalConfiguration::Nodes nodes;
+	configuration->getAll("log-files/log-file", &nodes);
+
+	for (auto node : nodes) {
+		try {
+			auto id = node->getAs<std::string>("id");
+			auto path = node->getAs<boost::filesystem::path>("path");
+			auto overwrite = node->getAs<bool>("overwrite");
+
+			logFileFactory.registerLogFile(id, path, overwrite);
+		} catch (const coconut_tools::configuration::MissingRequiredValue& e) {
+			throw LoggerConfigurationError(e.what());
+		}
+	}
+}
+
 } // anonymous namespace
+
+LoggerConfiguration::LoggerConfiguration(Configuration config, log_file::LogFileFactorySharedPtr logFileFactory) :
+	configuration_(config),
+	logFileFactory_(logFileFactory)
+{
+	registerLogFiles(*logFileFactory_, configuration_);
+}
 
 Level LoggerConfiguration::loggerLevel(const LoggerId& loggerId) const {
 	auto node = getLoggerNode(configuration_, "loggers/logger", loggerId, "level");
@@ -186,6 +210,19 @@ LoggerConfiguration::AppenderTypeId LoggerConfiguration::appenderTypeId(const Ap
 	}
 
 	return node->text();
+}
+
+log_file::LogFileSharedPtr LoggerConfiguration::logFile(const AppenderId& appenderId) const {
+	try {
+		auto node = getDerivedNode(configuration_, "appenders/appender", appenderId, "log-file");
+		if (!node) {
+			throw LoggerConfigurationError("log-file option not specified for appender \"" + appenderId + '"');
+		}
+
+		return logFileFactory_->create(node->text());
+	} catch (const design_pattern::NoSuchType<std::string>&) {
+		throw LoggerConfigurationError("Unknown log file: " + appenderId);
+	}
 }
 
 LoggerConfiguration::LayoutId LoggerConfiguration::layoutTypeId(const LayoutId& layoutId) const {

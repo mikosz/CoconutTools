@@ -99,8 +99,10 @@ BOOST_AUTO_TEST_CASE(LoggerFactoryProducesConfiguredLoggers) {
 		configurationData.get()
 		);
 
+	log_file::LogFileFactorySharedPtr logFileFactory(new log_file::LogFileFactory);
+
 	logger::configuration::LoggerConfigurationSharedPtr config(
-		std::make_shared<logger::configuration::LoggerConfiguration>(configurationData));
+		std::make_shared<logger::configuration::LoggerConfiguration>(configurationData, logFileFactory));
 
 	LoggerFactory loggerFactory(config);
 

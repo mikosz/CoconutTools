@@ -80,6 +80,16 @@ public:
         return text_;
     }
 
+	template <class Target>
+	Target getAs(KeyParam key) const {
+		std::string value = get(key)->text();
+		try {
+			return boost::lexical_cast<Target>(value);
+		} catch (const boost::bad_lexical_cast&) {
+			throw BadValueType(utils::toString<Key>(key), value, static_cast<Target*>(nullptr));
+		}
+	}
+
 private:
 
     std::string name_;

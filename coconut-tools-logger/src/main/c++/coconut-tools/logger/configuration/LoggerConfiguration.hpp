@@ -11,6 +11,8 @@
 #include "coconut-tools/utils/smart-pointer-definitions.hpp"
 
 #include "coconut-tools/logger/Level.hpp"
+#include "coconut-tools/logger/log-file/LogFile.hpp"
+#include "coconut-tools/logger/log-file/LogFileFactory.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -89,10 +91,7 @@ public:
 
 	typedef coconut_tools::configuration::hierarchical::ConstHierarchicalConfigurationSharedPtr Configuration;
 
-	LoggerConfiguration(Configuration config) :
-		configuration_(config)
-	{
-	}
+	LoggerConfiguration(Configuration config, log_file::LogFileFactorySharedPtr logFileFactory);
 
 	virtual ~LoggerConfiguration() {
 	}
@@ -107,6 +106,8 @@ public:
 
 	AppenderTypeId appenderTypeId(const AppenderId& appenderId) const;
 
+	log_file::LogFileSharedPtr logFile(const AppenderId& appenderId) const;
+
 	LayoutId layoutTypeId(const LayoutId& layoutId) const;
 
 	Configuration layoutConfiguration(const LayoutId& layoutId) const;
@@ -114,6 +115,8 @@ public:
 private:
 
 	Configuration configuration_;
+
+	log_file::LogFileFactorySharedPtr logFileFactory_;
 
 };
 

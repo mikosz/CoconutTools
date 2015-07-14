@@ -14,5 +14,5 @@ void FileAppender::doInitialise(
 	layout::LayoutFactory& layoutFactory = utils::pointee(layoutFactoryPtr);
 	Appender::doInitialise(id, configuration, &layoutFactory);
 
-	logFile_ = 
+	logFile_ = configuration.logFile(id);
 }

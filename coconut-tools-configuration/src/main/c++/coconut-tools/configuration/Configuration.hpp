@@ -12,6 +12,8 @@
 
 #include "configuration-exceptions.hpp"
 
+#include "coconut-tools/utils/to-string.hpp"
+
 namespace coconut_tools {
 namespace configuration {
 
@@ -138,10 +140,17 @@ public:
 	* @return Target - the value specified for key parsed as Target
 	* @throws MissingRequiredValue - iff count(key) == 0
 	* @throws MultipleValuesWhereSingleValueRequired - iff count(key) > 0
+	* @throws BadValueType - iff get(key) is not parsable as T
+	* 
+	* FIXME: does this belong here? StringConfiguration has this, and this is probably only correct in that context, delete this or the other
 	*/
 	template <class Target>
 	Target getAs(KeyParam key) const {
-		return boost::lexical_cast<Target>(get(key));
+		try {
+			return boost::lexical_cast<Target>(get(key));
+		} catch (const boost::bad_lexical_cast&) {
+			throw BadValueType(utils::toString<Key>(key), utils::toString<Value>(get(key)), static_cast<Target*>(nullptr));
+		}
 	}
 
 };

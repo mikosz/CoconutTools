@@ -11,6 +11,7 @@
 #include "coconut-tools/configuration/StackedConfiguration.hpp"
 #include "coconut-tools/configuration/hierarchical/HierarchicalConfiguration.hpp"
 #include "coconut-tools/utils/pointee.hpp"
+#include "coconut-tools/utils/to-string.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::configuration;
@@ -548,11 +549,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GetOptionalThowsWhenMultipleKeysPresent, Configura
             );
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(GetAsCastsToTargetType, ConfigurationImpl, ConfigurationImpls) {
-	ConfigurationTestSetup<ConfigurationImpl> setup;
-	std::shared_ptr<ConfigurationImpl> configuration = setup.create();
+BOOST_AUTO_TEST_CASE(GetAsCastsToTargetType) {
+	FlatConfiguration<std::string, std::string> configuration;
+	configuration.add("key 1", "1");
+	configuration.add("key 2", "value 2");
 
-	BOOST_CHECK(!configuration->getOptional(setup.singleEntry().first));
+	BOOST_CHECK_EQUAL(configuration.getAs<int>("key 1"), 1);
+}
+
+BOOST_AUTO_TEST_CASE(GetAsThrowsBadValueTypeOnErrors) {
+	FlatConfiguration<std::string, std::string> configuration;
+	configuration.add("key 1", "1");
+	configuration.add("key 2", "value 2");
+
+	BOOST_CHECK_THROW(configuration.getAs<int>("key 2"), BadValueType);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* ConfigurationTestSuite */);
