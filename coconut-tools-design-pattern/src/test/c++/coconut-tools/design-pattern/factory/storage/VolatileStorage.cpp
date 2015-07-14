@@ -75,6 +75,19 @@ BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
     BOOST_CHECK(!storage.get("instance"));
 }
 
+BOOST_AUTO_TEST_CASE(ClearErasesAll) {
+	typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
+	VolatileStorage storage;
+
+	storage.store("instance", std::unique_ptr<int>(new int));
+	storage.store("another", std::unique_ptr<int>(new int));
+
+	storage.clear();
+
+	BOOST_CHECK(!storage.get("instance"));
+	BOOST_CHECK(!storage.get("another"));
+}
+
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
     typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
     VolatileStorage storage;

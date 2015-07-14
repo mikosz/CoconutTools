@@ -2,6 +2,7 @@
 #define COCONUTTOOLS_LOGGER_HPP_
 
 #include "logger/LoggerFactory.hpp"
+#include "logger/macros.hpp"
 
 namespace coconut_tools {
 

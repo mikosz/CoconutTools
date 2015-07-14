@@ -22,5 +22,12 @@ void DetailedLayout::doInitialise(
 	const logger::configuration::LoggerConfiguration& configuration
 	) {
 	auto configurationNode = configuration.layoutConfiguration(layoutId);
-	clock_.precision() = configurationNode->getAs<Clock::Precision>("time-precision");
+	try {
+		clock_.precision() = configurationNode->getAs<Clock::Precision>("time-precision");
+	} catch (const coconut_tools::configuration::BadValueType&) {
+		throw logger::configuration::LoggerConfigurationError(
+			"Bad time-precision value for layout " + layoutId + ": \"" + configurationNode->get("time-precision")->text() + "\".");
+	} catch (const coconut_tools::configuration::MissingRequiredValue&) {
+		throw logger::configuration::LoggerConfigurationError("Missing required configuration value \"time-precision\" for layout " + layoutId);
+	}
 }

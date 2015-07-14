@@ -53,6 +53,10 @@ public:
         storage_.erase(identifier);
     }
 
+	void clear() {
+		storage_.clear();
+	}
+
 protected:
 
     Stored getStored(const IdentifierParam identifier) const {

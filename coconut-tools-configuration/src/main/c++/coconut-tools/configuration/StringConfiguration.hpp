@@ -15,11 +15,6 @@ private:
 
 public:
 
-    template <class T>
-    T getAs(const typename Super::KeyParam key) const {
-        return as<T>(key, get(key));
-    }
-
     template <class C>
     void getAllAs(C* values, const typename Super::KeyParam key) const {
         std::vector<std::reference_wrapper<const typename Super::Value> > sourceValues;
@@ -35,7 +30,7 @@ private:
         try {
             return boost::lexical_cast<T>(value);
         } catch (const boost::bad_lexical_cast&) {
-            throw BadValueType(utils::toString(key), utils::toString(value), static_cast<T*>(0));
+            throw BadValueType(utils::toString<StringType>(key), utils::toString<StringType>(value), static_cast<T*>(0));
         }
     }
 

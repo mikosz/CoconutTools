@@ -75,7 +75,7 @@ std::istream& coconut_tools::logger::layout::operator>>(std::istream& is, Clock:
 	is >> clockPrecisionString;
 
 	if (is) {
-		boost::to_upper(clockPrecisionString, is.getloc());
+		boost::to_lower(clockPrecisionString, is.getloc());
 
 		for (
 			size_t clockPrecisionIndex = static_cast<size_t>(Clock::Precision::MICROSECONDS);
