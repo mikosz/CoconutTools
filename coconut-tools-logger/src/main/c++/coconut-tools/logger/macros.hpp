@@ -9,8 +9,8 @@
 #include "GlobalLoggerFactory.hpp"
 
 #define CT_LOGGER_CATEGORY(NAME) \
-	const Category& loggerCategory(coconut_tools::logger::FakeParam) { \
-		static Category category = (NAME); \
+	const coconut_tools::logger::Category& loggerCategory(coconut_tools::logger::FakeParam) { \
+		static coconut_tools::logger::Category category = (NAME); \
 		return category; \
 		}
 
