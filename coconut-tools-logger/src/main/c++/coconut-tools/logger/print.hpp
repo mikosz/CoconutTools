@@ -10,29 +10,35 @@ namespace coconut_tools {
 namespace logger {
 
 template<class T>
-typename std::enable_if<!utils::IsIterable<T>::value, void>::type
-	print(std::ostream& os, const T& v) {
+inline typename std::enable_if_t<!utils::IsIterable<T>::value> print(std::ostream& os, const T& v) {
 	os << v;
 }
 
-/* template <class T>
-typename std::enable_if<utils::IsIterable<T>::value, void>::type
-	print(std::ostream& os, const T& iterable) {
+template <class T>
+inline typename std::enable_if_t<utils::IsIterable<T>::value> print(std::ostream& os, const T& iterable) {
 	using std::begin;
 	using std::end;
 
 	auto it = begin(iterable), endIt = end(iterable);
 
 	if (it != endIt) {
-		oss_ << *it;
+		os << *it;
 		++it;
 	}
 
 	while (it != endIt) {
-		oss_ << ", " << *it;
+		os << ", " << *it;
 		++it;
 	}
-} */
+}
+
+inline void print(std::ostream& os, const std::string& s) {
+	os << s;
+}
+
+inline void print(std::ostream& os, const char* s) {
+	os << s;
+}
 
 }  // namespace logger
 }  // namespace CoconutTools

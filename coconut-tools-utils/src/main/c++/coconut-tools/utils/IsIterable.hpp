@@ -25,7 +25,8 @@ std::false_type IsIterable(...);
 } // namespace detail
 
 template <typename T>
-using IsIterable = decltype(detail::IsIterable<T>(0));
+struct IsIterable : decltype(detail::IsIterable<T>(0)) {
+};
 
 } // namespace utils
 } // namespace coconut_tools

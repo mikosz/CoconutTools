@@ -9,8 +9,35 @@ using namespace coconut_tools::logger;
 
 namespace /* anonymous */ {
 
+int ss[] = { 1, 2, 3 };
+
+struct CustomIterable {
+};
+
+int* begin(CustomIterable) {
+	return ss;
+}
+
+int* end(CustomIterable) {
+	return ss + (sizeof(ss) / sizeof(int));
+}
+
 BOOST_AUTO_TEST_SUITE(LoggerTestSuite);
 BOOST_AUTO_TEST_SUITE(PrintTestSuite);
+
+BOOST_AUTO_TEST_CASE(PrintsStringsNormally) {
+	std::ostringstream oss;
+	print(oss, std::string("test"));
+
+	BOOST_CHECK_EQUAL(oss.str(), "test");
+}
+
+BOOST_AUTO_TEST_CASE(PrintsCStringsNormally) {
+	std::ostringstream oss;
+	print(oss, "test");
+
+	BOOST_CHECK_EQUAL(oss.str(), "test");
+}
 
 BOOST_AUTO_TEST_CASE(PrintsOutputStreamableValues) {
 	std::ostringstream oss;
@@ -56,7 +83,10 @@ BOOST_AUTO_TEST_CASE(PrintsCStyleArrays) {
 }
 
 BOOST_AUTO_TEST_CASE(PrintsCustomCollections) {
-	BOOST_CHECK(false);
+	std::ostringstream oss;
+	print(oss, CustomIterable());
+
+	BOOST_CHECK_EQUAL(oss.str(), "1, 2, 3");
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* PrintTestSuite */);
