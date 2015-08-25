@@ -18,7 +18,7 @@ using namespace coconut_tools::system::windows;
 
 bool coconut_tools::system::windows::createNewFile(const boost::filesystem::path& path) {
 	HANDLE h = CreateFile(path.string().c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, 0, 0);
-	if (h == INVALID_HANDLE_VALUE) {
+	if (h != INVALID_HANDLE_VALUE) {
 		CloseHandle(h);
 		return true;
 	} else {

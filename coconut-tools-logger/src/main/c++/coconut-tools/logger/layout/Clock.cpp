@@ -38,8 +38,8 @@ void Clock::formatNow(std::ostream* osPtr) const {
 		MICROSECONDS_IN_SECOND = 1000 * MILLISECONDS_IN_SECOND,
 	};
 
-	auto now = std::chrono::high_resolution_clock::now();
-	auto tt = std::chrono::high_resolution_clock::to_time_t(now);
+	auto now = std::chrono::system_clock::now();
+	auto tt = std::chrono::system_clock::to_time_t(now);
 	std::tm tm;
 	utils::localtime(&tm, tt);
 
