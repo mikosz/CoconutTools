@@ -16,6 +16,7 @@
 #include "appender/Appender.hpp"
 #include "Level.hpp"
 #include "Context.hpp"
+#include "print.hpp"
 
 namespace coconut_tools {
 namespace logger {
@@ -28,8 +29,8 @@ private:
 
         template <class T>
         Stream& operator<< (const T& v) {
-            oss_ << v;
-            return *this;
+			print(oss_, v);
+			return *this;
         }
 
         void flush() {
