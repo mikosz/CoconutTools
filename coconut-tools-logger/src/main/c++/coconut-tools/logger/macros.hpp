@@ -9,10 +9,12 @@
 #include "GlobalLoggerFactory.hpp"
 
 #define CT_LOGGER_CATEGORY(NAME) \
+	namespace /* anonymous */ { \
 	const coconut_tools::logger::Category& loggerCategory(coconut_tools::logger::FakeParam) { \
 		static coconut_tools::logger::Category category = (NAME); \
 		return category; \
-		}
+		} \
+	} // anonymous namespace
 
 #define CT_LOGGER_LOCAL_CATEGORY(NAME) \
 	auto loggerCategory = [](coconut_tools::logger::FakeParam) { return (NAME); }
