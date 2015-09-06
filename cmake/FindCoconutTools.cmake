@@ -10,6 +10,7 @@
 if(DEFINED CoconutTools_ROOT)
   set(CoconutTools_ALL_HINT ${CoconutTools_ROOT}/src)
   set(CoconutTools_INCLUDE_HINT ${CoconutTools_ROOT}/include)
+  set(CoconutTools_LIBRARY_HINT ${CoconutTools_ROOT}/lib)
 endif()
 
 find_path(
@@ -20,10 +21,16 @@ find_path(
   )
 
 find_library(
-  CoconutTools_LIBRARY_DIR
+  CoconutTools_UTILS_LIBRARY
   "coconut-tools-utils"
   HINTS ${CoconutTools_LIBRARY_HINT}
   PATH_SUFFIXES lib
+  )
+
+get_filename_component(
+  CoconutTools_LIBRARY_DIR
+  ${CoconutTools_UTILS_LIBRARY}
+  DIRECTORY
   )
 
 include(FindPackageHandleStandardArgs)
