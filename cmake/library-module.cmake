@@ -25,18 +25,20 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   
   install(
     DIRECTORY "${SOURCE_DIR}/"
-	DESTINATION include
-	FILES_MATCHING PATTERN "*.hpp" PATTERN ".h"
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.hpp" PATTERN ".h"
 	)
   
   if(SRCS)
     add_library(${MODULE_NAME} SHARED ${SRCS} ${HEADERS})
     add_library(${MODULE_NAME}_static STATIC ${SRCS} ${HEADERS})
-	install(TARGETS ${MODULE_NAME} ${MODULE_NAME}_static DESTINATION lib)
-	set_target_properties(${MODULE_NAME}_static PROPERTIES OUTPUT_NAME ${MODULE_NAME})
-	target_link_libraries(${MODULE_NAME} ${DEPENDENCY_LIBRARIES})
+    install(TARGETS ${MODULE_NAME} ${MODULE_NAME}_static DESTINATION lib)
+    set_target_properties(${MODULE_NAME}_static PROPERTIES OUTPUT_NAME ${MODULE_NAME})
+    target_link_libraries(${MODULE_NAME} ${DEPENDENCY_LIBRARIES})
 
     set(TEST_LIBRARIES ${MODULE_NAME} ${TEST_LIBRARIES})
+  else()
+    add_custom_target(${MODULE_NAME} SOURCES ${HEADERS})
   endif()
 
   if(TEST_SRCS)
