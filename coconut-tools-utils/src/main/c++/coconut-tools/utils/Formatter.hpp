@@ -22,7 +22,7 @@ public:
     ~FormatterError() throw() {
     }
 
-    const std::string& name() const {
+    const std::string& name() const noexcept override {
         static const std::string& NAME = "FormatterError";
         return NAME;
     }

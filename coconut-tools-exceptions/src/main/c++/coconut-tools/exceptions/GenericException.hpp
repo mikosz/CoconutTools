@@ -25,24 +25,23 @@ public:
         cause_(cause.what()) {
     }
 
-    virtual ~GenericException() throw () {
-    }
+	virtual ~GenericException() = default;
 
-    virtual const std::string& name() const = 0;
+    virtual const std::string& name() const noexcept = 0;
 
-    const char* what() const throw () {
+    const char* what() const noexcept override {
         return description().c_str();
     }
 
-    const std::string& message() const {
+    const std::string& message() const noexcept {
         return message_;
     }
 
-    const Backtrace& backtrace() const {
+    const Backtrace& backtrace() const noexcept {
         return backtrace_;
     }
 
-    const std::string& description() const {
+    const std::string& description() const noexcept {
         // description_ is built lazily, because we're calling name() which is virtual and
         // cannot be called in the constructor
         if (description_.empty()) {
@@ -83,7 +82,7 @@ private:
         PARENT(message, cause) { \
     } \
     \
-    const std::string& name() const { \
+    const std::string& name() const noexcept override { \
         static const std::string& NAME = #TYPE; \
         return NAME; \
     }
