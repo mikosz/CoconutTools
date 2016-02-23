@@ -9,4 +9,4 @@ SET(TEST_LIBRARIES
 	)
 	
 
-library_module(coconut-tools-system "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}")
+library_module(coconut-tools-system "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" STATIC SHARED)

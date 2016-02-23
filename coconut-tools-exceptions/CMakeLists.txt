@@ -1,1 +1,1 @@
-library_module(coconut-tools-exceptions "" "")
+library_module(coconut-tools-exceptions "" "" STATIC SHARED)
