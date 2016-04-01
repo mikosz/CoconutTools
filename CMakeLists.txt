@@ -60,6 +60,7 @@ set(MODULES
     "coconut-tools-concurrent"
     "coconut-tools-configuration"
     "coconut-tools-design-pattern"
+    "coconut-tools-enum"
     "coconut-tools-exceptions"
     "coconut-tools-logger"
     "coconut-tools-system"
