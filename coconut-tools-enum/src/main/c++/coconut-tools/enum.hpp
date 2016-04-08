@@ -3,7 +3,8 @@
 
 #include <boost/preprocessor.hpp>
 
-#include <iosfwd>
+#include <ostream>
+#include <string>
 #include <unordered_map>
 
 /**
