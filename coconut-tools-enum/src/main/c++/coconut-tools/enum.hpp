@@ -98,7 +98,7 @@
 		return EnumName ## _NAMES.at(value); \
 	} \
 	\
-	void fromString(EnumName& value, const std::string& name) { \
+	inline void fromString(EnumName& value, const std::string& name) { \
 		static const std::unordered_map<std::string, EnumName> NAMES_TO_ ## EnumName = { \
 			BOOST_PP_CAT(CCN_ENUM_nameValue_, domainType)(EnumName, values) \
 			}; \
