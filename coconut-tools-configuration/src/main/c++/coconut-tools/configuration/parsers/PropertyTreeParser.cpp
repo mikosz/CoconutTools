@@ -13,19 +13,14 @@ void addTreeNodes(
         PropertyTreeParser::NewChildCallback newChildCallback,
         PropertyTreeParser::ChildrenEndCallback childrenEndCallback
         ) {
-    if (!node.empty()) {
-        std::string trimmedData = boost::trim_copy(tree.data());
-        newChildCallback(node, trimmedData);
-    }
+    std::string trimmedData = boost::trim_copy(tree.data());
+    newChildCallback(node, trimmedData);
 
-    boost::property_tree::ptree::const_iterator it, end = tree.end();
-    for (it = tree.begin(); it != end; ++it) {
-        addTreeNodes(it->first, it->second, newChildCallback, childrenEndCallback);
-    }
+	for (const auto& node : tree) {
+		addTreeNodes(node.first, node.second, newChildCallback, childrenEndCallback);
+	}
 
-    if (!node.empty()) {
-        childrenEndCallback();
-    }
+    childrenEndCallback();
 }
 
 } // anonymous namespace
@@ -36,5 +31,7 @@ void PropertyTreeParser::parse(std::istream& is, NewChildCallback newChildCallba
 
     doParse(is, &tree);
 
-    addTreeNodes(std::string(), tree, newChildCallback, childrenEndCallback);
+	for (const auto& node : tree) {
+		addTreeNodes(node.first, node.second, newChildCallback, childrenEndCallback);
+	}
 }
