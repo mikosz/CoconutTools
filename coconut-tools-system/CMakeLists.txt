@@ -5,8 +5,7 @@ set(DEPENDENCY_LIBRARIES
     )
 
 SET(TEST_LIBRARIES
-	${Boost_TEST_EXEC_MONITOR_LIBRARY}
-	)
+    ${Boost_TEST_EXEC_MONITOR_LIBRARY}
+    )
 	
-
-library_module(coconut-tools-system "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" STATIC SHARED)
+library_module(coconut-tools-system "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" ${LIBRARY_TYPE})

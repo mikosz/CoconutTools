@@ -8,4 +8,4 @@ set(TEST_LIBRARIES
 	${Boost_TEST_EXEC_MONITOR_LIBRARY}
 	)
 
-library_module(coconut-tools-design-pattern "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" USE_GMOCK)
+library_module(coconut-tools-design-pattern "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" USE_GMOCK ${LIBRARY_TYPE})
