@@ -2,4 +2,8 @@
 
 using namespace coconut_tools::logger;
 
-const Context Context::DEFAULT;
+const Context Context::EMPTY;
+
+const Context& Context::empty() {
+	return EMPTY;
+}

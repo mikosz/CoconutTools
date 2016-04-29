@@ -30,6 +30,10 @@ logger::configuration::ConstLoggerConfigurationSharedPtr globalConfiguration(con
 
 const boost::filesystem::path GlobalLoggerFactory::DEFAULT_CONFIGURATION_PATH("coconut-tools-logger.cfg.xml");
 
+const boost::filesystem::path& GlobalLoggerFactory::defaultConfigurationPath() {
+	return DEFAULT_CONFIGURATION_PATH;
+}
+
 GlobalLoggerFactory::GlobalLoggerFactory() :
 	LoggerFactory(globalConfiguration(DEFAULT_CONFIGURATION_PATH))
 {

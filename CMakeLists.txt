@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 project(CoconutTools)
 
@@ -18,9 +18,12 @@ set(CoconutTools_VERSION
 
 option(BUILD_STATIC_LIBS "Whether to build static libs" ON)
 option(BUILD_DYNAMIC_LIBS "Whether to build dynamic libs" ON)
+option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "Export all symbols to dll libraries" ON)
 option(COMPILER_IS_DEBUG_BUILD "Is debug build" ON)
 option(COMPILER_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 option(COMPILER_BOOST_USE_STATIC_LIBS "Use static boost libs" OFF)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if(${BUILD_STATIC_LIBS})
   if(${BUILD_DYNAMIC_LIBS})

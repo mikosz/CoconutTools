@@ -1,3 +1,5 @@
+include(GenerateExportHeader)
+
 function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
 
   foreach(ARG ${ARGV})
@@ -87,10 +89,13 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
     endif()
     
     if(${DYNAMIC_LIB})
+      add_definitions(-DCT_DLL_EXPORTS)
+
       if(${STATIC_LIB})
         set(SUFFIX "_dynamic")
       endif()
       add_library(${MODULE_NAME}${SUFFIX} SHARED ${SRCS} ${HEADERS})
+            
       install(TARGETS ${MODULE_NAME}${SUFFIX} DESTINATION lib)
       set_target_properties(${MODULE_NAME}${SUFFIX} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
       target_link_libraries(${MODULE_NAME}${SUFFIX} ${DYNAMIC_DEPENDENCIES})
@@ -116,7 +121,7 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
     add_executable(${TEST_NAME} ${TEST_SRCS} ${TEST_HEADERS})
     
     target_link_libraries(${TEST_NAME} ${TEST_DEPENDENCIES})
-    add_test(${MODULE_NAME} ${TEST_NAME})
+    add_test(NAME ${MODULE_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
 
     if(${MSVC})
       set_target_properties(${TEST_NAME} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
@@ -127,8 +132,8 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   if(FUNCTIONAL_TEST_SRCS)
     set(FUNCTIONAL_TEST_NAME ${MODULE_NAME}_functional-test)
     add_executable(${FUNCTIONAL_TEST_NAME} ${FUNCTIONAL_TEST_SRCS} ${FUNCTIONAL_TEST_HEADERS})
-    target_link_libraries(${FUNCTIONAL_TEST_NAME} ${TEST_DEPENDENCIES} ${DEPENDENCY_LIBRARIES})
-    add_test(${MODULE_NAME}-functional ${FUNCTIONAL_TEST_NAME})
+    target_link_libraries(${FUNCTIONAL_TEST_NAME} ${TEST_DEPENDENCIES})
+    add_test(NAME ${MODULE_NAME}-functional COMMAND $<TARGET_FILE:${FUNCTIONAL_TEST_NAME}>)
   endif(FUNCTIONAL_TEST_SRCS)  
   
   if(RESOURCES)

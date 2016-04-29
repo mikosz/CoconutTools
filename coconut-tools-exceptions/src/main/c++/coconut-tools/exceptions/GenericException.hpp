@@ -19,7 +19,7 @@ public:
         message_(message) {
     }
 
-    GenericException(const std::string& message, const std::exception& cause) :
+	GenericException(const std::string& message, const std::exception& cause) :
         ParentType(message),
         message_(message),
         cause_(cause.what()) {
