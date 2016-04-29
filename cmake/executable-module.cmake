@@ -26,6 +26,8 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   if(${MSVC})
     if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
       set(SHADER_DEBUG_FLAG "/Zi")
+    else()
+      set(SHADER_DEBUG_FLAG " ")
     endif()
   
     set(VERTEX_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/vertex")
