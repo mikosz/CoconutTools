@@ -24,27 +24,37 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   file(GLOB_RECURSE RESOURCES RELATIVE "${RESOURCES_DIR}" "${RESOURCES_DIR}/*")
 
   if(${MSVC})
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+      set(SHADER_DEBUG_FLAG "/Zi")
+    endif()
+  
     set(VERTEX_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/vertex")
-	file(GLOB_RECURSE VERTEX_SHADER_SRCS "${VERTEX_SHADER_DIR}/*.hlsl")
-	foreach(VERTEX_SHADER ${VERTEX_SHADER_SRCS})
-	  set_source_files_properties(
-		${VERTEX_SHADER}
-		PROPERTIES VS_SHADER_TYPE Vertex VS_SHADER_MODEL 5.0
-		VS_SHADER_ENTRYPOINT main
-		)
-	  set(SRCS ${SRCS} ${VERTEX_SHADER})
-	endforeach(VERTEX_SHADER)
-		
-	set(PIXEL_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/pixel")
-	file(GLOB_RECURSE PIXEL_SHADER_SRCS "${PIXEL_SHADER_DIR}/*.hlsl")
-	foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
-	  set_source_files_properties(
-		${PIXEL_SHADER}
-		PROPERTIES VS_SHADER_TYPE Pixel VS_SHADER_MODEL 5.0
-		VS_SHADER_ENTRYPOINT main
-		)
-	  set(SRCS ${SRCS} ${PIXEL_SHADER})
-	endforeach(PIXEL_SHADER)
+    file(GLOB_RECURSE VERTEX_SHADER_SRCS "${VERTEX_SHADER_DIR}/*.hlsl")
+    foreach(VERTEX_SHADER ${VERTEX_SHADER_SRCS})
+    set_source_files_properties(
+      ${VERTEX_SHADER}
+      PROPERTIES
+      VS_SHADER_TYPE Vertex
+      VS_SHADER_MODEL 5.0
+      VS_SHADER_ENTRYPOINT main
+      VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+      )
+      set(SRCS ${SRCS} ${VERTEX_SHADER})
+    endforeach(VERTEX_SHADER)
+      
+    set(PIXEL_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/pixel")
+    file(GLOB_RECURSE PIXEL_SHADER_SRCS "${PIXEL_SHADER_DIR}/*.hlsl")
+    foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
+      set_source_files_properties(
+      ${PIXEL_SHADER}
+      PROPERTIES
+      VS_SHADER_TYPE Pixel
+      VS_SHADER_MODEL 5.0
+      VS_SHADER_ENTRYPOINT main
+      VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+      )
+      set(SRCS ${SRCS} ${PIXEL_SHADER})
+    endforeach(PIXEL_SHADER)
   endif(${MSVC})
   
   if(SRCS)
