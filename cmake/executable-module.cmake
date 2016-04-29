@@ -75,9 +75,9 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
       foreach(GMOCK_INCLUDE ${GMOCK_INCLUDES})
         include_directories(${GMOCK_INCLUDE})
       endforeach(GMOCK_INCLUDE)
-  	  if(${MSVC})
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10" PARENT_SCOPE)
-	  endif()
+        if(${MSVC})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10" PARENT_SCOPE)
+      endif()
     endif(${USE_GMOCK})
     add_executable(${TEST_NAME} ${TEST_SRCS} ${TEST_HEADERS})
     target_link_libraries(${TEST_NAME} ${TEST_LIBRARIES} ${DEPENDENCY_LIBRARIES})
@@ -92,15 +92,18 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   endif(FUNCTIONAL_TEST_SRCS)  
   
   if(RESOURCES)
-    add_custom_target(copy-resources)
     foreach(RESOURCE ${RESOURCES})
       add_custom_command(
-	    TARGET copy-resources
-	    POST_BUILD
-	    COMMAND ${CMAKE_COMMAND} -E copy "${RESOURCES_DIR}/${RESOURCE}" "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
-	    )
-	endforeach(RESOURCE)
-	add_dependencies(${MODULE_NAME} copy-resources)
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy "${RESOURCES_DIR}/${RESOURCE}" "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
+        MAIN_DEPENDENCY "${RESOURCES_DIR}/${RESOURCE}"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
+        )
+      set(ALL_RESOURCES ${ALL_RESOURCES} "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}")
+    endforeach(RESOURCE)
+    add_custom_target(${MODULE_NAME}-copy-resources DEPENDS ${ALL_RESOURCES})
+    
+    add_dependencies(${MODULE_NAME} ${MODULE_NAME}-copy-resources)
   endif(RESOURCES)
 
   if(${MSVC})
