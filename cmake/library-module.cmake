@@ -137,15 +137,18 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   endif(FUNCTIONAL_TEST_SRCS)  
   
   if(RESOURCES)
-    add_custom_target(copy-resources)
     foreach(RESOURCE ${RESOURCES})
       add_custom_command(
-        TARGET copy-resources
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${RESOURCES_DIR}/${RESOURCE}" "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
+        MAIN_DEPENDENCY "${RESOURCES_DIR}/${RESOURCE}"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
         )
+      set(ALL_RESOURCES ${ALL_RESOURCES} "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}")
     endforeach(RESOURCE)
-    add_dependencies(${MODULE_NAME} copy-resources)
+    add_custom_target(${MODULE_NAME}-copy-resources DEPENDS ${ALL_RESOURCES})
+    
+    add_dependencies(${MODULE_NAME} ${MODULE_NAME}-copy-resources)
   endif(RESOURCES)
   
   if(${MSVC})
