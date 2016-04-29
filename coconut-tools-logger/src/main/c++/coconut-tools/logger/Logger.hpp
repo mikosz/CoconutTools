@@ -127,7 +127,7 @@ public:
     {
     }
 
-    StreamRef log(Level level, const Context& context = Context::DEFAULT) {
+    StreamRef log(Level level, const Context& context = Context::empty()) {
         if (level_ > level) {
             return StreamRef();
         } else {
@@ -135,58 +135,58 @@ public:
         }
     }
 
-    StreamRef log(Level level, const Context& context = Context::DEFAULT) volatile {
+    StreamRef log(Level level, const Context& context = Context::empty()) volatile {
         WriteLocked self = lock();
         StreamRef result = self->log(level, context);
         result.loggerLock().swap(self.lock());
         return result;
     }
 
-    StreamRef trace(const Context& context = Context::DEFAULT) {
+    StreamRef trace(const Context& context = Context::empty()) {
     	return log(Level::TRACE, context);
     }
 
-    StreamRef trace(const Context& context = Context::DEFAULT) volatile {
+    StreamRef trace(const Context& context = Context::empty()) volatile {
     	return log(Level::TRACE, context);
     }
 
-    StreamRef debug(const Context& context = Context::DEFAULT) {
+    StreamRef debug(const Context& context = Context::empty()) {
     	return log(Level::DEBUG, context);
     }
 
-    StreamRef debug(const Context& context = Context::DEFAULT) volatile {
+    StreamRef debug(const Context& context = Context::empty()) volatile {
     	return log(Level::DEBUG, context);
     }
 
-    StreamRef info(const Context& context = Context::DEFAULT) {
+    StreamRef info(const Context& context = Context::empty()) {
     	return log(Level::INFO, context);
     }
 
-    StreamRef info(const Context& context = Context::DEFAULT) volatile {
+    StreamRef info(const Context& context = Context::empty()) volatile {
     	return log(Level::INFO, context);
     }
 
-    StreamRef warning(const Context& context = Context::DEFAULT) {
+    StreamRef warning(const Context& context = Context::empty()) {
     	return log(Level::WARNING, context);
     }
 
-    StreamRef warning(const Context& context = Context::DEFAULT) volatile {
+    StreamRef warning(const Context& context = Context::empty()) volatile {
     	return log(Level::WARNING, context);
     }
 
-    StreamRef error(const Context& context = Context::DEFAULT) {
+    StreamRef error(const Context& context = Context::empty()) {
     	return log(Level::ERROR, context);
     }
 
-    StreamRef error(const Context& context = Context::DEFAULT) volatile {
+    StreamRef error(const Context& context = Context::empty()) volatile {
     	return log(Level::ERROR, context);
     }
 
-    StreamRef critical(const Context& context = Context::DEFAULT) {
+    StreamRef critical(const Context& context = Context::empty()) {
     	return log(Level::CRITICAL, context);
     }
 
-    StreamRef critical(const Context& context = Context::DEFAULT) volatile {
+    StreamRef critical(const Context& context = Context::empty()) volatile {
     	return log(Level::CRITICAL, context);
     }
 
