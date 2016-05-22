@@ -61,6 +61,14 @@ BOOST_AUTO_TEST_CASE(EnumFromStringThrowsOnBadName) {
 	BOOST_CHECK_THROW(fromString(value, "NOT_A_VALUE_STRING"), std::out_of_range); // TODO: use a custom exception
 }
 
+BOOST_AUTO_TEST_CASE(AllEnumValuesContainsAllValues) {
+	const auto& allValues = allTestEnumValues();
+	BOOST_REQUIRE_EQUAL(allValues.size(), 3);
+	BOOST_CHECK_EQUAL(allValues[0], TestEnum::VALUE0);
+	BOOST_CHECK_EQUAL(allValues[1], TestEnum::VALUE1);
+	BOOST_CHECK_EQUAL(allValues[2], TestEnum::VALUE2);
+}
+
 BOOST_AUTO_TEST_SUITE_END(/* EnumTestSuite */);
 
 } // anonymous namespace
