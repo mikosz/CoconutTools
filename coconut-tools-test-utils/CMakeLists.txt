@@ -1,1 +1,1 @@
-library_module(coconut-tools-test-utils "" "")
+library_module(coconut-tools-test-utils "" "" ${LIBRARY_TYPE})

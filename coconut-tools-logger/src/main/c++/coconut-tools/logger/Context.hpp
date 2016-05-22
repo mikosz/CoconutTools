@@ -10,7 +10,7 @@ namespace logger {
 
 struct Context {
 
-	static const Context DEFAULT;
+	static const Context& empty();
 
     Context() :
         line(0)
@@ -32,6 +32,10 @@ struct Context {
     size_t line;
 
     std::string function;
+
+private:
+
+	static const Context EMPTY;
 
 };
 

@@ -20,15 +20,19 @@ class GlobalLoggerFactory :
 {
 public:
 
-	static const boost::filesystem::path DEFAULT_CONFIGURATION_PATH;
+	static const boost::filesystem::path& defaultConfigurationPath();
 
 	GlobalLoggerFactory();
 
 	using LoggerFactory::reloadConfiguration;
 
-	void reloadConfiguration(const boost::filesystem::path& path = DEFAULT_CONFIGURATION_PATH);
+	void reloadConfiguration(const boost::filesystem::path& path = defaultConfigurationPath());
 
-	void reloadConfiguration(const boost::filesystem::path& path = DEFAULT_CONFIGURATION_PATH) volatile;
+	void reloadConfiguration(const boost::filesystem::path& path = defaultConfigurationPath()) volatile;
+
+private:
+
+	static const boost::filesystem::path DEFAULT_CONFIGURATION_PATH;
 
 };
 

@@ -24,27 +24,39 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   file(GLOB_RECURSE RESOURCES RELATIVE "${RESOURCES_DIR}" "${RESOURCES_DIR}/*")
 
   if(${MSVC})
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+      set(SHADER_DEBUG_FLAG "/Zi")
+    else()
+      set(SHADER_DEBUG_FLAG " ")
+    endif()
+  
     set(VERTEX_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/vertex")
-	file(GLOB_RECURSE VERTEX_SHADER_SRCS "${VERTEX_SHADER_DIR}/*.hlsl")
-	foreach(VERTEX_SHADER ${VERTEX_SHADER_SRCS})
-	  set_source_files_properties(
-		${VERTEX_SHADER}
-		PROPERTIES VS_SHADER_TYPE Vertex VS_SHADER_MODEL 5.0
-		VS_SHADER_ENTRYPOINT main
-		)
-	  set(SRCS ${SRCS} ${VERTEX_SHADER})
-	endforeach(VERTEX_SHADER)
-		
-	set(PIXEL_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/pixel")
-	file(GLOB_RECURSE PIXEL_SHADER_SRCS "${PIXEL_SHADER_DIR}/*.hlsl")
-	foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
-	  set_source_files_properties(
-		${PIXEL_SHADER}
-		PROPERTIES VS_SHADER_TYPE Pixel VS_SHADER_MODEL 5.0
-		VS_SHADER_ENTRYPOINT main
-		)
-	  set(SRCS ${SRCS} ${PIXEL_SHADER})
-	endforeach(PIXEL_SHADER)
+    file(GLOB_RECURSE VERTEX_SHADER_SRCS "${VERTEX_SHADER_DIR}/*.hlsl")
+    foreach(VERTEX_SHADER ${VERTEX_SHADER_SRCS})
+    set_source_files_properties(
+      ${VERTEX_SHADER}
+      PROPERTIES
+      VS_SHADER_TYPE Vertex
+      VS_SHADER_MODEL 5.0
+      VS_SHADER_ENTRYPOINT main
+      VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+      )
+      set(SRCS ${SRCS} ${VERTEX_SHADER})
+    endforeach(VERTEX_SHADER)
+      
+    set(PIXEL_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/main/hlsl/pixel")
+    file(GLOB_RECURSE PIXEL_SHADER_SRCS "${PIXEL_SHADER_DIR}/*.hlsl")
+    foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
+      set_source_files_properties(
+      ${PIXEL_SHADER}
+      PROPERTIES
+      VS_SHADER_TYPE Pixel
+      VS_SHADER_MODEL 5.0
+      VS_SHADER_ENTRYPOINT main
+      VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+      )
+      set(SRCS ${SRCS} ${PIXEL_SHADER})
+    endforeach(PIXEL_SHADER)
   endif(${MSVC})
   
   if(SRCS)
@@ -63,9 +75,9 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
       foreach(GMOCK_INCLUDE ${GMOCK_INCLUDES})
         include_directories(${GMOCK_INCLUDE})
       endforeach(GMOCK_INCLUDE)
-  	  if(${MSVC})
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10" PARENT_SCOPE)
-	  endif()
+        if(${MSVC})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10" PARENT_SCOPE)
+      endif()
     endif(${USE_GMOCK})
     add_executable(${TEST_NAME} ${TEST_SRCS} ${TEST_HEADERS})
     target_link_libraries(${TEST_NAME} ${TEST_LIBRARIES} ${DEPENDENCY_LIBRARIES})
@@ -80,15 +92,18 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
   endif(FUNCTIONAL_TEST_SRCS)  
   
   if(RESOURCES)
-    add_custom_target(copy-resources)
     foreach(RESOURCE ${RESOURCES})
       add_custom_command(
-	    TARGET copy-resources
-	    POST_BUILD
-	    COMMAND ${CMAKE_COMMAND} -E copy "${RESOURCES_DIR}/${RESOURCE}" "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
-	    )
-	endforeach(RESOURCE)
-	add_dependencies(${MODULE_NAME} copy-resources)
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy "${RESOURCES_DIR}/${RESOURCE}" "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
+        MAIN_DEPENDENCY "${RESOURCES_DIR}/${RESOURCE}"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}"
+        )
+      set(ALL_RESOURCES ${ALL_RESOURCES} "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE}")
+    endforeach(RESOURCE)
+    add_custom_target(${MODULE_NAME}-copy-resources DEPENDS ${ALL_RESOURCES})
+    
+    add_dependencies(${MODULE_NAME} ${MODULE_NAME}-copy-resources)
   endif(RESOURCES)
 
   if(${MSVC})
