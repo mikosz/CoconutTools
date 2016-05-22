@@ -30,6 +30,19 @@
  * * void fromString(Shape&, const std::string&)
  */
 
+#define CCN_ENUM_is_column_left(i) \
+	BOOST_PP_EQUAL(BOOST_PP_MOD(i, 2), 0)
+
+#define CCN_ENUM_qualifiedValue(r, data, value) \
+	data ## ::value BOOST_PP_COMMA()
+
+#define CCN_ENUM_qualifiedValue_i(r, data, i, value) \
+	BOOST_PP_IF( \
+		CCN_ENUM_is_column_left(i), \
+		CCN_ENUM_qualifiedValue, \
+		BOOST_PP_TUPLE_EAT(3) \
+		)(r, data, value)
+
 #define CCN_ENUM_value(r, data, value) \
 	value BOOST_PP_COMMA()
 
@@ -38,9 +51,6 @@
 
 #define CCN_ENUM_nameValue(r, data, value) \
 	{ BOOST_PP_STRINGIZE(value) BOOST_PP_COMMA() data ## ::value } BOOST_PP_COMMA()
-
-#define CCN_ENUM_is_column_left(i) \
-	BOOST_PP_EQUAL(BOOST_PP_MOD(i, 2), 0)
 
 #define CCN_ENUM_eq(value) \
 	BOOST_PP_CAT(= value, BOOST_PP_COMMA())
@@ -78,6 +88,15 @@
 		CCN_ENUM_eq \
 		)(value)
 
+#define CCN_ENUM_qualifiedValues_incrementing(EnumName, values) \
+	BOOST_PP_SEQ_FOR_EACH(CCN_ENUM_qualifiedValue, EnumName, values)
+
+#define CCN_ENUM_qualifiedValues_provided(EnumName, values) \
+	BOOST_PP_SEQ_FOR_EACH_I(CCN_ENUM_qualifiedValue_i, EnumName, values)
+
+#define CCN_ENUM_values(values) \
+	BOOST_PP_SEQ_FOR_EACH(CCN_ENUM_value, 0, values)
+
 #define CCN_ENUM_domain_incrementing(values) \
 	BOOST_PP_SEQ_FOR_EACH(CCN_ENUM_value, 0, values)
 
@@ -89,6 +108,14 @@
 		BOOST_PP_CAT(CCN_ENUM_domain_, domainType)(values) \
 	}; \
 	\
+	using EnumName ## ValueList = std::vector<EnumName>; \
+	\
+	inline const EnumName ## ValueList& all ## EnumName ## Values() { \
+		static const EnumName ## ValueList VALUES = { \
+			BOOST_PP_CAT(CCN_ENUM_qualifiedValues_, domainType)(EnumName, values) \
+			}; \
+		return VALUES; \
+	} \
 	\
 	inline const std::string& toString(EnumName value) { \
 		/* TODO: this builds on visual c++, but is probably invalid C++ (no hash function for enum class) */ \
