@@ -72,6 +72,48 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
     set(DYNAMIC_DEPENDENCIES "${DEPENDENCY_LIBRARIES}")
     set(TEST_DEPENDENCIES "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}")
   endif()
+
+  if(${MSVC})
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+      set(SHADER_DEBUG_FLAG "/Zi")
+    else()
+      set(SHADER_DEBUG_FLAG " ")
+    endif()
+  
+    foreach(BASE_SRC_DIR "main" "test")
+      set(VERTEX_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/${BASE_SRC_DIR}/hlsl/vertex")
+      file(GLOB_RECURSE VERTEX_SHADER_SRCS "${VERTEX_SHADER_DIR}/*.hlsl")
+      foreach(VERTEX_SHADER ${VERTEX_SHADER_SRCS})
+      set_source_files_properties(
+        ${VERTEX_SHADER}
+        PROPERTIES
+        VS_SHADER_TYPE Vertex
+        VS_SHADER_MODEL 5.0
+        VS_SHADER_ENTRYPOINT main
+        VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+        )
+        set(SHADERS_${BASE_SRC_DIR} ${SHADERS_${BASE_SRC_DIR}} ${VERTEX_SHADER})
+      endforeach(VERTEX_SHADER)
+        
+      set(PIXEL_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/${BASE_SRC_DIR}/hlsl/pixel")
+      file(GLOB_RECURSE PIXEL_SHADER_SRCS "${PIXEL_SHADER_DIR}/*.hlsl")
+      foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
+        set_source_files_properties(
+        ${PIXEL_SHADER}
+        PROPERTIES
+        VS_SHADER_TYPE Pixel
+        VS_SHADER_MODEL 5.0
+        VS_SHADER_ENTRYPOINT main
+        VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+        )
+        set(SHADERS_${BASE_SRC_DIR} ${SHADERS_${BASE_SRC_DIR}} ${PIXEL_SHADER})
+      endforeach(PIXEL_SHADER)
+    endforeach(BASE_SRC_DIR)
+    
+    set(SRCS ${SRCS} ${SHADERS_main})
+    set(TEST_SRCS ${TEST_SRCS} ${SHADERS_test})
+    
+  endif(${MSVC})
   
   if(SRCS)
     if(NOT ${STATIC_LIB} AND NOT ${DYNAMIC_LIB})
