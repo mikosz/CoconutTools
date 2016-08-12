@@ -15,6 +15,20 @@ CCN_ENUM_VALUES(TestEnumValues,
 	(SQUARE)(4)
 	);
 
+class C {
+public:
+
+	CCN_MEMBER_ENUM(MemberTestEnum,
+		(VALUE0)
+		(VALUE1)
+		);
+
+	CCN_MEMBER_ENUM_VALUES(MemberTestEnumValues,
+		(TRIANGLE)(3)
+		(SQUARE)(4)
+		);
+};
+
 BOOST_AUTO_TEST_SUITE(EnumTestSuite);
 
 BOOST_AUTO_TEST_CASE(DefaultEnumValuesAreIncrementingIntegers) {
@@ -67,6 +81,14 @@ BOOST_AUTO_TEST_CASE(AllEnumValuesContainsAllValues) {
 	BOOST_CHECK_EQUAL(allValues[0], TestEnum::VALUE0);
 	BOOST_CHECK_EQUAL(allValues[1], TestEnum::VALUE1);
 	BOOST_CHECK_EQUAL(allValues[2], TestEnum::VALUE2);
+}
+
+BOOST_AUTO_TEST_CASE(AllowsMemberEnumAsMember) {
+	BOOST_CHECK_EQUAL(static_cast<int>(C::MemberTestEnum::VALUE0), 0);
+	BOOST_CHECK_EQUAL(static_cast<int>(C::MemberTestEnum::VALUE1), 1);
+
+	BOOST_CHECK_EQUAL(static_cast<int>(C::MemberTestEnumValues::TRIANGLE), 3);
+	BOOST_CHECK_EQUAL(static_cast<int>(C::MemberTestEnumValues::SQUARE), 4);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* EnumTestSuite */);
