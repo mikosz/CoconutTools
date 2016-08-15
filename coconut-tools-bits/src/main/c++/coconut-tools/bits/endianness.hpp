@@ -1,10 +1,11 @@
-#ifndef _COCONUT_TOOLS_UTILS_ENDIANNESS_HPP_
-#define _COCONUT_TOOLS_UTILS_ENDIANNESS_HPP_
+#ifndef _COCONUT_TOOLS_BITS_ENDIANNESS_HPP_
+#define _COCONUT_TOOLS_BITS_ENDIANNESS_HPP_
 
 #include <cstdint>
+#include <type_traits>
 
 namespace coconut_tools {
-namespace utils {
+namespace bits {
 
 namespace detail {
 
@@ -19,8 +20,8 @@ constexpr bool isBigEndian() noexcept {
 	return detail::one.bytes[1] == 1;
 }
 
-template <class T>
-T changeEndianness(T value) noexcept { // TODO: should only accept POD values
+template <class T, std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
+T changeEndianness(T value) noexcept {
 	T result;
 	auto* writer = reinterpret_cast<std::uint8_t*>(&result);
 	const auto* firstByte = reinterpret_cast<const std::uint8_t*>(&value);
@@ -31,7 +32,7 @@ T changeEndianness(T value) noexcept { // TODO: should only accept POD values
 	return result;
 }
 
-} // namespace utils
+} // namespace bits
 } // namespace coconut_tools
 
-#endif /* _COCONUT_TOOLS_UTILS_ENDIANNESS_HPP_ */
+#endif /* _COCONUT_TOOLS_BITS_ENDIANNESS_HPP_ */

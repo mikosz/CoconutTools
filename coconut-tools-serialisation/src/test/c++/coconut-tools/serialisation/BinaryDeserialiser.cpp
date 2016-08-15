@@ -8,7 +8,7 @@
 
 #include "coconut-tools/serialisation/BinaryDeserialiser.hpp"
 
-#include "coconut-tools/utils/endianness.hpp"
+#include "coconut-tools/bits/endianness.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::serialisation;

@@ -5,7 +5,7 @@
 
 #include "coconut-tools/logger.hpp"
 
-#include "coconut-tools/utils/endianness.hpp"
+#include "coconut-tools/bits/endianness.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::serialisation;
@@ -19,7 +19,7 @@ void readBinaryData(std::istream& is, T& value, bool changeEndianness) { // TODO
 	auto* ptr = reinterpret_cast<char*>(&value);
 	is.read(ptr, sizeof(value));
 	if (changeEndianness) {
-		value = utils::changeEndianness(value);
+		value = bits::changeEndianness(value);
 	}
 }
 
@@ -32,7 +32,7 @@ BinaryDeserialiser::BinaryDeserialiser(std::istream& is) :
 
 	char dataEndianBig;
 	readBinaryData(is_, dataEndianBig, false);
-	changeEndianness_ = (dataEndianBig != static_cast<char>(utils::isBigEndian()));
+	changeEndianness_ = (dataEndianBig != static_cast<char>(bits::isBigEndian()));
 }
 
 void BinaryDeserialiser::readObjectStart() {

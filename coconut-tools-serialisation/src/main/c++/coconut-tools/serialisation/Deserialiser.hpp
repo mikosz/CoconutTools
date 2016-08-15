@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstddef>
+#include <type_traits>
 
 namespace coconut_tools {
 namespace serialisation {
@@ -18,7 +19,7 @@ public:
 
 		std::string label;
 
-		Label(std::string label) :
+		explicit Label(std::string label) :
 			label(std::move(label))
 		{
 		}
@@ -26,6 +27,9 @@ public:
 	};
 
 	virtual ~Deserialiser() = default;
+
+	template <class T>
+	Deserialiser& operator>>(T value);
 
 	template <class T>
 	Deserialiser& operator>>(T& value) {
@@ -48,13 +52,26 @@ public:
 		return *this;
 	}
 
+	template <class T, std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
+	Deserialiser& operator>>(T& value) {
+		read(value);
+		return *this;
+	}
+
+	template <>
 	Deserialiser& operator>>(Label label) {
 		readLabel(std::move(label.label));
 		return *this;
 	}
 
+	template <>
+	Deserialiser& operator>>(std::string& s) {
+		read(s);
+		return *this;
+	}
+
 	// TODO: make this a template accepting all integral types
-	Deserialiser& operator>>(bool& b) {
+/*	Deserialiser& operator>>(bool& b) {
 		read(b);
 		return* this;
 	}
@@ -102,12 +119,7 @@ public:
 	Deserialiser& operator>>(float& f) {
 		read(f);
 		return *this;
-	}
-
-	Deserialiser& operator>>(std::string& s) {
-		read(s);
-		return *this;
-	}
+	} */
 
 	template <class T>
 	Deserialiser& operator()(T& value) {

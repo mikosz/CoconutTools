@@ -5,7 +5,7 @@
 
 #include "coconut-tools/logger.hpp"
 
-#include "coconut-tools/utils/endianness.hpp"
+#include "coconut-tools/bits/endianness.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::serialisation;
@@ -27,7 +27,7 @@ BinarySerialiser::BinarySerialiser(std::ostream& os) :
 {
 	os_.exceptions(std::ios::badbit | std::ios::failbit);
 
-	writeBinaryData(os_, static_cast<char>(utils::isBigEndian()));
+	writeBinaryData(os_, static_cast<char>(bits::isBigEndian()));
 }
 
 void BinarySerialiser::writeObjectStart() {

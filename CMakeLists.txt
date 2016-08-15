@@ -74,6 +74,7 @@ include_directories(${GMOCK_INCLUDE_DIR})
 find_package(Threads REQUIRED)
 
 set(MODULES
+    "coconut-tools-bits"
     "coconut-tools-concurrent"
     "coconut-tools-configuration"
     "coconut-tools-design-pattern"

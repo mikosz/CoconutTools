@@ -10,7 +10,7 @@
 
 #include "coconut-tools/serialisation/BinarySerialiser.hpp"
 
-#include "coconut-tools/utils/endianness.hpp"
+#include "coconut-tools/bits/endianness.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::serialisation;
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(SerialisesDataToBinary) {
 	const auto&& serialisedData = oss.str();
 	BOOST_CHECK_EQUAL(sizeof(expectedBigEndian) - 1, serialisedData.length());
 
-	if (utils::isBigEndian()) {
+	if (bits::isBigEndian()) {
 		const auto mismatch = std::mismatch(serialisedData.begin(), serialisedData.end(), expectedBigEndian);
 		BOOST_CHECK(mismatch.first == serialisedData.end());
 	} else {

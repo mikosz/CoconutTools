@@ -1,13 +1,13 @@
 #include <boost/test/auto_unit_test.hpp>
 
-#include "coconut-tools/utils/endianness.hpp"
+#include "coconut-tools/bits/endianness.hpp"
 
 using namespace coconut_tools;
-using namespace coconut_tools::utils;
+using namespace coconut_tools::bits;
 
 namespace /* anonymous */ {
 
-BOOST_AUTO_TEST_SUITE(UtilsEndiannessTestSuite);
+BOOST_AUTO_TEST_SUITE(BitsEndiannessTestSuite);
 
 BOOST_AUTO_TEST_CASE(ReturnsValidEndianness) {
 	const std::uint32_t ONE_TWO_THREE_FOUR = 0x01020304;
@@ -30,6 +30,6 @@ BOOST_AUTO_TEST_CASE(ChangingEndiannessOfCharDoesNothing) {
 	BOOST_CHECK_EQUAL(changeEndianness(ONE), ONE);
 }
 
-BOOST_AUTO_TEST_SUITE_END(/* UtilsEndiannessTestSuite */);
+BOOST_AUTO_TEST_SUITE_END(/* BitsEndiannessTestSuite */);
 
 } // anonymous namespace
