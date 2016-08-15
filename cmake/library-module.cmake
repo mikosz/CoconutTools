@@ -62,9 +62,9 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
 
     foreach(TEST_LIBRARY ${TEST_LIBRARIES})
       if(${TEST_LIBRARY} MATCHES "^coconut-tools-")
-        set(TEST_DEPENDENCIES "${TEST_DEPENDENCIES}" "${DEPENDENCY_LIBRARY}${TEST_LINK_SUFFIX}")
+        set(TEST_DEPENDENCIES "${TEST_DEPENDENCIES}" "${TEST_LIBRARY}${TEST_LINK_SUFFIX}")
       else()
-        set(TEST_DEPENDENCIES "${TEST_DEPENDENCIES}" "${DEPENDENCY_LIBRARY}")
+        set(TEST_DEPENDENCIES "${TEST_DEPENDENCIES}" "${TEST_LIBRARY}")
       endif()
     endforeach()
   else()
@@ -161,7 +161,7 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
       endif()
     endif(${DO_USE_GMOCK})
     add_executable(${TEST_NAME} ${TEST_SRCS} ${TEST_HEADERS})
-    
+	
     target_link_libraries(${TEST_NAME} ${TEST_DEPENDENCIES})
     add_test(NAME ${MODULE_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
 
