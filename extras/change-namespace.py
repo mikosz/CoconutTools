@@ -4,7 +4,7 @@ import shutil
 import re
 import io
 
-project = "coconut-pulp-file-io"
+project = "coconut-tools-serialisation"
 src_namespace = "coconut::pulp::file_io"
 dest_namespace = "coconut::pulp::serialisation"
 

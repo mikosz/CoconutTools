@@ -80,6 +80,7 @@ set(MODULES
     "coconut-tools-enum"
     "coconut-tools-exceptions"
     "coconut-tools-logger"
+	"coconut-tools-serialisation"
     "coconut-tools-system"
     "coconut-tools-test-utils"
     "coconut-tools-utils"
