@@ -68,9 +68,9 @@ def refactor_header(f):
     with io.open(f, newline='') as in_f, io.open(working_f, 'w', newline='') as out_f:
         for line in in_f.readlines():
             content, line_feed = get_line_feed(line)
-            #content = refactor_include_guard(content)
-            #content = refactor_namespace_declaration(content)
-            #content = refactor_using_namespace(content)
+            content = refactor_include_guard(content)
+            content = refactor_namespace_declaration(content)
+            content = refactor_using_namespace(content)
             content = refactor_namespace_specifier(content)
             out_f.write(content + line_feed)
     shutil.move(working_f, f)
@@ -81,7 +81,7 @@ def refactor_impl(f):
     with io.open(f, newline='') as in_f, io.open(working_f, 'w', newline='') as out_f:
         for line in in_f.readlines():
             content, line_feed = get_line_feed(line)
-            #content = refactor_using_namespace(content)
+            content = refactor_using_namespace(content)
             content = refactor_namespace_specifier(content)
             out_f.write(content + line_feed)
     shutil.move(working_f, f)
