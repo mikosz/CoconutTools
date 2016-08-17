@@ -50,24 +50,22 @@ BOOST_AUTO_TEST_CASE(EnumToStringYieldsName) {
 	BOOST_CHECK_EQUAL(toString(TestEnumValues::SQUARE), "SQUARE");
 }
 
-BOOST_AUTO_TEST_CASE(EnumFromStringReadsName) {
-	{
-		TestEnum value;
-		fromString(value, "VALUE0");
-		BOOST_CHECK_EQUAL(value, TestEnum::VALUE0);
-		fromString(value, "VALUE1");
-		BOOST_CHECK_EQUAL(value, TestEnum::VALUE1);
-		fromString(value, "VALUE2");
-		BOOST_CHECK_EQUAL(value, TestEnum::VALUE2);
-	}
+BOOST_AUTO_TEST_CASE(EnumFromStringReadsDefaultValueName) {
+	TestEnum value;
+	fromString(value, "VALUE0");
+	BOOST_CHECK_EQUAL(value, TestEnum::VALUE0);
+	fromString(value, "VALUE1");
+	BOOST_CHECK_EQUAL(value, TestEnum::VALUE1);
+	fromString(value, "VALUE2");
+	BOOST_CHECK_EQUAL(value, TestEnum::VALUE2);
+}
 
-	{
-		TestEnumValues value;
-		fromString(value, "TRIANGLE");
-		BOOST_CHECK_EQUAL(value, TestEnumValues::TRIANGLE);
-		fromString(value, "SQUARE");
-		BOOST_CHECK_EQUAL(value, TestEnumValues::SQUARE);
-	}
+BOOST_AUTO_TEST_CASE(EnumFromStringReadsSetValueName) {
+	TestEnumValues value;
+	fromString(value, "TRIANGLE");
+	BOOST_CHECK_EQUAL(value, TestEnumValues::TRIANGLE);
+	fromString(value, "SQUARE");
+	BOOST_CHECK_EQUAL(value, TestEnumValues::SQUARE);
 }
 
 BOOST_AUTO_TEST_CASE(EnumFromStringThrowsOnBadName) {
@@ -77,10 +75,11 @@ BOOST_AUTO_TEST_CASE(EnumFromStringThrowsOnBadName) {
 
 BOOST_AUTO_TEST_CASE(AllEnumValuesContainsAllValues) {
 	const auto& allValues = allTestEnumValues();
+
 	BOOST_REQUIRE_EQUAL(allValues.size(), 3);
-	BOOST_CHECK_EQUAL(allValues[0], TestEnum::VALUE0);
-	BOOST_CHECK_EQUAL(allValues[1], TestEnum::VALUE1);
-	BOOST_CHECK_EQUAL(allValues[2], TestEnum::VALUE2);
+	BOOST_CHECK_EQUAL(allValues.count(TestEnum::VALUE0), 1);
+	BOOST_CHECK_EQUAL(allValues.count(TestEnum::VALUE1), 1);
+	BOOST_CHECK_EQUAL(allValues.count(TestEnum::VALUE2), 1);
 }
 
 BOOST_AUTO_TEST_CASE(AllowsMemberEnumAsMember) {
@@ -89,6 +88,29 @@ BOOST_AUTO_TEST_CASE(AllowsMemberEnumAsMember) {
 
 	BOOST_CHECK_EQUAL(static_cast<int>(C::MemberTestEnumValues::TRIANGLE), 3);
 	BOOST_CHECK_EQUAL(static_cast<int>(C::MemberTestEnumValues::SQUARE), 4);
+}
+
+BOOST_AUTO_TEST_CASE(FromIntegralReturnsDefaultValues) {
+	TestEnum value;
+	fromIntegral(value, 0);
+	BOOST_CHECK_EQUAL(value, TestEnum::VALUE0);
+	fromIntegral(value, 1);
+	BOOST_CHECK_EQUAL(value, TestEnum::VALUE1);
+	fromIntegral(value, 2);
+	BOOST_CHECK_EQUAL(value, TestEnum::VALUE2);
+}
+
+BOOST_AUTO_TEST_CASE(FromIntegralReturnsSetValues) {
+	TestEnumValues value;
+	fromIntegral(value, 3);
+	BOOST_CHECK_EQUAL(value, TestEnumValues::TRIANGLE);
+	fromIntegral(value, 4);
+	BOOST_CHECK_EQUAL(value, TestEnumValues::SQUARE);
+}
+
+BOOST_AUTO_TEST_CASE(FromIntegralThrowsOnInvalidValues) {
+	TestEnum value;
+	BOOST_CHECK_THROW(fromIntegral(value, -1), std::out_of_range);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* EnumTestSuite */);
