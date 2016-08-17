@@ -2,9 +2,11 @@ set(DEPENDENCY_LIBRARIES
     coconut-tools-exceptions
     ${Boost_THREAD_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
+	${Boost_FILESYSTEM_LIBRARY}
     )
 
-SET(TEST_LIBRARIES
+set(TEST_LIBRARIES
+	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${Boost_TEST_EXEC_MONITOR_LIBRARY}
     )
 
