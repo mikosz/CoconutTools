@@ -68,6 +68,14 @@ BOOST_AUTO_TEST_CASE(EnumFromStringReadsSetValueName) {
 	BOOST_CHECK_EQUAL(value, TestEnumValues::SQUARE);
 }
 
+BOOST_AUTO_TEST_CASE(EnumFromStringReadsMemberSetValueName) {
+	C::MemberTestEnumValues value;
+	fromString(value, "TRIANGLE");
+	BOOST_CHECK_EQUAL(value, C::MemberTestEnumValues::TRIANGLE);
+	fromString(value, "SQUARE");
+	BOOST_CHECK_EQUAL(value, C::MemberTestEnumValues::SQUARE);
+}
+
 BOOST_AUTO_TEST_CASE(EnumFromStringThrowsOnBadName) {
 	TestEnum value;
 	BOOST_CHECK_THROW(fromString(value, "NOT_A_VALUE_STRING"), std::out_of_range); // TODO: use a custom exception
@@ -106,6 +114,22 @@ BOOST_AUTO_TEST_CASE(FromIntegralReturnsSetValues) {
 	BOOST_CHECK_EQUAL(value, TestEnumValues::TRIANGLE);
 	fromIntegral(value, 4);
 	BOOST_CHECK_EQUAL(value, TestEnumValues::SQUARE);
+}
+
+BOOST_AUTO_TEST_CASE(FromIntegralReturnsMemberDefaultValues) {
+	C::MemberTestEnum value;
+	fromIntegral(value, 0);
+	BOOST_CHECK_EQUAL(value, C::MemberTestEnum::VALUE0);
+	fromIntegral(value, 1);
+	BOOST_CHECK_EQUAL(value, C::MemberTestEnum::VALUE1);
+}
+
+BOOST_AUTO_TEST_CASE(FromIntegralReturnsMemberSetValues) {
+	C::MemberTestEnumValues value;
+	fromIntegral(value, 3);
+	BOOST_CHECK_EQUAL(value, C::MemberTestEnumValues::TRIANGLE);
+	fromIntegral(value, 4);
+	BOOST_CHECK_EQUAL(value, C::MemberTestEnumValues::SQUARE);
 }
 
 BOOST_AUTO_TEST_CASE(FromIntegralThrowsOnInvalidValues) {
