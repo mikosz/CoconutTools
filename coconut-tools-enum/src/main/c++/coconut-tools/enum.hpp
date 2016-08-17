@@ -6,6 +6,8 @@
 #include <ostream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
+#include <type_traits>
 
 /**
  * Usage example with incremental values starting at 0:
@@ -108,10 +110,10 @@
 		BOOST_PP_CAT(CCN_ENUM_domain_, domainType)(values) \
 	}; \
 	\
-	using EnumName ## ValueList = std::vector<EnumName>; \
+	using EnumName ## ValueSet = std::unordered_set<EnumName>; \
 	\
-	functionModifier const EnumName ## ValueList& all ## EnumName ## Values() { \
-		static const EnumName ## ValueList VALUES = { \
+	functionModifier const EnumName ## ValueSet& all ## EnumName ## Values() { \
+		static const EnumName ## ValueSet VALUES = { \
 			BOOST_PP_CAT(CCN_ENUM_qualifiedValues_, domainType)(EnumName, values) \
 			}; \
 		return VALUES; \
@@ -119,18 +121,28 @@
 	\
 	functionModifier const std::string& toString(EnumName value) { \
 		/* TODO: this builds on visual c++, but is probably invalid C++ (no hash function for enum class) */ \
-		static const std::unordered_map<EnumName, std::string> EnumName ## _NAMES = { \
+		static const std::unordered_map<EnumName, std::string> NAMES = { \
 			BOOST_PP_CAT(CCN_ENUM_valueName_, domainType)(EnumName, values) \
 			}; \
-		return EnumName ## _NAMES.at(value); \
+		return NAMES.at(value); \
 	} \
 	\
 	functionModifier void fromString(EnumName& value, const std::string& name) { \
-		static const std::unordered_map<std::string, EnumName> NAMES_TO_ ## EnumName = { \
+		static const std::unordered_map<std::string, EnumName> NAMES_TO_VALUE = { \
 			BOOST_PP_CAT(CCN_ENUM_nameValue_, domainType)(EnumName, values) \
 			}; \
 		/* TODO: this will throw out_of_range if name not found. return optional or throw custom exception */ \
-		value = NAMES_TO_ ## EnumName.at(name); \
+		value = NAMES_TO_VALUE.at(name); \
+	} \
+	\
+	template <class IntegralType, std::enable_if_t<std::is_integral<IntegralType>::value>* = nullptr> \
+	functionModifier void fromIntegral(EnumName& value, IntegralType integral) { \
+		value = static_cast<EnumName>(integral); \
+		const auto& lookup = all ## EnumName ## Values(); \
+		if (lookup.count(value) == 0) { \
+				/* TODO: this will throw out_of_range if name not found. return optional or throw custom exception */ \
+				throw std::out_of_range("Incorrect value for " # EnumName ": " + std::to_string(integral)); \
+		} \
 	} \
 	\
 	functionModifier std::ostream& operator<<(std::ostream& os, EnumName value) { \
