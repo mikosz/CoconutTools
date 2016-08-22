@@ -76,10 +76,12 @@ find_package(Threads REQUIRED)
 set(MODULES
     "coconut-tools-concurrent"
     "coconut-tools-configuration"
-    "coconut-tools-design-pattern"
     "coconut-tools-enum"
     "coconut-tools-exceptions"
+    "coconut-tools-factory"
     "coconut-tools-logger"
+    "coconut-tools-policy"
+    "coconut-tools-singleton"
     "coconut-tools-system"
     "coconut-tools-test-utils"
     "coconut-tools-utils"

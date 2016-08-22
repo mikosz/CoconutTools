@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_UNIQUEMUTEXLOCKINGPOLICY_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_UNIQUEMUTEXLOCKINGPOLICY_HPP_
+#ifndef COCONUT_TOOLS_POLICY_LOCKING_UNIQUE_HPP_
+#define COCONUT_TOOLS_POLICY_LOCKING_UNIQUE_HPP_
 
 #include <boost/thread/mutex.hpp>
 
@@ -7,10 +7,10 @@
 #include "coconut-tools/utils/pointee.hpp"
 
 namespace coconut_tools {
-namespace design_pattern {
-namespace locking_policy {
+namespace policy {
+namespace locking {
 
-class UniqueMutexLockingPolicy {
+class Unique {
 public:
 
     template <class T>
@@ -25,8 +25,8 @@ private:
 
 };
 
-} // namespace locking_policy
-} // namespace design_pattern
+} // namespace locking
+} // namespace policy
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_UNIQUEMUTEXLOCKINGPOLICY_HPP_ */
+#endif /* COCONUT_TOOLS_POLICY_LOCKING_UNIQUE_HPP_ */

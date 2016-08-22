@@ -1,25 +1,25 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_NEWCREATOR_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_NEWCREATOR_HPP_
+#ifndef COCONUT_TOOLS_POLICY_NEW_HPP_
+#define COCONUT_TOOLS_POLICY_NEW_HPP_
 
 #include <memory>
 
 namespace coconut_tools {
-namespace design_pattern {
-namespace creator {
+namespace policy {
+namespace creation {
 
 template <class InstanceType, class... Arguments>
-class NewCreator {
+class New {
 public:
 
-	typedef InstanceType Instance;
+	using Instance = InstanceType;
 
 	template <class ConcreteType>
 	static NewCreator makeCreator() {
-		return NewCreator(std::make_shared<ConcreteDelegate<ConcreteType> >());
+		return NewCreator(std::make_shared<ConcreteDelegate<ConcreteType>>());
 	}
 
 	NewCreator() :
-		delegate_(std::make_shared<ConcreteDelegate<Instance> >())
+		delegate_(std::make_shared<ConcreteDelegate<Instance>>())
 	{
 	}
 
@@ -57,8 +57,8 @@ private:
 
 };
 
-} // namespace creator
-} // namespace design_pattern
+} // namespace creation
+} // namespace policy
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_CREATOR_NEWCREATOR_HPP_ */
+#endif /* COCONUT_TOOLS_POLICY_NEW_HPP_ */

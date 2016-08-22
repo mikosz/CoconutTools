@@ -15,15 +15,15 @@ template <class T, class M = boost::mutex>
 class Lockable {
 public:
 
-    typedef M Mutex;
+    using Mutex = M;
 
-    typedef typename LockTraits<Mutex>::SharedLock ReadLock;
+    using ReadLock = typename LockTraits<Mutex>::SharedLock;
 
-    typedef typename LockTraits<Mutex>::UniqueLock WriteLock;
+    using WriteLock = typename LockTraits<Mutex>::UniqueLock;
 
-    typedef LockingPtr<const T, Mutex, ReadLock> ReadLocked;
+    using ReadLocked = LockingPtr<const T, Mutex, ReadLock>;
 
-    typedef LockingPtr<T, Mutex, WriteLock> WriteLocked;
+    using WriteLocked = LockingPtr<T, Mutex, WriteLock>;
 
     Mutex& mutex() const volatile {
         return const_cast<Mutex&>(mutex_);
