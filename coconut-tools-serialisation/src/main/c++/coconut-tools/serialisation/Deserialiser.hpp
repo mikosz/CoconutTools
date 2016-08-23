@@ -45,6 +45,7 @@ public:
 		return *this;
 	}
 
+	// TODO: figure out how to do for all IsIterable
 	template <class T>
 	Deserialiser& operator>>(std::vector<T>& vector) {
 		auto arrayElementsCount = readArrayStart();

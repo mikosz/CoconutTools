@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "coconut-tools/utils/IsIterable.hpp"
+
 // TODO: document, support versioning
 
 namespace coconut_tools {
@@ -43,8 +45,11 @@ public:
 
 	template <
 		class T,
-		std::enable_if_t<std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value
-		>* = nullptr>
+		std::enable_if_t<
+			(std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value) &&
+			!utils::IsIterable<T>::value
+			>* = nullptr
+		>
 	Serialiser& operator<<(const T& value) {
 		writeObjectStart();
 		serialise(*this, value);
@@ -52,12 +57,14 @@ public:
 		return *this;
 	}
 
-	// TODO: customise for iterable?
-	template <class T>
-	Serialiser& operator<<(const std::vector<T>& vector) {
-		// TODO: verify array not larger than max uint32_t
-		writeArrayStart(static_cast<std::uint32_t>(vector.size()));
-		for (const auto& element : vector) {
+	template <class T, std::enable_if_t<utils::IsIterable<T>::value>* = nullptr>
+	Serialiser& operator<<(const T& iterable) {
+		const auto elements = static_cast<std::uint64_t>(std::distance(begin(iterable), end(iterable)));
+		if (elements > std::numeric_limits<std::uint32_t>::max()) {
+			throw std::runtime_error("Serialised array too large"); // TODO: custom exception
+		}
+		writeArrayStart(static_cast<std::uint32_t>(elements));
+		for (const auto& element : iterable) {
 			*this << element;
 		}
 		writeArrayEnd();
