@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstddef>
+#include <type_traits>
 
 // TODO: document, support versioning
 
@@ -34,7 +35,16 @@ public:
 
 	virtual ~Serialiser() = default;
 
-	template <class T>
+	template <class T, std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
+	Serialiser& operator<<(const T& value) {
+		write(value);
+		return *this;
+	}
+
+	template <
+		class T,
+		std::enable_if_t<std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value
+		>* = nullptr>
 	Serialiser& operator<<(const T& value) {
 		writeObjectStart();
 		serialise(*this, value);
@@ -42,6 +52,7 @@ public:
 		return *this;
 	}
 
+	// TODO: customise for iterable?
 	template <class T>
 	Serialiser& operator<<(const std::vector<T>& vector) {
 		// TODO: verify array not larger than max uint32_t
@@ -53,58 +64,9 @@ public:
 		return *this;
 	}
 
+	template <>
 	Serialiser& operator<<(const Label& label) {
 		writeLabel(label.label);
-		return *this;
-	}
-
-	Serialiser& operator<<(bool b) {
-		write(b);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::uint8_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::int8_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::uint16_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::int16_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::uint32_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::int32_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::uint64_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(std::int64_t i) {
-		write(i);
-		return *this;
-	}
-
-	Serialiser& operator<<(float f) {
-		write(f);
 		return *this;
 	}
 
@@ -113,6 +75,7 @@ public:
 		return *this;
 	}
 
+	template <>
 	Serialiser& operator<<(const std::string& s) {
 		write(s);
 		return *this;
