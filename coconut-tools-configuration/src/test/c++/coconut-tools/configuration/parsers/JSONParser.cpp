@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_SUITE(ParsersTestSuite);
 BOOST_AUTO_TEST_SUITE(JSONParserTestSuite);
 
 BOOST_AUTO_TEST_CASE(EmptyConfigurationDoesntCallCallbacks) {
-	const std::string CONFIGURATION_CONTENTS = "0";
+	const std::string CONFIGURATION_CONTENTS = "{}";
 	std::istringstream configurationStream(CONFIGURATION_CONTENTS);
 
 	ExpectedCalls expectedCalls;
