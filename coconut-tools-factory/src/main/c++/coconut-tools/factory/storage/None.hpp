@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_NOSTORAGE_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_NOSTORAGE_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_STORAGE_NONE_HPP_
+#define COCONUT_TOOLS_FACTORY_STORAGE_NONE_HPP_
 
 #include <memory>
 
@@ -8,15 +8,14 @@
 #include "coconut-tools/exceptions/LogicError.hpp"
 
 namespace coconut_tools {
-namespace design_pattern {
 namespace factory {
 namespace storage {
 
-class GetCalledOnNoStorage : public exceptions::LogicError {
+class GetCalledOnNone : public exceptions::LogicError {
 };
 
 template <class IdentifierType, class InstanceType>
-class NoStorage {
+class None {
 public:
 
     typedef IdentifierType Identifier;
@@ -30,7 +29,7 @@ public:
     typedef Instance Permanent;
 
     Permanent get(const IdentifierParam) const {
-        throw GetCalledOnNoStorage();
+        throw GetCalledOnNone();
     }
 
     bool isStored(const IdentifierParam) const {
@@ -48,7 +47,6 @@ public:
 
 } // namespace storage
 } // namespace factory
-} // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_NOSTORAGE_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_STORAGE_NONE_HPP_ */

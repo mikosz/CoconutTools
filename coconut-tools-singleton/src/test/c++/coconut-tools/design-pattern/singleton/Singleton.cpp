@@ -2,27 +2,26 @@
 
 #include <memory>
 
-#include "coconut-tools/design-pattern/singleton/Singleton.hpp"
-#include "coconut-tools/design-pattern/locking-policy.hpp"
+#include "coconut-tools/singleton/Singleton.hpp"
+#include "coconut-tools/policy/locking/Unique.hpp"
 
 namespace {
 
 using namespace coconut_tools;
-using namespace coconut_tools::design_pattern;
-using namespace coconut_tools::design_pattern::singleton;
+using namespace coconut_tools::singleton;
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_AUTO_TEST_SUITE(SingletonTestSuite);
 BOOST_AUTO_TEST_SUITE(SingletonTestSuite);
 
-class SingletonClass : public Singleton<SingletonClass, UniqueMutexLockingPolicy> {
+class SingletonClass : public Singleton<SingletonClass, policy::locking::Unique> {
 };
 
 BOOST_AUTO_TEST_CASE(CreatesSingletonInstance) {
 	BOOST_CHECK_EQUAL(SingletonClass::instance().get(), SingletonClass::instance().get());
 }
 
-class ReplacedSingletonClass : public Singleton<ReplacedSingletonClass, UniqueMutexLockingPolicy> {
+class ReplacedSingletonClass : public Singleton<ReplacedSingletonClass, policy::locking::Unique> {
 };
 
 BOOST_AUTO_TEST_CASE(ReplacesExistingInstance) {
@@ -37,7 +36,7 @@ BOOST_AUTO_TEST_CASE(ReplacesExistingInstance) {
 	BOOST_CHECK_NE(instance, ReplacedSingletonClass::instance().get());
 }
 
-class ProvidedSingletonClass : public Singleton<ProvidedSingletonClass, UniqueMutexLockingPolicy> {
+class ProvidedSingletonClass : public Singleton<ProvidedSingletonClass, policy::locking::Unique> {
 };
 
 BOOST_AUTO_TEST_CASE(UsesProvidedInstance) {

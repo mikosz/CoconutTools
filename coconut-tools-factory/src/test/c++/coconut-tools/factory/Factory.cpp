@@ -5,18 +5,17 @@
 
 #include <gmock/gmock.h>
 
-#include "coconut-tools/design-pattern/factory/Factory.hpp"
-#include "coconut-tools/design-pattern/factory/storage.hpp"
-#include "coconut-tools/design-pattern/factory/error-policy.hpp"
-#include "coconut-tools/design-pattern/locking-policy.hpp"
+#include "coconut-tools/factory/Factory.hpp"
+#include "coconut-tools/factory/storage.hpp"
+#include "coconut-tools/factory/error-policy.hpp"
+#include "coconut-tools/policy/locking/Unique.hpp"
 
 #include "coconut-tools/test-utils/GMockFixture.hpp"
 
 namespace {
 
 using namespace coconut_tools;
-using namespace coconut_tools::design_pattern;
-using namespace coconut_tools::design_pattern::factory;
+using namespace coconut_tools::factory;
 
 class MockCreator {
 public:
@@ -38,7 +37,7 @@ public:
         return delegate_;
     }
 
-    std::unique_ptr<int> create() {
+    std::unique_ptr<int> doCreate() {
         return std::unique_ptr<int>(new int(delegate_->create()));
     }
 
@@ -164,10 +163,10 @@ BOOST_AUTO_TEST_CASE(CallsCreatorsTest) {
     Factory<
         std::string,
         std::unique_ptr<int>,
-        NoStorage,
+        storage::None,
         CopyableMockCreatorAdapter,
-        UniqueMutexLockingPolicy,
-        ExceptionThrowingErrorPolicy
+        policy::locking::Unique,
+        factory::error_policy::ExceptionThrowing
         > f;
 
     CopyableMockCreatorAdapter creator1;
@@ -193,8 +192,8 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
         std::unique_ptr<int>,
         SingletonMockStorageAdapter,
         CopyableMockCreatorAdapter,
-        UniqueMutexLockingPolicy,
-        ExceptionThrowingErrorPolicy
+        policy::locking::Unique,
+        factory::error_policy::ExceptionThrowing
         > f;
 
     // Storage storage;
@@ -245,9 +244,9 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
     Factory<
         std::string,
         std::unique_ptr<int>,
-        NoStorage,
+        storage::None,
         CopyableMockCreatorAdapter,
-        UniqueMutexLockingPolicy,
+        policy::locking::Unique,
         StaticFunctionMockErrorPolicyAdapter
         > f;
 
@@ -266,9 +265,9 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
     Factory<
         std::string,
         int,
-        NoStorage,
+        storage::None,
         CopyableMockCreatorAdapter,
-        UniqueMutexLockingPolicy,
+        policy::locking::Unique,
         StaticFunctionMockErrorPolicyAdapter
         > f;
 
@@ -287,9 +286,9 @@ BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegiste
     Factory<
         std::string,
         int,
-        NoStorage,
+        storage::None,
         CopyableMockCreatorAdapter,
-        UniqueMutexLockingPolicy,
+        policy::locking::Unique,
         StaticFunctionMockErrorPolicyAdapter
         > f;
 

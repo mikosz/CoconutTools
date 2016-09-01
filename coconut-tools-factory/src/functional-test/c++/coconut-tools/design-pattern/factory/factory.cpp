@@ -2,10 +2,11 @@
 
 #include <functional>
 
-#include "coconut-tools/design-pattern/factory.hpp"
+#include "coconut-tools/factory/Factory.hpp"
+#include "coconut-tools/policy/creation/New.hpp"
 
 using namespace coconut_tools;
-using namespace coconut_tools::design_pattern;
+using namespace coconut_tools::factory;
 
 namespace /* anonymous */ {
 
@@ -52,8 +53,8 @@ BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 	typedef Factory<
 				std::string,
 				std::unique_ptr<AbstractClass>,
-				NoStorage,
-				NewCreator<AbstractClass>,
+				None,
+				policy::creation::New<AbstractClass>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
 			> Factory;
@@ -87,7 +88,7 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 	typedef Factory<
 				int,
 				int,
-				NoStorage,
+				None,
 				FunctorCreator<int>,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
@@ -117,7 +118,7 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 	typedef Factory<
 				int,
 				std::unique_ptr<int>,
-				PermanentStorage,
+				Permanent,
 				FunctorCreator<std::unique_ptr<int> >,
 				NoLockingPolicy,
 				ExceptionThrowingErrorPolicy
@@ -143,7 +144,7 @@ BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
 	typedef volatile Factory<
 				int,
 				std::unique_ptr<int>,
-				PermanentStorage,
+				Permanent,
 				FunctorCreator<std::unique_ptr<int> >,
 				UniqueMutexLockingPolicy,
 				ExceptionThrowingErrorPolicy

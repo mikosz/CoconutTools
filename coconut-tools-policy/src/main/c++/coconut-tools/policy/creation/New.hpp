@@ -14,11 +14,11 @@ public:
 	using Instance = InstanceType;
 
 	template <class ConcreteType>
-	static NewCreator makeCreator() {
-		return NewCreator(std::make_shared<ConcreteDelegate<ConcreteType>>());
+	static New makeCreator() {
+		return New(std::make_shared<ConcreteDelegate<ConcreteType>>());
 	}
 
-	NewCreator() :
+	New() :
 		delegate_(std::make_shared<ConcreteDelegate<Instance>>())
 	{
 	}
@@ -49,7 +49,7 @@ private:
 
 	};
 
-	NewCreator(std::shared_ptr<AbstractDelegate> delegate) :
+	New(std::shared_ptr<AbstractDelegate> delegate) :
 		delegate_(delegate) {
 	}
 

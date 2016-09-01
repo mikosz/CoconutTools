@@ -1,21 +1,20 @@
-#ifndef COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_SINGLETON_HPP_
-#define COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_SINGLETON_HPP_
+#ifndef COCONUTTOOLS_SINGLETON_SINGLETON_HPP_
+#define COCONUTTOOLS_SINGLETON_SINGLETON_HPP_
 
 #include <cstdlib>
 #include <memory>
 
 #include <boost/noncopyable.hpp>
 
-#include "coconut-tools/design-pattern/creator.hpp"
+#include "coconut-tools/policy/creation/New.hpp"
 
 namespace coconut_tools {
-namespace design_pattern {
 namespace singleton {
 
 template <
 	class InstanceType,
 	class LockingPolicyType,
-	class CreatorType = NewCreator<InstanceType>
+	class CreatorType = policy::creation::New<InstanceType>
 	>
 class Singleton : boost::noncopyable {
 public:
@@ -72,7 +71,6 @@ template <class InstanceType, class LockingPolicy, class Creator>
 typename Singleton<InstanceType, LockingPolicy, Creator>::InstancePtr Singleton<InstanceType, LockingPolicy, Creator>::instance_;
 
 } // namespace singleton
-} // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUTTOOLS_DESIGN_PATTERN_SINGLETON_SINGLETON_HPP_ */
+#endif /* COCONUTTOOLS_SINGLETON_SINGLETON_HPP_ */

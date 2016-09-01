@@ -17,7 +17,7 @@ class LayoutFactory :
 		public design_pattern::factory::Factory<
 			std::string,
 			LayoutSharedPtr,
-			design_pattern::PermanentStorage,
+			design_pattern::Permanent,
 			design_pattern::NewCreator<Layout>,
 			design_pattern::NoLockingPolicy,
 			design_pattern::ExceptionThrowingErrorPolicy
@@ -54,7 +54,7 @@ private:
 	typedef design_pattern::factory::Factory<
 		LayoutTypeId,
 		std::unique_ptr<Layout::Initialiser>,
-		design_pattern::NoStorage,
+		design_pattern::None,
 		design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >,
 		design_pattern::NoLockingPolicy,
 		design_pattern::ExceptionThrowingErrorPolicy
@@ -62,7 +62,7 @@ private:
 
 	LayoutTypeFactory typeFactory_;
 
-	design_pattern::PermanentStorage<Layout::Id, LayoutSharedPtr> instanceStorage_;
+	design_pattern::Permanent<Layout::Id, LayoutSharedPtr> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

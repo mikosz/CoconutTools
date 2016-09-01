@@ -16,7 +16,7 @@ public:
 
     using Creator = std::function<Instance ()>;
 
-    FunctorCreator(Creator creator) :
+    Functor(Creator creator) :
         creator_(creator) {
     }
 

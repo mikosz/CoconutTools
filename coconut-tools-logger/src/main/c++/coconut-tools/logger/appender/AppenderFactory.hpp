@@ -46,7 +46,7 @@ private:
 	typedef design_pattern::factory::Factory<
 		AppenderTypeId,
 		std::unique_ptr<Appender::Initialiser>,
-		design_pattern::NoStorage,
+		design_pattern::None,
 		design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >,
 		design_pattern::NoLockingPolicy,
 		design_pattern::ExceptionThrowingErrorPolicy
@@ -54,7 +54,7 @@ private:
 
 	AppenderTypeFactory typeFactory_;
 
-	design_pattern::PermanentStorage<Appender::Id, AppenderSharedPtr> instanceStorage_;
+	design_pattern::Permanent<Appender::Id, AppenderSharedPtr> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

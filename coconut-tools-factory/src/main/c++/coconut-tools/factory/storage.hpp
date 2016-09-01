@@ -1,20 +1,8 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_STORAGE_HPP_
+#define COCONUT_TOOLS_FACTORY_STORAGE_HPP_
 
-#include "storage/NoStorage.hpp"
-#include "storage/PermanentStorage.hpp"
-#include "storage/VolatileStorage.hpp"
+#include "storage/None.hpp"
+#include "storage/Permanent.hpp"
+#include "storage/Volatile.hpp"
 
-namespace coconut_tools {
-namespace design_pattern {
-namespace factory {
-
-using storage::NoStorage;
-using storage::PermanentStorage;
-using storage::VolatileStorage;
-
-} // namespace factory
-} // namespace design_pattern
-} // namespace coconut_tools
-
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_STORAGE_HPP_ */

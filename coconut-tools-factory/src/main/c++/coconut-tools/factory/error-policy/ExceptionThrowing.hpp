@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_ERROR_POLICY_EXCEPTIONTHROWINGERRORPOLICY_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_ERROR_POLICY_EXCEPTIONTHROWINGERRORPOLICY_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_ERROR_POLICY_EXCEPTIONTHROWING_HPP_
+#define COCONUT_TOOLS_FACTORY_ERROR_POLICY_EXCEPTIONTHROWING_HPP_
 
 #include <sstream>
 
@@ -8,7 +8,6 @@
 #include "coconut-tools/exceptions/RuntimeError.hpp"
 
 namespace coconut_tools {
-namespace design_pattern {
 namespace factory {
 namespace error_policy {
 
@@ -79,7 +78,7 @@ private:
 };
 
 template <class IdentifierType>
-class ExceptionThrowingErrorPolicy {
+class ExceptionThrowing {
 public:
 
     typedef IdentifierType Identifier;
@@ -98,7 +97,6 @@ public:
 
 } // namespace error_policy
 } // namespace factory
-} // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_ERROR_POLICY_EXCEPTIONTHROWINGERRORPOLICY_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_ERROR_POLICY_EXCEPTIONTHROWING_HPP_ */

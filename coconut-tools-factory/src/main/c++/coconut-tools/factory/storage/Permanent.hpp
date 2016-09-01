@@ -1,18 +1,17 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_PERMANENTSTORAGE_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_PERMANENTSTORAGE_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_STORAGE_PERMANENT_HPP_
+#define COCONUT_TOOLS_FACTORY_STORAGE_PERMANENT_HPP_
 
 #include <memory>
 
-#include "MappingStorage.hpp"
+#include "Mapping.hpp"
 
 namespace coconut_tools {
-namespace design_pattern {
 namespace factory {
 namespace storage {
 
 template <class IdentifierType, class InstanceType>
-class PermanentStorage :
-    public MappingStorage<
+class Permanent :
+    public Mapping<
         IdentifierType,
         std::shared_ptr<typename InstanceType::element_type>,
         std::shared_ptr<typename InstanceType::element_type>
@@ -22,7 +21,6 @@ class PermanentStorage :
 
 } // namespace storage
 } // namespace factory
-} // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_PERMANENTSTORAGE_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_STORAGE_PERMANENT_HPP_ */

@@ -1,27 +1,26 @@
 #include <boost/test/auto_unit_test.hpp>
 
-#include "coconut-tools/design-pattern/factory/storage/VolatileStorage.hpp"
+#include "coconut-tools/factory/storage/Volatile.hpp"
 
 using namespace coconut_tools;
-using namespace coconut_tools::design_pattern::factory;
-using namespace coconut_tools::design_pattern::factory::storage;
+using namespace coconut_tools::factory;
+using namespace coconut_tools::factory::storage;
 
 namespace {
 
-BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_AUTO_TEST_SUITE(FactoryTestSuite);
 BOOST_AUTO_TEST_SUITE(StorageTestSuite);
-BOOST_AUTO_TEST_SUITE(VolatileStorageTestSuite);
+BOOST_AUTO_TEST_SUITE(VolatileTestSuite);
 
 BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     int* instance = new int;
     int* newInstance = new int;
 
-    VolatileStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
-    VolatileStorage::Permanent newStored = storage.store("instance", std::unique_ptr<int>(newInstance));
+    auto stored = storage.store("instance", std::unique_ptr<int>(instance));
+    auto newStored = storage.store("instance", std::unique_ptr<int>(newInstance));
 
     BOOST_CHECK_EQUAL(stored.get(), instance);
     BOOST_CHECK_EQUAL(newStored.get(), newInstance);
@@ -29,24 +28,24 @@ BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
 }
 
 BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     int* instance = new int;
 
-    VolatileStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
+    auto stored = storage.store("instance", std::unique_ptr<int>(instance));
 
     BOOST_CHECK_EQUAL(stored.get(), instance);
     BOOST_CHECK_EQUAL(storage.get("instance").get(), instance);
 }
 
 BOOST_AUTO_TEST_CASE(InvalidatesInstanceWhenUnused) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     int* instance = new int;
 
-    VolatileStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
+    auto stored = storage.store("instance", std::unique_ptr<int>(instance));
 
     stored.reset();
 
@@ -54,12 +53,12 @@ BOOST_AUTO_TEST_CASE(InvalidatesInstanceWhenUnused) {
 }
 
 BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     int* instance = new int;
 
-    VolatileStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
+    auto stored = storage.store("instance", std::unique_ptr<int>(instance));
 
     storage.erase("instance");
 
@@ -67,8 +66,8 @@ BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     storage.erase("instance");
 
@@ -76,8 +75,8 @@ BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(ClearErasesAll) {
-	typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-	VolatileStorage storage;
+	using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+	Volatile storage;
 
 	storage.store("instance", std::unique_ptr<int>(new int));
 	storage.store("another", std::unique_ptr<int>(new int));
@@ -89,38 +88,37 @@ BOOST_AUTO_TEST_CASE(ClearErasesAll) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     int* instance = new int;
 
-    VolatileStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
+    auto stored = storage.store("instance", std::unique_ptr<int>(instance));
 
     BOOST_CHECK(storage.isStored("instance"));
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsFalseIfInstanceNotPresent) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     BOOST_CHECK(!storage.isStored("instance"));
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstanceRemoved) {
-    typedef VolatileStorage<std::string, std::unique_ptr<int> > VolatileStorage;
-    VolatileStorage storage;
+    using Volatile = Volatile<std::string, std::unique_ptr<int> >;
+    Volatile storage;
 
     int* instance = new int;
 
-    VolatileStorage::Permanent stored = storage.store("instance", std::unique_ptr<int>(instance));
+    auto stored = storage.store("instance", std::unique_ptr<int>(instance));
     storage.erase("instance");
 
     BOOST_CHECK(!storage.isStored("instance"));
 }
 
-BOOST_AUTO_TEST_SUITE_END(/* VolatileStorageTestSuite */);
+BOOST_AUTO_TEST_SUITE_END(/* VolatileTestSuite */);
 BOOST_AUTO_TEST_SUITE_END(/* StorageTestSuite */);
 BOOST_AUTO_TEST_SUITE_END(/* FactoryTestSuite */);
-BOOST_AUTO_TEST_SUITE_END(/* DesignPatternTestSuite */);
 
 } // anonymous namespace

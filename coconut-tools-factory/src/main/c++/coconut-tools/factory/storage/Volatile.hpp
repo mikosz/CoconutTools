@@ -1,18 +1,17 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_VOLATILESTORAGE_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_VOLATILESTORAGE_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_STORAGE_VOLATILE_HPP_
+#define COCONUT_TOOLS_FACTORY_STORAGE_VOLATILE_HPP_
 
 #include <memory>
 
-#include "MappingStorage.hpp"
+#include "Mapping.hpp"
 
 namespace coconut_tools {
-namespace design_pattern {
 namespace factory {
 namespace storage {
 
 template <class IdentifierType, class InstanceType>
-class VolatileStorage :
-    public MappingStorage<
+class Volatile :
+    public Mapping<
         IdentifierType,
         std::weak_ptr<typename InstanceType::element_type>,
         std::shared_ptr<typename InstanceType::element_type>
@@ -20,7 +19,7 @@ class VolatileStorage :
 {
 private:
 
-    typedef MappingStorage<
+    typedef Mapping<
                 IdentifierType,
 				std::weak_ptr<typename InstanceType::element_type>,
 				std::shared_ptr<typename InstanceType::element_type>
@@ -48,7 +47,6 @@ public:
 
 } // namespace storage
 } // namespace factory
-} // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_VOLATILESTORAGE_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_STORAGE_VOLATILE_HPP_ */

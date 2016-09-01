@@ -3,7 +3,8 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "coconut-tools/design-pattern/factory.hpp"
+#include "coconut-tools/policy/locking/None.hpp"
+#include "coconut-tools/factory.hpp"
 
 #include "LogFile.hpp"
 
@@ -20,14 +21,14 @@ public:
 
 private:
 
-	typedef design_pattern::Factory<
+	using Factory = factor::Factory<
 		std::string,
 		LogFileSharedPtr,
-		design_pattern::PermanentStorage,
+		design_pattern::Permanent,
 		design_pattern::FunctorCreator<LogFileUniquePtr>,
-		design_pattern::NoLockingPolicy,
-		design_pattern::ExceptionThrowingErrorPolicy
-		> Factory;
+		policy::locking::None,
+		factory::error_policy::ExceptionThrowingErrorPolicy
+		>;
 
 	Factory factory_;
 

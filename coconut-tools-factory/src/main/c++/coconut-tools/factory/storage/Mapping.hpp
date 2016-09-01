@@ -1,5 +1,5 @@
-#ifndef COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_MAPPINGSTORAGE_HPP_
-#define COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_MAPPINGSTORAGE_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_STORAGE_MAPPING_HPP_
+#define COCONUT_TOOLS_FACTORY_STORAGE_MAPPING_HPP_
 
 #include <memory>
 #include <unordered_map>
@@ -7,25 +7,24 @@
 #include <boost/call_traits.hpp>
 
 namespace coconut_tools {
-namespace design_pattern {
 namespace factory {
 namespace storage {
 
 template <class IdentifierType, class StoredType, class PermanentType>
-class MappingStorage {
+class Mapping {
 public:
 
-    typedef IdentifierType Identifier;
+    using Identifier = IdentifierType;
 
-    typedef typename boost::call_traits<Identifier>::param_type IdentifierParam;
+    using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
-    typedef typename StoredType::element_type Instance;
+    using Instance = typename StoredType::element_type;
 
-    typedef typename std::unique_ptr<Instance> InstanceParam;
+    using InstanceParam = typename std::unique_ptr<Instance>;
 
-    typedef StoredType Stored;
+    using Stored = StoredType;
 
-    typedef PermanentType Permanent;
+    using Permanent = PermanentType;
 
     Permanent get(const IdentifierParam identifier) const {
         typename Storage::const_iterator it = storage_.find(identifier);
@@ -70,7 +69,7 @@ protected:
 
 private:
 
-    typedef std::unordered_map<Identifier, Stored> Storage;
+    using Storage = std::unordered_map<Identifier, Stored>;
 
     Storage storage_;
 
@@ -78,7 +77,6 @@ private:
 
 } // namespace storage
 } // namespace factory
-} // namespace design_pattern
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_DESIGN_PATTERN_FACTORY_STORAGE_MAPPINGSTORAGE_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_STORAGE_MAPPING_HPP_ */
