@@ -6,7 +6,7 @@
 
 #include "Appender.hpp"
 
-#include "coconut-tools/design-pattern/creator/NewCreator.hpp"
+#include "coconut-tools/policy/creation/New.hpp"
 
 #include "coconut-tools/utils/pointee.hpp"
 

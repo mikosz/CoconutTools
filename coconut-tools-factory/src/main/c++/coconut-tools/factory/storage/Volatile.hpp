@@ -28,17 +28,15 @@ private:
 
 public:
 
-    typedef typename Super::Instance Instance;
+    using Instance = typename Super::Instance;
 
-    typedef typename Super::Identifier Identifier;
+    using Identifier = typename Super::Identifier;
 
-    typedef typename Super::IdentifierParam IdentifierParam;
+    using IdentifierParam = typename Super::IdentifierParam;
 
-    typedef typename Super::Permanent Permanent;
+    using Stored = typename Super::Stored;
 
-    typedef typename Super::Stored Stored;
-
-    Permanent get(const IdentifierParam identifier) const {
+    Instance get(const IdentifierParam identifier) const {
         Stored stored = Super::getStored(identifier);
         return stored.lock();
     }

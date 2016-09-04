@@ -3,7 +3,9 @@
 
 #include "Appender.hpp"
 
-#include "coconut-tools/design-pattern/factory.hpp"
+#include "coconut-tools/concurrent/fake.hpp"
+
+#include "coconut-tools/factory.hpp"
 
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 #include "coconut-tools/logger/layout/LayoutFactory.hpp"
@@ -23,7 +25,7 @@ public:
 	void registerType(const AppenderTypeId& appenderTypeId) {
 		typeFactory_.registerCreator(
 			appenderTypeId,
-			design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >(
+			policy::creation::Functor<std::unique_ptr<Appender::Initialiser>>(
 				[]() {
 					return std::unique_ptr<Appender::Initialiser>(
 							new Appender::Initialiser(Appender::Initialiser::createInitialisable<ConcreteAppenderType>())
@@ -43,18 +45,17 @@ public:
 
 private:
 
-	typedef design_pattern::factory::Factory<
+	using AppenderTypeFactory = Factory<
 		AppenderTypeId,
 		std::unique_ptr<Appender::Initialiser>,
-		design_pattern::None,
-		design_pattern::FunctorCreator<std::unique_ptr<Appender::Initialiser> >,
-		design_pattern::NoLockingPolicy,
-		design_pattern::ExceptionThrowingErrorPolicy
-		> AppenderTypeFactory;
+		factory::storage::None,
+		factory::CreatorRegistry<AppenderTypeId, policy::creation::Functor<std::unique_ptr<Appender::Initialiser>>, factory::error_policy::ExceptionThrowing>,
+		concurrent::FakeMutex
+		>;
 
 	AppenderTypeFactory typeFactory_;
 
-	design_pattern::Permanent<Appender::Id, AppenderSharedPtr> instanceStorage_;
+	factory::storage::Permanent<Appender::Id, Appender> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

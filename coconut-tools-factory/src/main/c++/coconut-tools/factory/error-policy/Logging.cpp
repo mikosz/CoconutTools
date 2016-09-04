@@ -2,8 +2,16 @@
 
 #include "coconut-tools/logger.hpp"
 
-CT_LOGGING_CATEGORY("COCONUT_TOOLS.FACTORY");
+CT_LOGGER_CATEGORY("COCONUT_TOOLS.FACTORY.ERROR_POLICY");
 
-void coconut_tools::factory::error_policy::log_(const std::string& message) {
+namespace coconut_tools {
+namespace factory {
+namespace error_policy {
+
+void log_(const std::string& message) {
 	CT_LOG_ERROR << message;
 }
+
+}  // namespace error_policy
+}  // namespace factory
+}  // namespace coconut_tools

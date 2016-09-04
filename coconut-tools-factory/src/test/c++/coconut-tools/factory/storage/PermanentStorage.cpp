@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(TestSuite);
 BOOST_AUTO_TEST_SUITE(PermanentTestSuite);
 
 BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     int* instance = new int;
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(StoreReplacesExistingEntry) {
 }
 
 BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     int* instance = new int;
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(ReturnsStoredInstanceWhenExists) {
 }
 
 BOOST_AUTO_TEST_CASE(RetainsInstanceWhenUnused) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     int* instance = new int;
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(RetainsInstanceWhenUnused) {
 }
 
 BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     int* instance = new int;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(ErasesExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     storage.erase("instance");
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(EraseIsNoOpOnNoExistingInstances) {
 }
 
 BOOST_AUTO_TEST_CASE(ClearErasesAll) {
-	using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+	using Permanent = Permanent<std::string, int>;
 	Permanent storage;
 
 	storage.store("instance", std::unique_ptr<int>(new int));
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(ClearErasesAll) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     int* instance = new int;
@@ -97,14 +97,14 @@ BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstancePresent) {
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsFalseIfInstanceNotPresent) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     BOOST_CHECK(!storage.isStored("instance"));
 }
 
 BOOST_AUTO_TEST_CASE(IsStoredReturnsTrueIfInstanceRemoved) {
-    using Permanent = Permanent<std::string, std::unique_ptr<int> >;
+    using Permanent = Permanent<std::string, int>;
     Permanent storage;
 
     int* instance = new int;

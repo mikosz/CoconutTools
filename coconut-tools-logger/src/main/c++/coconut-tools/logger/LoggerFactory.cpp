@@ -25,7 +25,7 @@ LoggerSharedPtr LoggerFactory::create(const LoggerId& loggerId) {
 	if (!loggerConfiguration_) {
 		return SystemLogger::instance();
 	} else {
-		LoggerSharedPtr logger = storage_.get(loggerId);
+		auto logger = storage_.get(loggerId);
 		if (logger) {
 			return logger;
 		}

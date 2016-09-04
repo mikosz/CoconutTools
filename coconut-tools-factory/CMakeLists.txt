@@ -1,5 +1,6 @@
 set(DEPENDENCY_LIBRARIES
     coconut-tools-exceptions
+    coconut-tools-logger
     ${Boost_SYSTEM_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
     )

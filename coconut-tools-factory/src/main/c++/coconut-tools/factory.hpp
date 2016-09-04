@@ -4,6 +4,7 @@
 #include "factory/CreatorRegistry.hpp"
 #include "factory/Factory.hpp"
 #include "factory/error-policy.hpp"
+#include "factory/storage.hpp"
 
 namespace coconut_tools {
 

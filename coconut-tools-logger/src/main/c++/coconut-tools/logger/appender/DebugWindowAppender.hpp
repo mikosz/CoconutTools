@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "coconut-tools/design-pattern/creator/NewCreator.hpp"
+#include "coconut-tools/policy/creation/New.hpp"
 
 namespace coconut_tools {
 namespace logger {

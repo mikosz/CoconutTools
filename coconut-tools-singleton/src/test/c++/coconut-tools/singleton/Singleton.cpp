@@ -2,26 +2,26 @@
 
 #include <memory>
 
+#include <boost/thread/mutex.hpp>
+
 #include "coconut-tools/singleton/Singleton.hpp"
-#include "coconut-tools/policy/locking/Unique.hpp"
 
 namespace {
 
 using namespace coconut_tools;
 using namespace coconut_tools::singleton;
 
-BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
 BOOST_AUTO_TEST_SUITE(SingletonTestSuite);
 BOOST_AUTO_TEST_SUITE(SingletonTestSuite);
 
-class SingletonClass : public Singleton<SingletonClass, policy::locking::Unique> {
+class SingletonClass : public Singleton<SingletonClass, boost::mutex> {
 };
 
 BOOST_AUTO_TEST_CASE(CreatesSingletonInstance) {
 	BOOST_CHECK_EQUAL(SingletonClass::instance().get(), SingletonClass::instance().get());
 }
 
-class ReplacedSingletonClass : public Singleton<ReplacedSingletonClass, policy::locking::Unique> {
+class ReplacedSingletonClass : public Singleton<ReplacedSingletonClass, boost::mutex> {
 };
 
 BOOST_AUTO_TEST_CASE(ReplacesExistingInstance) {
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(ReplacesExistingInstance) {
 	BOOST_CHECK_NE(instance, ReplacedSingletonClass::instance().get());
 }
 
-class ProvidedSingletonClass : public Singleton<ProvidedSingletonClass, policy::locking::Unique> {
+class ProvidedSingletonClass : public Singleton<ProvidedSingletonClass, boost::mutex> {
 };
 
 BOOST_AUTO_TEST_CASE(UsesProvidedInstance) {
@@ -48,6 +48,5 @@ BOOST_AUTO_TEST_CASE(UsesProvidedInstance) {
 
 BOOST_AUTO_TEST_SUITE_END(/* SingletonTestSuite */);
 BOOST_AUTO_TEST_SUITE_END(/* SingletonTestSuite */);
-BOOST_AUTO_TEST_SUITE_END(/* DesignPatternTestSuite */);
 
 } // anonymous namespace

@@ -5,7 +5,7 @@
 
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 
-#include "coconut-tools/design-pattern/factory/storage/Permanent.hpp"
+#include "coconut-tools/factory/storage/Permanent.hpp"
 
 #include "coconut-tools/concurrent/Lockable.hpp"
 
@@ -40,7 +40,7 @@ private:
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
-	design_pattern::factory::storage::Permanent<LoggerId, LoggerSharedPtr> storage_;
+	factory::storage::Permanent<LoggerId, Logger> storage_;
 
 	appender::AppenderFactory appenderFactory_;
 

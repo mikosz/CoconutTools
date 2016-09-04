@@ -11,7 +11,7 @@ template <class InstanceType, class... Arguments>
 class New {
 public:
 
-	using Instance = InstanceType;
+	using Instance = std::unique_ptr<InstanceType>;
 
 	template <class ConcreteType>
 	static New makeCreator() {
@@ -19,12 +19,12 @@ public:
 	}
 
 	New() :
-		delegate_(std::make_shared<ConcreteDelegate<Instance>>())
+		delegate_(std::make_shared<ConcreteDelegate<InstanceType>>()) // TODO: why shared?
 	{
 	}
 
-	std::unique_ptr<Instance> create(Arguments... arguments) {
-		return delegate_->create(arguments...);
+	Instance create(Arguments&&... arguments) {
+		return delegate_->create(std::forward<Arguments>(arguments)...);
 	}
 
 private:
@@ -35,7 +35,7 @@ private:
 		virtual ~AbstractDelegate() {
 		}
 
-		virtual std::unique_ptr<Instance> create(Arguments... arguments) = 0;
+		virtual Instance create(Arguments&&... arguments) = 0;
 
 	};
 
@@ -43,8 +43,8 @@ private:
 	class ConcreteDelegate : public AbstractDelegate {
 	public:
 
-		std::unique_ptr<Instance> create(Arguments... arguments) override {
-			return std::unique_ptr<Instance>(new ConcreteType(arguments...));
+		Instance create(Arguments&&... arguments) override {
+			return std::make_unique<ConcreteType>(std::forward<Arguments>(arguments)...);
 		}
 
 	};

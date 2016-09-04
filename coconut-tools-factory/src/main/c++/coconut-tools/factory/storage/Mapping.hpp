@@ -18,32 +18,27 @@ public:
 
     using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
-    using Instance = typename StoredType::element_type;
+    using Instance = PermanentType;
 
-    using InstanceParam = typename std::unique_ptr<Instance>;
-
-    using Stored = StoredType;
-
-    using Permanent = PermanentType;
-
-    Permanent get(const IdentifierParam identifier) const {
+    Instance get(const IdentifierParam identifier) const {
         typename Storage::const_iterator it = storage_.find(identifier);
         if (it == storage_.end()) {
-            return Permanent();
+            return Instance();
         } else {
-            return Permanent(it->second);
+            return Instance(it->second);
         }
     }
 
+	// TODO: remove isStored, which may be invalid for Volatile. Add cleanup of invalid elements.
     bool isStored(const IdentifierParam identifier) const {
         return storage_.count(identifier) != 0;
     }
 
-    Permanent store(const IdentifierParam identifier, InstanceParam&& instance) {
+    Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {
         if (isStored(identifier)) {
             erase(identifier);
         }
-        Permanent permanent(instance.release());
+        Instance permanent(instance.release());
         storage_.insert(std::make_pair(identifier, Stored(permanent)));
         return permanent;
     }
@@ -57,6 +52,8 @@ public:
 	}
 
 protected:
+
+    using Stored = StoredType;
 
     Stored getStored(const IdentifierParam identifier) const {
         typename Storage::const_iterator it = storage_.find(identifier);

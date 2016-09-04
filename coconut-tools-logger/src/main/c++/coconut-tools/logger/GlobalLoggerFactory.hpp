@@ -1,9 +1,11 @@
 #ifndef COCONUTTOOLS_LOGGER_GLOBALLOGGERFACTORY_HPP_
 #define COCONUTTOOLS_LOGGER_GLOBALLOGGERFACTORY_HPP_
 
+#include <boost/thread/mutex.hpp>
+
 #include <boost/filesystem/path.hpp>
 
-#include "coconut-tools/design-pattern/singleton.hpp"
+#include "coconut-tools/singleton.hpp"
 
 #include "LoggerFactory.hpp"
 
@@ -11,10 +13,10 @@ namespace coconut_tools {
 namespace logger {
 
 class GlobalLoggerFactory :
-	public design_pattern::Singleton<
+	public Singleton<
 		GlobalLoggerFactory,
-		design_pattern::UniqueMutexLockingPolicy,
-		design_pattern::NewCreator<GlobalLoggerFactory>
+		boost::mutex,
+		policy::creation::New<GlobalLoggerFactory>
 		>,
 	public LoggerFactory
 {

@@ -13,8 +13,8 @@ template <class IdentifierType, class InstanceType>
 class Permanent :
     public Mapping<
         IdentifierType,
-        std::shared_ptr<typename InstanceType::element_type>,
-        std::shared_ptr<typename InstanceType::element_type>
+        std::shared_ptr<typename InstanceType>,
+        std::shared_ptr<typename InstanceType>
         >
 {
 };

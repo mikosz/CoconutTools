@@ -59,7 +59,7 @@ private:
 
 };
 
-}  // namespace concurrent
-}  // namespace CoconutTools {
+} // namespace concurrent
+} // namespace CoconutTools
 
 #endif /* COCONUTTOOLS_CONCURRENT_LOCKABLE_HPP_ */

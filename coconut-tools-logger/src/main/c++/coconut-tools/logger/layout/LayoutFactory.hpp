@@ -5,27 +5,33 @@
 
 #include "Layout.hpp"
 
-#include "coconut-tools/design-pattern/factory.hpp"
-#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
+#include "coconut-tools/concurrent/fake.hpp"
+
+#include "coconut-tools/policy/creation/Functor.hpp"
+#include "coconut-tools/policy/creation/New.hpp"
+
+#include "coconut-tools/factory.hpp"
+
 #include "coconut-tools/utils/Null.hpp"
+
+#include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 
 namespace coconut_tools {
 namespace logger {
 namespace layout {
 
 class LayoutFactory :
-		public design_pattern::factory::Factory<
-			std::string,
-			LayoutSharedPtr,
-			design_pattern::Permanent,
-			design_pattern::NewCreator<Layout>,
-			design_pattern::NoLockingPolicy,
-			design_pattern::ExceptionThrowingErrorPolicy
-			>
+	public Factory<
+		std::string,
+		LayoutSharedPtr,
+		factory::storage::Permanent,
+		factory::CreatorRegistry<std::string, policy::creation::New<Layout>, factory::error_policy::ExceptionThrowing>,
+		concurrent::FakeMutex
+		>
 {
 public:
 
-	typedef std::string LayoutTypeId;
+	using LayoutTypeId = std::string;
 
 	LayoutFactory(configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration);
 
@@ -33,7 +39,7 @@ public:
 	utils::Null registerType(const LayoutTypeId& layoutTypeId) {
 		typeFactory_.registerCreator(
 			layoutTypeId,
-			design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >(
+			policy::creation::Functor<std::unique_ptr<Layout::Initialiser> >(
 				[]() {
 					return std::unique_ptr<Layout::Initialiser>(
 						new Layout::Initialiser(Layout::Initialiser::createInitialisable<ConcreteLayoutType>())
@@ -51,18 +57,17 @@ public:
 
 private:
 
-	typedef design_pattern::factory::Factory<
+	using LayoutTypeFactory = Factory<
 		LayoutTypeId,
 		std::unique_ptr<Layout::Initialiser>,
-		design_pattern::None,
-		design_pattern::FunctorCreator<std::unique_ptr<Layout::Initialiser> >,
-		design_pattern::NoLockingPolicy,
-		design_pattern::ExceptionThrowingErrorPolicy
-	> LayoutTypeFactory;
+		factory::storage::None,
+		factory::CreatorRegistry<LayoutTypeId, policy::creation::Functor<std::unique_ptr<Layout::Initialiser>>, factory::error_policy::ExceptionThrowing>,
+		concurrent::FakeMutex
+		>;
 
 	LayoutTypeFactory typeFactory_;
 
-	design_pattern::Permanent<Layout::Id, LayoutSharedPtr> instanceStorage_;
+	factory::storage::Permanent<Layout::Id, Layout> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

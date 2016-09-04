@@ -6,6 +6,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "coconut-tools/concurrent/LockTraits.hpp"
+
 #include "coconut-tools/policy/creation/New.hpp"
 
 namespace coconut_tools {
@@ -13,23 +15,21 @@ namespace singleton {
 
 template <
 	class InstanceType,
-	class LockingPolicyType,
+	class MutexType,
 	class CreatorType = policy::creation::New<InstanceType>
 	>
 class Singleton : boost::noncopyable {
 public:
 
-	typedef InstanceType Instance;
+	using Instance = InstanceType;
 
-	typedef std::shared_ptr<InstanceType> InstancePtr;
+	using InstancePtr = std::shared_ptr<InstanceType>;
 
-    typedef CreatorType Creator;
-
-    typedef LockingPolicyType LockingPolicy;
+    using Creator = CreatorType;
 
     static InstancePtr instance() {
         if (!instance_) {
-            auto lock = lockingPolicy().lock(&instance_);
+			Lock lock(mutex());
             if (!instance_) {
 				Creator creator;
                 instance_.reset(creator.create().release());
@@ -40,7 +40,7 @@ public:
     }
 
     static void setInstance(std::unique_ptr<Instance>&& instance) {
-		auto lock = lockingPolicy().lock(&instance_);
+		Lock lock(mutex());
     	if (!instance_) {
     		std::atexit(&Singleton::destroy);
     	}
@@ -49,20 +49,22 @@ public:
 
 private:
 
+	using Lock = typename concurrent::LockTraits<MutexType>::UniqueLock;
+
     static InstancePtr instance_;
 
     static void destroy() {
         if (instance_) {
-			auto lock = lockingPolicy().lock(&instance_);
+			Lock lock(mutex());
             if (instance_) {
                 instance_.reset();
             }
         }
     }
 
-	static LockingPolicy& lockingPolicy() {
-		static std::unique_ptr<LockingPolicy> lockingPolicy_(new LockingPolicy);
-		return *lockingPolicy_;
+	static MutexType& mutex() {
+		static MutexType mutex_;
+		return mutex_;
 	}
 
 };

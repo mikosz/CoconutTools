@@ -1,0 +1,60 @@
+#ifndef COCONUT_TOOLS_FACTORY_CREATORREGISTRY_HPP_
+#define COCONUT_TOOLS_FACTORY_CREATORREGISTRY_HPP_
+
+#include <unordered_map>
+
+#include <boost/call_traits.hpp>
+
+namespace coconut_tools {
+namespace factory {
+
+template <
+	class IdentifierType,
+	class CreationPolicy,
+	template<class /* IdentifierType */> class ErrorPolicy
+	>
+class CreatorRegistry {
+public:
+
+	using Identifier = IdentifierType;
+
+	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
+
+	void registerCreator(const IdentifierParam id, CreationPolicy creator) {
+		auto it = creators_.lower_bound(id);
+		if (it != creators_.end() && it->first == id) {
+			ErrorPolicy<Identifier>::alreadyRegistered(id);
+		} else {
+			creators_.insert(it, std::make_pair(id, creator));
+		}
+	}
+
+	void unregisterCreator(const IdentifierParam id) {
+		if (!creators_.erase(id)) {
+			ErrorPolicy<Identifier>::noSuchType(id);
+		}
+	}
+
+protected:
+
+	typename CreationPolicy::Instance doCreate(const IdentifierParam id) {
+		auto it = creators_.find(id);
+		if (it == creators_.end()) {
+			ErrorPolicy<Identifier>::noSuchType(id);
+			return CreationPolicy::Instance();
+		}
+		return it->second.create();
+	}
+
+private:
+
+	using CreationPolicies = std::unordered_map<Identifier, CreationPolicy>;
+
+	CreationPolicies creators_;
+
+};
+
+} // namespace factory
+} // namespace coconut_tools
+
+#endif /* COCONUT_TOOLS_FACTORY_CREATORREGISTRY_HPP_ */

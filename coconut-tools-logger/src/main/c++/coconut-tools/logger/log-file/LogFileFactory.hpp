@@ -3,7 +3,9 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "coconut-tools/policy/locking/None.hpp"
+#include "coconut-tools/concurrent/fake.hpp"
+
+#include "coconut-tools/policy/creation/Functor.hpp"
 #include "coconut-tools/factory.hpp"
 
 #include "LogFile.hpp"
@@ -21,13 +23,12 @@ public:
 
 private:
 
-	using Factory = factor::Factory<
+	using Factory = Factory<
 		std::string,
-		LogFileSharedPtr,
-		design_pattern::Permanent,
-		design_pattern::FunctorCreator<LogFileUniquePtr>,
-		policy::locking::None,
-		factory::error_policy::ExceptionThrowingErrorPolicy
+		LogFile,
+		factory::storage::Permanent,
+		factory::CreatorRegistry<std::string, policy::creation::Functor<LogFileUniquePtr>, factory::error_policy::ExceptionThrowing>,
+		concurrent::FakeMutex
 		>;
 
 	Factory factory_;
