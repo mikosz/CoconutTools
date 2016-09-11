@@ -28,7 +28,7 @@ public:
 class CopyableMockCreatorAdapter {
 public:
 
-    typedef testing::StrictMock<MockCreator> Delegate;
+    using Delegate = testing::StrictMock<MockCreator>;
 
     CopyableMockCreatorAdapter() :
         delegate_(new Delegate) {
@@ -63,9 +63,9 @@ template <class, class>
 class SingletonMockStorageAdapter {
 public:
 
-    typedef testing::StrictMock<MockStorage> Delegate;
+    using Delegate = testing::StrictMock<MockStorage>;
 
-    typedef std::unique_ptr<int> Instance;
+    using Instance = std::shared_ptr<int>;
 
     ~SingletonMockStorageAdapter() {
         reset();
@@ -82,12 +82,12 @@ public:
         return delegate_;
     }
 
-    std::shared_ptr<int> get(const std::string& id) {
+    Instance get(const std::string& id) {
         int value = delegate()->get(id);
         if (value) {
-            return std::unique_ptr<int>(new int(value));
+            return std::make_unique<int>(value);
         } else {
-            return std::unique_ptr<int>();
+            return std::make_unique<int>();
         }
     }
 
@@ -95,8 +95,8 @@ public:
         return delegate()->isStored(id);
     }
 
-    std::shared_ptr<int> store(const std::string& id, std::unique_ptr<int> instance) {
-        return std::shared_ptr<int>(new int(delegate()->store(id, *instance)));
+    Instance store(const std::string& id, std::shared_ptr<int> instance) {
+        return std::make_shared<int>(delegate()->store(id, *instance));
     }
 
     void erase(const std::string& id) {
@@ -125,7 +125,7 @@ template <class>
 class StaticFunctionMockErrorPolicyAdapter {
 public:
 
-    typedef testing::StrictMock<MockErrorPolicy> Delegate;
+    using Delegate = testing::StrictMock<MockErrorPolicy>;
 
     static void reset() {
         delegate_.reset();
@@ -174,10 +174,8 @@ BOOST_AUTO_TEST_CASE(CallsCreators) {
     BOOST_CHECK_EQUAL(*f.create("2"), 2);
 }
 
-#if 0 // TODO: fixme
-
 BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
-    typedef SingletonMockStorageAdapter<std::string, std::shared_ptr<int> > Storage;
+    using Storage = SingletonMockStorageAdapter<std::string, int>;
 
     Storage::reset();
 
@@ -222,12 +220,10 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 	BOOST_CHECK_EQUAL(*two2, 2);
 }
 
-#endif
-
 #if 0 // TODO: move tests to CreatorRegistry tests
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
+    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
 
     ErrorPolicy::reset();
 
@@ -248,7 +244,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
+    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
 
     ErrorPolicy::reset();
 
@@ -269,7 +265,7 @@ BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
 }
 
 BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
-    typedef StaticFunctionMockErrorPolicyAdapter<std::string> ErrorPolicy;
+    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
 
     ErrorPolicy::reset();
 
