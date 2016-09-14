@@ -21,28 +21,7 @@ using namespace coconut_tools::factory;
 class MockCreator {
 public:
 
-    MOCK_METHOD0(create, int ());
-
-};
-
-class CopyableMockCreatorAdapter {
-public:
-
-    using Delegate = testing::StrictMock<MockCreator>;
-
-    CopyableMockCreatorAdapter() :
-        delegate_(new Delegate) {
-    }
-
-    std::shared_ptr<Delegate> delegate() const {
-        return delegate_;
-    }
-
 	MOCK_METHOD1(doCreate, std::shared_ptr<int> (const std::string&));
-
-private:
-
-    std::shared_ptr<Delegate> delegate_;
 
 };
 
@@ -112,50 +91,7 @@ private:
 template<class T1, class T2>
 std::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
 
-class MockErrorPolicy {
-public:
-
-    MOCK_METHOD1(alreadyRegistered, void (const std::string&));
-
-    MOCK_METHOD1(noSuchType, void (const std::string&));
-
-};
-
-template <class>
-class StaticFunctionMockErrorPolicyAdapter {
-public:
-
-    using Delegate = testing::StrictMock<MockErrorPolicy>;
-
-    static void reset() {
-        delegate_.reset();
-    }
-
-    static std::shared_ptr<Delegate> delegate() {
-        if (!delegate_) {
-            delegate_.reset(new Delegate);
-        }
-        return delegate_;
-    }
-
-    static void alreadyRegistered(const std::string& id) {
-        delegate_->alreadyRegistered(id);
-    }
-
-    static void noSuchType(const std::string& id) {
-        delegate_->noSuchType(id);
-    }
-
-private:
-
-    static std::shared_ptr<Delegate> delegate_;
-
-};
-
-template<class T>
-std::shared_ptr<typename StaticFunctionMockErrorPolicyAdapter<T>::Delegate> StaticFunctionMockErrorPolicyAdapter<T>::delegate_;
-
-BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
+BOOST_AUTO_TEST_SUITE(FactoryTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
 
 BOOST_AUTO_TEST_CASE(CallsCreators) {
@@ -163,7 +99,7 @@ BOOST_AUTO_TEST_CASE(CallsCreators) {
         std::string,
         std::shared_ptr<int>,
         storage::None,
-        CopyableMockCreatorAdapter,
+        MockCreator,
         boost::mutex
         > f;
 
@@ -183,7 +119,7 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
         std::string,
         int,
         SingletonMockStorageAdapter,
-        CopyableMockCreatorAdapter,
+        MockCreator,
         boost::mutex
         > f;
 
@@ -220,77 +156,7 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 	BOOST_CHECK_EQUAL(*two2, 2);
 }
 
-#if 0 // TODO: move tests to CreatorRegistry tests
-
-BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
-
-    ErrorPolicy::reset();
-
-    Factory<
-        std::string,
-        int,
-        storage::None,
-        CopyableMockCreatorAdapter,
-        policy::locking::Unique,
-        StaticFunctionMockErrorPolicyAdapter
-        > f;
-
-    EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
-
-    f.create("1");
-
-    ErrorPolicy::reset();
-}
-
-BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
-
-    ErrorPolicy::reset();
-
-    Factory<
-        std::string,
-        int,
-        storage::None,
-        CopyableMockCreatorAdapter,
-        policy::locking::Unique,
-        StaticFunctionMockErrorPolicyAdapter
-        > f;
-
-    EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
-
-    f.unregisterCreator("1");
-
-    ErrorPolicy::reset();
-}
-
-BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
-
-    ErrorPolicy::reset();
-
-    Factory<
-        std::string,
-        int,
-        storage::None,
-        CopyableMockCreatorAdapter,
-        policy::locking::Unique,
-        StaticFunctionMockErrorPolicyAdapter
-        > f;
-
-    EXPECT_CALL(*ErrorPolicy::delegate(), alreadyRegistered(std::string("1")));
-
-    CopyableMockCreatorAdapter creator;
-
-    f.registerCreator("1", creator);
-    f.registerCreator("1", creator);
-
-    ErrorPolicy::reset();
-}
-
-#endif /* 0 */
-
 BOOST_AUTO_TEST_SUITE_END(/* FactoryTestSuite */);
-BOOST_AUTO_TEST_SUITE_END(/* DesignPatternTestSuite */);
+BOOST_AUTO_TEST_SUITE_END(/* FactoryTestSuite */);
 
 } // anonymous namespace
