@@ -56,6 +56,12 @@ public:
 
     using StoredInstance = typename Storage::Instance;
 
+	template <class... CreatorParams>
+	Factory(CreatorParams&&... creatorParams) :
+		CreatorType(std::forward<CreatorParams>(creatorParams)...)
+	{
+	}
+
     StoredInstance create(const IdentifierParam id) {
 		if (!storage_.isStored(id)) {
 			return storage_.store(id, doCreate(id));
