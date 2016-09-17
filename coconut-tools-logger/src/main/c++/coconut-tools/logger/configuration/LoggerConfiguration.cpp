@@ -220,7 +220,7 @@ log_file::LogFileSharedPtr LoggerConfiguration::logFile(const AppenderId& append
 		}
 
 		return logFileFactory_->create(node->text());
-	} catch (const design_pattern::NoSuchType<std::string>&) {
+	} catch (const factory::error_policy::NoSuchType<std::string>&) {
 		throw LoggerConfigurationError("Unknown log file: " + appenderId);
 	}
 }

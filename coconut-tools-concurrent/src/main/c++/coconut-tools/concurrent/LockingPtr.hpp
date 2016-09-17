@@ -7,7 +7,7 @@
 namespace coconut_tools {
 namespace concurrent {
 
-template <class T, class M = boost::mutex, class L = boost::unique_lock<M> >
+template <class T, class M = boost::mutex, class L = boost::unique_lock<M>>
 class LockingPtr {
 public:
 
@@ -17,12 +17,14 @@ public:
 
     LockingPtr(volatile T& object, Mutex& mutex) :
         object_(const_cast<T&>(object)),
-        lock_(mutex) {
+        lock_(mutex)
+	{
     }
 
     LockingPtr(const LockingPtr& rhs) :
         object_(rhs.object_),
-        lock_(*rhs.lock_.mutex()) {
+        lock_(*rhs.lock_.mutex())
+	{
     }
 
     T& operator*() {
@@ -45,7 +47,7 @@ private:
 
 };
 
-}  // namespace concurrent
-}  // namespace CoconutTools {
+} // namespace concurrent
+} // namespace CoconutTools
 
 #endif /* COCONUTTOOLS_CONCURRENT_LOCKINGPTR_HPP_ */

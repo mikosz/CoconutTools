@@ -1,9 +1,14 @@
 #ifndef COCONUTTOOLS_LOGGER_LOGFILE_LOGFILEFACTORY_HPP_
 #define COCONUTTOOLS_LOGGER_LOGFILE_LOGFILEFACTORY_HPP_
 
+#include <functional>
+
 #include <boost/filesystem/path.hpp>
 
-#include "coconut-tools/design-pattern/factory.hpp"
+#include "coconut-tools/concurrent/fake.hpp"
+
+#include "coconut-tools/policy/creation/Functor.hpp"
+#include "coconut-tools/factory.hpp"
 
 #include "LogFile.hpp"
 
@@ -20,14 +25,19 @@ public:
 
 private:
 
-	typedef design_pattern::Factory<
+	using FunctorType = std::function<LogFileUniquePtr()>;
+
+	using Factory = Factory<
 		std::string,
-		LogFileSharedPtr,
-		design_pattern::PermanentStorage,
-		design_pattern::FunctorCreator<LogFileUniquePtr>,
-		design_pattern::NoLockingPolicy,
-		design_pattern::ExceptionThrowingErrorPolicy
-		> Factory;
+		LogFile,
+		factory::storage::Permanent,
+		factory::CreatorRegistry<
+			std::string,
+			policy::creation::Functor<FunctorType>,
+			factory::error_policy::ExceptionThrowing
+			>,
+		concurrent::FakeMutex
+		>;
 
 	Factory factory_;
 

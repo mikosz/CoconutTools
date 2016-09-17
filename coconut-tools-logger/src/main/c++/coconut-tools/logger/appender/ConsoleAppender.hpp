@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 
-#include "coconut-tools/design-pattern/creator/NewCreator.hpp"
+#include "coconut-tools/policy/creation/New.hpp"
 
 #include "coconut-tools/logger/configuration/LoggerConfiguration.hpp"
 #include "coconut-tools/logger/layout/LayoutFactory.hpp"

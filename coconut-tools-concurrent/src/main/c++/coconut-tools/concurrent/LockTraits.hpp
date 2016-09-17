@@ -17,11 +17,11 @@ template <>
 class LockTraits<boost::mutex> {
 public:
 
-    typedef boost::mutex Mutex;
+    using Mutex = boost::mutex;
 
-    typedef boost::unique_lock<Mutex> UniqueLock;
+    using UniqueLock = boost::unique_lock<Mutex>;
 
-    typedef boost::unique_lock<Mutex> SharedLock;
+    using SharedLock = boost::unique_lock<Mutex>;
 
 };
 
@@ -29,11 +29,11 @@ template <>
 class LockTraits<boost::shared_mutex> {
 public:
 
-    typedef boost::shared_mutex Mutex;
+    using Mutex = boost::shared_mutex;
 
-    typedef boost::unique_lock<Mutex> UniqueLock;
+    using UniqueLock = boost::unique_lock<Mutex>;
 
-    typedef boost::shared_lock<Mutex> SharedLock;
+    using SharedLock = boost::shared_lock<Mutex>;
 
 };
 
@@ -41,15 +41,15 @@ template <>
 class LockTraits<boost::recursive_mutex> {
 public:
 
-    typedef boost::mutex Mutex;
+    using Mutex = boost::mutex;
 
-    typedef boost::unique_lock<Mutex> UniqueLock;
+    using UniqueLock = boost::unique_lock<Mutex>;
 
-    typedef boost::unique_lock<Mutex> SharedLock;
+    using SharedLock = boost::unique_lock<Mutex>;
 
 };
 
-}  // namespace concurrent
-}  // namespace CoconutTools {
+} // namespace concurrent
+} // namespace CoconutTools
 
 #endif /* COCONUTTOOLS_CONCURRENT_LOCKTRAITS_HPP_ */
