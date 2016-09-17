@@ -28,13 +28,13 @@ public:
 class MockStorage {
 public:
 
-    MOCK_CONST_METHOD1(get, int (const std::string&));
+	MOCK_CONST_METHOD1(get, int (const std::string&));
 
-    MOCK_CONST_METHOD1(isStored, bool (const std::string&));
+	MOCK_CONST_METHOD1(isStored, bool (const std::string&));
 
-    MOCK_METHOD2(store, int (const std::string&, int));
+	MOCK_METHOD2(store, int (const std::string&, int));
 
-    MOCK_METHOD1(erase, void (const std::string&));
+	MOCK_METHOD1(erase, void (const std::string&));
 
 };
 
@@ -42,103 +42,114 @@ template <class, class>
 class SingletonMockStorageAdapter {
 public:
 
-    using Delegate = testing::StrictMock<MockStorage>;
+	using Delegate = testing::StrictMock<MockStorage>;
 
-    using Instance = std::shared_ptr<int>;
+	using Instance = std::shared_ptr<int>;
 
-    ~SingletonMockStorageAdapter() {
-        reset();
-    }
+	~SingletonMockStorageAdapter() {
+		reset();
+	}
 
-    static void reset() {
-        delegate_.reset();
-    }
+	static void reset() {
+		delegate_.reset();
+	}
 
-    static std::shared_ptr<Delegate> delegate() {
-        if (!delegate_) {
-            delegate_.reset(new Delegate);
-        }
-        return delegate_;
-    }
+	static std::shared_ptr<Delegate> delegate() {
+		if (!delegate_) {
+			delegate_.reset(new Delegate);
+		}
+		return delegate_;
+	}
 
-    Instance get(const std::string& id) {
-        int value = delegate()->get(id);
-        if (value) {
-            return std::make_unique<int>(value);
-        } else {
-            return std::make_unique<int>();
-        }
-    }
+	Instance get(const std::string& id) {
+		int value = delegate()->get(id);
+		if (value) {
+			return std::make_unique<int>(value);
+		} else {
+			return std::make_unique<int>();
+		}
+	}
 
-    bool isStored(const std::string& id) {
-        return delegate()->isStored(id);
-    }
+	bool isStored(const std::string& id) {
+		return delegate()->isStored(id);
+	}
 
-    Instance store(const std::string& id, std::shared_ptr<int> instance) {
-        return std::make_shared<int>(delegate()->store(id, *instance));
-    }
+	Instance store(const std::string& id, std::shared_ptr<int> instance) {
+		return std::make_shared<int>(delegate()->store(id, *instance));
+	}
 
-    void erase(const std::string& id) {
-        delegate()->erase(id);
-    }
+	void erase(const std::string& id) {
+		delegate()->erase(id);
+	}
 
 private:
 
-    static std::shared_ptr<Delegate> delegate_;
+	static std::shared_ptr<Delegate> delegate_;
 
 };
 
 template<class T1, class T2>
 std::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> SingletonMockStorageAdapter<T1, T2>::delegate_;
 
+struct IntConstructedCreator {
+
+	IntConstructedCreator(int value) :
+		value(value)
+	{
+	}
+
+	int value;
+
+};
+
 BOOST_AUTO_TEST_SUITE(FactoryTestSuite);
 BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
 
 BOOST_AUTO_TEST_CASE(CallsCreators) {
-    Factory<
-        std::string,
-        std::shared_ptr<int>,
-        storage::None,
-        MockCreator,
-        boost::mutex
-        > f;
+	Factory<
+		std::string,
+		std::shared_ptr<int>,
+		storage::None,
+		MockCreator,
+		boost::mutex
+		> f;
 
-    EXPECT_CALL(f, doCreate("1")).WillOnce(testing::Return(std::make_shared<int>(1)));
-    EXPECT_CALL(f, doCreate("2")).WillOnce(testing::Return(std::make_shared<int>(2)));
+	EXPECT_CALL(f, doCreate("1")).WillOnce(testing::Return(std::make_shared<int>(1)));
+	EXPECT_CALL(f, doCreate("2")).WillOnce(testing::Return(std::make_shared<int>(2)));
 
-    BOOST_CHECK_EQUAL(*f.create("1"), 1);
-    BOOST_CHECK_EQUAL(*f.create("2"), 2);
+	BOOST_CHECK_EQUAL(*f.create("1"), 1);
+	BOOST_CHECK_EQUAL(*f.create("2"), 2);
 }
 
 BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
-    using Storage = SingletonMockStorageAdapter<std::string, int>;
+	using Storage = SingletonMockStorageAdapter<std::string, int>;
 
-    Storage::reset();
+	Storage::reset();
 
-    Factory<
-        std::string,
-        int,
-        SingletonMockStorageAdapter,
-        MockCreator,
-        boost::mutex
-        > f;
+	Factory<
+		std::string,
+		int,
+		SingletonMockStorageAdapter,
+		MockCreator,
+		boost::mutex
+		> f;
 
-    {
-        testing::InSequence inSequence;
+	{
+		testing::InSequence inSequence;
 
-        EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(false));
-        EXPECT_CALL(*Storage::delegate(), store(std::string("1"), testing::_)).WillOnce(testing::Return(1));
+		EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(false));
+		EXPECT_CALL(*Storage::delegate(), store(std::string("1"), testing::_)).WillOnce(testing::Return(1));
 		EXPECT_CALL(*Storage::delegate(), isStored(std::string("1"))).WillOnce(testing::Return(true));
-        EXPECT_CALL(*Storage::delegate(), get(std::string("1"))).WillOnce(testing::Return(1));
+		EXPECT_CALL(*Storage::delegate(), get(std::string("1"))).WillOnce(testing::Return(1));
 
 		EXPECT_CALL(*Storage::delegate(), isStored(std::string("2"))).WillOnce(testing::Return(false));
 		EXPECT_CALL(*Storage::delegate(), store(std::string("2"), testing::_)).WillOnce(testing::Return(2));
 		EXPECT_CALL(*Storage::delegate(), isStored(std::string("2"))).WillOnce(testing::Return(true));
 		EXPECT_CALL(*Storage::delegate(), get(std::string("2"))).WillOnce(testing::Return(2));
-    }
+	}
 
-    EXPECT_CALL(f, doCreate("1")).WillOnce(testing::Return(std::make_shared<int>(1)));
-    EXPECT_CALL(f, doCreate("2")).WillOnce(testing::Return(std::make_shared<int>(2)));
+	EXPECT_CALL(f, doCreate("1")).WillOnce(testing::Return(std::make_shared<int>(1)));
+	EXPECT_CALL(f, doCreate("2")).WillOnce(testing::Return(std::make_shared<int>(2)));
 
 	auto one1 = f.create("1");
 	auto one2 = f.create("1");
@@ -150,10 +161,22 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 	BOOST_REQUIRE(two1);
 	BOOST_REQUIRE(two1);
 
-    BOOST_CHECK_EQUAL(*one1, 1);
+	BOOST_CHECK_EQUAL(*one1, 1);
 	BOOST_CHECK_EQUAL(*one2, 1);
 	BOOST_CHECK_EQUAL(*two1, 2);
 	BOOST_CHECK_EQUAL(*two2, 2);
+}
+
+BOOST_AUTO_TEST_CASE(PassesArgumentsToCreatorConstructor) {
+	Factory<
+		int,
+		int,
+		storage::None,
+		IntConstructedCreator,
+		boost::mutex
+		> f(42);
+
+	BOOST_CHECK_EQUAL(f.value, 42);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* FactoryTestSuite */);
