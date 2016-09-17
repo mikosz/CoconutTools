@@ -2,33 +2,36 @@
 #define COCONUT_TOOLS_POLICY_CREATION_HPP_
 
 #include <memory>
-#include <functional>
+#include <type_traits>
 
 namespace coconut_tools {
 namespace policy {
 namespace creation {
 
-template <class InstanceType>
+template <class FunctionType, class... Arguments>
 class Functor {
 public:
 
-    using Instance = InstanceType;
+    using Instance = std::result_of_t<FunctionType(Arguments...)>;
 
-    using Creator = std::function<Instance ()>;
-
-    Functor(Creator creator) :
+    Functor(FunctionType creator) :
         creator_(creator) {
     }
 
-    Instance create() {
-        return creator_();
+    Instance create(Arguments&&... arguments) {
+        return creator_(std::forward<Arguments>(arguments)...);
     }
 
 private:
 
-    Creator creator_;
+    FunctionType creator_;
 
 };
+
+template <class... Arguments, class FunctionType>
+Functor<FunctionType, Arguments...> makeFunctor(FunctionType creator) {
+	return Functor<FunctionType, Arguments...>(std::move(creator));
+}
 
 } // namespace creation
 } // namespace policy

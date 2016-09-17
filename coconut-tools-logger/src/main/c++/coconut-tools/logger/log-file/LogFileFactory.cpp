@@ -19,7 +19,7 @@ void LogFileFactory::registerLogFile(
 	) {
 	factory_.registerCreator(
 		id,
-		policy::creation::Functor<LogFileUniquePtr>([=]() { return ::create(path, overwrite); })
+		policy::creation::Functor<FunctorType>([path, overwrite]() { return ::create(path, overwrite); })
 		);
 }
 

@@ -88,21 +88,22 @@ BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 }
 
 BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
+	using FunctorType = std::function<int()>;
 	using Factory = Factory<
 		int,
 		int,
 		storage::None,
-		CreatorRegistry<int, policy::creation::Functor<int>, error_policy::ExceptionThrowing>,
+		CreatorRegistry<int, policy::creation::Functor<FunctorType>, error_policy::ExceptionThrowing>,
 		FakeMutex
 		>;
 
 	Factory f;
 
-	f.registerCreator(1, policy::creation::Functor<int>([]() { return 1; }));
-	f.registerCreator(2, policy::creation::Functor<int>([]() { return 2; }));
+	f.registerCreator(1, policy::creation::Functor<FunctorType>([]() { return 1; }));
+	f.registerCreator(2, policy::creation::Functor<FunctorType>([]() { return 2; }));
 
 	BOOST_CHECK_THROW(
-			f.registerCreator(1, policy::creation::Functor<int>([]() { return 1; })),
+			f.registerCreator(1, policy::creation::Functor<FunctorType>([]() { return 1; })),
 			error_policy::CreatorAlreadyRegistered<int>
 			);
 
@@ -117,18 +118,19 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 }
 
 BOOST_AUTO_TEST_CASE(CachingFactory) {
+	using FunctorType = std::function<std::unique_ptr<int>()>;
 	using Factory = Factory<
 		int,
 		int,
 		storage::Permanent,
-		CreatorRegistry<int, policy::creation::Functor<std::unique_ptr<int>>, error_policy::ExceptionThrowing>,
+		CreatorRegistry<int, policy::creation::Functor<FunctorType>, error_policy::ExceptionThrowing>,
 		FakeMutex
 		>;
 
 	Factory f;
 
-	f.registerCreator(1, policy::creation::Functor<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(1)); }));
-	f.registerCreator(2, policy::creation::Functor<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(2)); }));
+	f.registerCreator(1, policy::creation::Functor<FunctorType>([]() { return std::unique_ptr<int>(new int(1)); }));
+	f.registerCreator(2, policy::creation::Functor<FunctorType>([]() { return std::unique_ptr<int>(new int(2)); }));
 
 	auto one = f.create(1);
 	auto two = f.create(2);
@@ -142,18 +144,19 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 }
 
 BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
+	using FunctorType = std::function<std::unique_ptr<int>()>;
 	using Factory = volatile Factory<
 		int,
 		int,
 		storage::Permanent,
-		CreatorRegistry<int, policy::creation::Functor<std::unique_ptr<int>>, error_policy::ExceptionThrowing>,
+		CreatorRegistry<int, policy::creation::Functor<FunctorType>, error_policy::ExceptionThrowing>,
 		boost::mutex
 		>;
 
 	Factory f;
 
-	f.lock()->registerCreator(1, policy::creation::Functor<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(1)); }));
-	f.lock()->registerCreator(2, policy::creation::Functor<std::unique_ptr<int> >([]() { return std::unique_ptr<int>(new int(2)); }));
+	f.lock()->registerCreator(1, policy::creation::Functor<FunctorType>([]() { return std::unique_ptr<int>(new int(1)); }));
+	f.lock()->registerCreator(2, policy::creation::Functor<FunctorType>([]() { return std::unique_ptr<int>(new int(2)); }));
 
 	auto one = f.create(1);
 	auto two = f.create(2);

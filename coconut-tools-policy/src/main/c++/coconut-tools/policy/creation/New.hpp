@@ -19,7 +19,7 @@ public:
 	}
 
 	New() :
-		delegate_(std::make_shared<ConcreteDelegate<InstanceType>>()) // TODO: why shared?
+		delegate_(std::make_shared<ConcreteDelegate<InstanceType>>())
 	{
 	}
 

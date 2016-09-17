@@ -1,6 +1,8 @@
 #ifndef COCONUTTOOLS_LOGGER_LOGFILE_LOGFILEFACTORY_HPP_
 #define COCONUTTOOLS_LOGGER_LOGFILE_LOGFILEFACTORY_HPP_
 
+#include <functional>
+
 #include <boost/filesystem/path.hpp>
 
 #include "coconut-tools/concurrent/fake.hpp"
@@ -23,11 +25,17 @@ public:
 
 private:
 
+	using FunctorType = std::function<LogFileUniquePtr()>;
+
 	using Factory = Factory<
 		std::string,
 		LogFile,
 		factory::storage::Permanent,
-		factory::CreatorRegistry<std::string, policy::creation::Functor<LogFileUniquePtr>, factory::error_policy::ExceptionThrowing>,
+		factory::CreatorRegistry<
+			std::string,
+			policy::creation::Functor<FunctorType>,
+			factory::error_policy::ExceptionThrowing
+			>,
 		concurrent::FakeMutex
 		>;
 

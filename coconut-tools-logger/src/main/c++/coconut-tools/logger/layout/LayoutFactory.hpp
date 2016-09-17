@@ -2,6 +2,7 @@
 #define COCONUT_TOOLS_LOGGER_LAYOUT_LAYOUTFACTORY_HPP_
 
 #include <string>
+#include <functional>
 
 #include "Layout.hpp"
 
@@ -39,7 +40,7 @@ public:
 	utils::Null registerType(const LayoutTypeId& layoutTypeId) {
 		typeFactory_.registerCreator(
 			layoutTypeId,
-			policy::creation::Functor<std::unique_ptr<Layout::Initialiser> >(
+			policy::creation::Functor<FunctorType>(
 				[]() {
 					return std::unique_ptr<Layout::Initialiser>(
 						new Layout::Initialiser(Layout::Initialiser::createInitialisable<ConcreteLayoutType>())
@@ -57,11 +58,17 @@ public:
 
 private:
 
+	using FunctorType = std::function<std::unique_ptr<Layout::Initialiser>()>;
+
 	using LayoutTypeFactory = Factory<
 		LayoutTypeId,
 		std::unique_ptr<Layout::Initialiser>,
 		factory::storage::None,
-		factory::CreatorRegistry<LayoutTypeId, policy::creation::Functor<std::unique_ptr<Layout::Initialiser>>, factory::error_policy::ExceptionThrowing>,
+		factory::CreatorRegistry<
+			LayoutTypeId,
+			policy::creation::Functor<FunctorType>,
+			factory::error_policy::ExceptionThrowing
+			>,
 		concurrent::FakeMutex
 		>;
 

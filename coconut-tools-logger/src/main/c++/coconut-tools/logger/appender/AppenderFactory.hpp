@@ -1,6 +1,8 @@
 #ifndef COCONUT_TOOLS_APPENDER_APPENDERFACTORY_HPP_
 #define COCONUT_TOOLS_APPENDER_APPENDERFACTORY_HPP_
 
+#include <functional>
+
 #include "Appender.hpp"
 
 #include "coconut-tools/concurrent/fake.hpp"
@@ -25,7 +27,7 @@ public:
 	void registerType(const AppenderTypeId& appenderTypeId) {
 		typeFactory_.registerCreator(
 			appenderTypeId,
-			policy::creation::Functor<std::unique_ptr<Appender::Initialiser>>(
+			policy::creation::Functor<FunctorType>(
 				[]() {
 					return std::unique_ptr<Appender::Initialiser>(
 							new Appender::Initialiser(Appender::Initialiser::createInitialisable<ConcreteAppenderType>())
@@ -45,11 +47,13 @@ public:
 
 private:
 
+	using FunctorType = std::function<std::unique_ptr<Appender::Initialiser>()>;
+
 	using AppenderTypeFactory = Factory<
 		AppenderTypeId,
 		std::unique_ptr<Appender::Initialiser>,
 		factory::storage::None,
-		factory::CreatorRegistry<AppenderTypeId, policy::creation::Functor<std::unique_ptr<Appender::Initialiser>>, factory::error_policy::ExceptionThrowing>,
+		factory::CreatorRegistry<AppenderTypeId, policy::creation::Functor<FunctorType>, factory::error_policy::ExceptionThrowing>,
 		concurrent::FakeMutex
 		>;
 
