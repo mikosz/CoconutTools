@@ -62,15 +62,17 @@ public:
 	{
 	}
 
-    StoredInstance create(const IdentifierParam id) {
+	template <class... CreatorParams>
+    StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) {
 		if (!storage_.isStored(id)) {
-			return storage_.store(id, doCreate(id));
+			return storage_.store(id, doCreate(id, std::forward<CreatorParams>(creatorParams)...));
 		}
 		return storage_.get(id);
     }
 
-    StoredInstance create(const IdentifierParam id) volatile {
-    	return lock()->create(id);
+	template <class... CreatorParams>
+    StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) volatile {
+    	return lock()->create(id, std::forward<CreatorParams>(creatorParams)...);
     }
 
 private:

@@ -25,6 +25,13 @@ public:
 
 };
 
+class MockParametrisedCreator {
+public:
+
+	MOCK_METHOD2(doCreate, std::shared_ptr<int> (const std::string&, int));
+
+};
+
 class MockStorage {
 public:
 
@@ -177,6 +184,22 @@ BOOST_AUTO_TEST_CASE(PassesArgumentsToCreatorConstructor) {
 		> f(42);
 
 	BOOST_CHECK_EQUAL(f.value, 42);
+}
+
+BOOST_AUTO_TEST_CASE(PassesArgumentsToCreatorCreator) {
+	Factory<
+		std::string,
+		std::shared_ptr<int>,
+		storage::None,
+		MockParametrisedCreator,
+		boost::mutex
+		> f;
+
+	EXPECT_CALL(f, doCreate("1", 42)).WillOnce(testing::Return(std::make_shared<int>(42)));
+	EXPECT_CALL(f, doCreate("2", 123)).WillOnce(testing::Return(std::make_shared<int>(123)));
+
+	BOOST_CHECK_EQUAL(*f.create("1", 42), 42);
+	BOOST_CHECK_EQUAL(*f.create("2", 123), 123);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* FactoryTestSuite */);
