@@ -13,16 +13,16 @@ template <class IdentifierType, class InstanceType>
 class Volatile :
     public Mapping<
         IdentifierType,
-        std::weak_ptr<typename InstanceType::element_type>,
-        std::shared_ptr<typename InstanceType::element_type>
+        std::weak_ptr<InstanceType>,
+        std::shared_ptr<InstanceType>
         >
 {
 private:
 
     typedef Mapping<
                 IdentifierType,
-				std::weak_ptr<typename InstanceType::element_type>,
-				std::shared_ptr<typename InstanceType::element_type>
+				std::weak_ptr<InstanceType>,
+				std::shared_ptr<InstanceType>
                 >
             Super;
 
