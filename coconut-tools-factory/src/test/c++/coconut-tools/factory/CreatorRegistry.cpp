@@ -177,6 +177,27 @@ BOOST_AUTO_TEST_CASE(PassesArgumentsToCreators) {
 	CopyableMockCreationPolicyAdapter::reset();
 }
 
+BOOST_AUTO_TEST_CASE(ReturnsWhetherCreatorRegistered) {
+	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
+
+	CopyableMockCreationPolicyAdapter::reset();
+	ErrorPolicy::reset();
+
+	CreatorRegistry<
+		std::string,
+		CopyableMockCreationPolicyAdapter,
+		StaticFunctionMockErrorPolicyAdapter
+		> cr;
+
+	cr.registerCreator("1", CopyableMockCreationPolicyAdapter());
+
+	BOOST_CHECK(cr.isCreatorRegistered("1"));
+	BOOST_CHECK(!cr.isCreatorRegistered("2"));
+
+	ErrorPolicy::reset();
+	CopyableMockCreationPolicyAdapter::reset();
+}
+
 BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
 	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
 
