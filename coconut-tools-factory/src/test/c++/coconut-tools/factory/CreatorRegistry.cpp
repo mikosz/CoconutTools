@@ -21,9 +21,9 @@ using namespace coconut_tools::factory;
 class MockErrorPolicy {
 public:
 
-    MOCK_METHOD1(alreadyRegistered, void (const std::string&));
+	MOCK_METHOD1(alreadyRegistered, void (const std::string&));
 
-    MOCK_METHOD1(noSuchType, void (const std::string&));
+	MOCK_METHOD1(noSuchType, void (const std::string&));
 
 };
 
@@ -31,30 +31,30 @@ template <class>
 class StaticFunctionMockErrorPolicyAdapter {
 public:
 
-    using Delegate = testing::StrictMock<MockErrorPolicy>;
+	using Delegate = testing::StrictMock<MockErrorPolicy>;
 
-    static void reset() {
-        delegate_.reset();
-    }
+	static void reset() {
+		delegate_.reset();
+	}
 
-    static std::shared_ptr<Delegate> delegate() {
-        if (!delegate_) {
-            delegate_.reset(new Delegate);
-        }
-        return delegate_;
-    }
+	static std::shared_ptr<Delegate> delegate() {
+		if (!delegate_) {
+			delegate_.reset(new Delegate);
+		}
+		return delegate_;
+	}
 
-    static void alreadyRegistered(const std::string& id) {
-        delegate_->alreadyRegistered(id);
-    }
+	static void alreadyRegistered(const std::string& id) {
+		delegate_->alreadyRegistered(id);
+	}
 
-    static void noSuchType(const std::string& id) {
-        delegate_->noSuchType(id);
-    }
+	static void noSuchType(const std::string& id) {
+		delegate_->noSuchType(id);
+	}
 
 private:
 
-    static std::shared_ptr<Delegate> delegate_;
+	static std::shared_ptr<Delegate> delegate_;
 
 };
 
@@ -68,6 +68,8 @@ public:
 
 	MOCK_METHOD0(create, Instance ());
 
+	MOCK_METHOD1(create, Instance (int));
+
 };
 
 class CopyableMockCreationPolicyAdapter {
@@ -75,17 +77,21 @@ public:
 
 	using Instance = std::shared_ptr<int>;
 
-    using Delegate = testing::StrictMock<MockCreationPolicy>;
+	using Delegate = testing::StrictMock<MockCreationPolicy>;
 
-    static std::shared_ptr<Delegate> delegate() {
+	static std::shared_ptr<Delegate> delegate() {
 		if (!delegate_) {
-            delegate_ = std::make_shared<Delegate>();
-        }
-        return delegate_;
-    }
+			delegate_ = std::make_shared<Delegate>();
+		}
+		return delegate_;
+	}
 
 	Instance create() {
 		return delegate_->create();
+	}
+
+	Instance create(int i) {
+		return delegate_->create(i);
 	}
 
 	static void reset() {
@@ -94,7 +100,7 @@ public:
 
 private:
 
-    static std::shared_ptr<Delegate> delegate_;
+	static std::shared_ptr<Delegate> delegate_;
 
 };
 
@@ -112,18 +118,18 @@ BOOST_AUTO_TEST_SUITE(FactoryTestSuite);
 BOOST_FIXTURE_TEST_SUITE(CreatorRegistryTestSuite, test_utils::GMockFixture);
 
 BOOST_AUTO_TEST_CASE(ExecutesRegisteredCreators) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
+	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
 
 	CopyableMockCreationPolicyAdapter::reset();
-    ErrorPolicy::reset();
+	ErrorPolicy::reset();
 
-    DoCreateExposer<
+	DoCreateExposer<
 		CreatorRegistry<
 			std::string,
 			CopyableMockCreationPolicyAdapter,
 			StaticFunctionMockErrorPolicyAdapter
 			>
-        > cr;
+		> cr;
 
 	EXPECT_CALL(*CopyableMockCreationPolicyAdapter::delegate(), create())
 		.WillOnce(testing::Return(std::make_shared<int>(1)))
@@ -139,71 +145,99 @@ BOOST_AUTO_TEST_CASE(ExecutesRegisteredCreators) {
 	BOOST_CHECK_EQUAL(*one, 1);
 	BOOST_CHECK_EQUAL(*two, 2);
 
-    ErrorPolicy::reset();
+	ErrorPolicy::reset();
 	CopyableMockCreationPolicyAdapter::reset();
 }
 
-BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
+BOOST_AUTO_TEST_CASE(PassesArgumentsToCreators) {
+	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
 
-    ErrorPolicy::reset();
+	CopyableMockCreationPolicyAdapter::reset();
+	ErrorPolicy::reset();
 
-    DoCreateExposer<
-		CreatorRegistry<
-			std::string,
-			MockCreationPolicy,
-			StaticFunctionMockErrorPolicyAdapter
-			>
-        > cr;
-
-    EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
-
-    cr.doCreate("1");
-
-    ErrorPolicy::reset();
-}
-
-BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
-
-    ErrorPolicy::reset();
-
-    DoCreateExposer<
-		CreatorRegistry<
-			std::string,
-			MockCreationPolicy,
-			StaticFunctionMockErrorPolicyAdapter
-			>
-        > cr;
-
-    EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
-
-    cr.unregisterCreator("1");
-
-    ErrorPolicy::reset();
-}
-
-BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
-    using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
-
-    ErrorPolicy::reset();
-
-    DoCreateExposer<
+	DoCreateExposer<
 		CreatorRegistry<
 			std::string,
 			CopyableMockCreationPolicyAdapter,
 			StaticFunctionMockErrorPolicyAdapter
 			>
-        > cr;
+		> cr;
 
-    EXPECT_CALL(*ErrorPolicy::delegate(), alreadyRegistered(std::string("1")));
+	EXPECT_CALL(*CopyableMockCreationPolicyAdapter::delegate(), create(1))
+		.WillOnce(testing::Return(std::make_shared<int>(1)))
+		;
 
-    CopyableMockCreationPolicyAdapter creator;
+	cr.registerCreator("1", CopyableMockCreationPolicyAdapter());
 
-    cr.registerCreator("1", creator);
-    cr.registerCreator("1", creator);
+	auto one = cr.doCreate("1", 1);
 
-    ErrorPolicy::reset();
+	BOOST_CHECK_EQUAL(*one, 1);
+
+	ErrorPolicy::reset();
+	CopyableMockCreationPolicyAdapter::reset();
+}
+
+BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfCreatingAndCreatorNotRegistered) {
+	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
+
+	ErrorPolicy::reset();
+
+	DoCreateExposer<
+		CreatorRegistry<
+			std::string,
+			MockCreationPolicy,
+			StaticFunctionMockErrorPolicyAdapter
+			>
+		> cr;
+
+	EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
+
+	cr.doCreate("1");
+
+	ErrorPolicy::reset();
+}
+
+BOOST_AUTO_TEST_CASE(CallsNoSuchTypeIfUnregisteringAndCreatorNotRegistered) {
+	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
+
+	ErrorPolicy::reset();
+
+	DoCreateExposer<
+		CreatorRegistry<
+			std::string,
+			MockCreationPolicy,
+			StaticFunctionMockErrorPolicyAdapter
+			>
+		> cr;
+
+	EXPECT_CALL(*ErrorPolicy::delegate(), noSuchType(std::string("1")));
+
+	cr.unregisterCreator("1");
+
+	ErrorPolicy::reset();
+}
+
+BOOST_AUTO_TEST_CASE(CallsCreatorAlreadyRegisteredIfRegisteringAndCreatorRegistered) {
+	using ErrorPolicy = StaticFunctionMockErrorPolicyAdapter<std::string>;
+
+	ErrorPolicy::reset();
+
+	DoCreateExposer<
+		CreatorRegistry<
+			std::string,
+			CopyableMockCreationPolicyAdapter,
+			StaticFunctionMockErrorPolicyAdapter
+			>
+		> cr;
+
+	EXPECT_CALL(*ErrorPolicy::delegate(), alreadyRegistered(std::string("1")));
+
+	CopyableMockCreationPolicyAdapter creator;
+
+	cr.registerCreator("1", creator);
+	cr.registerCreator("1", creator);
+
+	ErrorPolicy::reset();
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* CreatorRegistryTestSuite */);

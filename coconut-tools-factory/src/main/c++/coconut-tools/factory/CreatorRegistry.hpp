@@ -37,13 +37,14 @@ public:
 
 protected:
 
-	typename CreationPolicy::Instance doCreate(const IdentifierParam id) {
+	template <class... CreateParams>
+	typename CreationPolicy::Instance doCreate(const IdentifierParam id, CreateParams&&... createParams) {
 		auto it = creators_.find(id);
 		if (it == creators_.end()) {
 			ErrorPolicy<Identifier>::noSuchType(id);
 			return CreationPolicy::Instance();
 		}
-		return it->second.create();
+		return it->second.create(std::forward<CreateParams>(createParams)...);
 	}
 
 private:
