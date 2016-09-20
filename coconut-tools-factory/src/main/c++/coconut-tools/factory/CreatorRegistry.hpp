@@ -20,6 +20,10 @@ public:
 
 	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
+	bool isCreatorRegistered(const IdentifierParam id) const {
+		return creators_.count(id) != 0;
+	}
+
 	void registerCreator(const IdentifierParam id, CreationPolicy creator) {
 		auto it = creators_.lower_bound(id);
 		if (it != creators_.end() && it->first == id) {
