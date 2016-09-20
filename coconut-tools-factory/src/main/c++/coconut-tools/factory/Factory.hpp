@@ -25,7 +25,7 @@ namespace factory {
  *       provided object and returns it as a StorageType::Instance
  *     * implements a get(IdentifierType) that returns a stored StorageType::Instance
  * @param CreatorType A policy class from which Factory publicly inherits. It may provide additional functions
- *     to be exposed for the user. Required to implement a doCreate(IdentifierType) function, that returns
+ *     to be exposed for the user. Required to implement a doCreate(IdentifierType, ...) function, that returns
  *     a newly created object. The type must be compatible with StorageType's store function parameter.
  * @param MutexType Type of a the mutex that will be used to achieve thread safety. Must be compatible with
  *     concurrent::Lockable's MutexType parameter.
