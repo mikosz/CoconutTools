@@ -1,6 +1,9 @@
 #ifndef COCONUTTOOLS_CONCURRENT_LOCKTRAITS_HPP_
 #define COCONUTTOOLS_CONCURRENT_LOCKTRAITS_HPP_
 
+#include <mutex>
+#include <shared_mutex>
+
 #include <boost/thread/locks.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
@@ -41,11 +44,23 @@ template <>
 class LockTraits<boost::recursive_mutex> {
 public:
 
-    using Mutex = boost::mutex;
+    using Mutex = boost::recursive_mutex;
 
     using UniqueLock = boost::unique_lock<Mutex>;
 
     using SharedLock = boost::unique_lock<Mutex>;
+
+};
+
+template <>
+class LockTraits<std::mutex> {
+public:
+
+	using Mutex = std::mutex;
+
+	using UniqueLock = std::unique_lock<Mutex>;
+
+	using SharedLock = std::shared_lock<Mutex>;
 
 };
 

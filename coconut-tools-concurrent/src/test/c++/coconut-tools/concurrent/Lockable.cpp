@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <mutex>
 
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/thread/mutex.hpp>
@@ -84,14 +85,20 @@ void runTest(volatile I& i, M& m) {
 
 BOOST_AUTO_TEST_SUITE(LockingPtrTestSuite);
 
-BOOST_AUTO_TEST_CASE(sharedTest) {
+BOOST_AUTO_TEST_CASE(boostSharedTest) {
     volatile IntHolder<boost::shared_mutex> i;
     boost::shared_mutex m;
     runTest(i, m);
 }
 
-BOOST_AUTO_TEST_CASE(scopedTest) {
+BOOST_AUTO_TEST_CASE(boostScopedTest) {
     volatile IntHolder<boost::mutex> i;
+    boost::mutex m;
+    runTest(i, m);
+}
+
+BOOST_AUTO_TEST_CASE(stdTest) {
+    volatile IntHolder<std::mutex> i;
     boost::mutex m;
     runTest(i, m);
 }
