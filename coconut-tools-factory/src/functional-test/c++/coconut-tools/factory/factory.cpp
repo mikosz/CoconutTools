@@ -48,6 +48,18 @@ public:
 
 };
 
+int return2() {
+	return 2;
+}
+
+struct Return3 {
+
+	int operator()() {
+		return 3;
+	}
+
+};
+
 const std::string ConcreteClass2::ID("ConcreteClass2");
 
 BOOST_AUTO_TEST_SUITE(DesignPatternTestSuite);
@@ -99,22 +111,26 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 
 	Factory f;
 
-	f.registerCreator(1, policy::creation::Functor<FunctorType>([]() { return 1; }));
-	f.registerCreator(2, policy::creation::Functor<FunctorType>([]() { return 2; }));
+	f.registerCreator(1, []() { return 1; });
+	f.registerCreator(2, &return2);
+	f.registerCreator(3, Return3());
 
 	BOOST_CHECK_THROW(
-			f.registerCreator(1, policy::creation::Functor<FunctorType>([]() { return 1; })),
+			f.registerCreator(1, []() { return 1; }),
 			error_policy::CreatorAlreadyRegistered<int>
 			);
 
 	BOOST_CHECK_EQUAL(f.create(1), 1);
 	BOOST_CHECK_EQUAL(f.create(2), 2);
+	BOOST_CHECK_EQUAL(f.create(3), 3);
 
 	f.unregisterCreator(1);
 	f.unregisterCreator(2);
+	f.unregisterCreator(3);
 
 	BOOST_CHECK_THROW(f.create(1), error_policy::NoSuchType<int>);
 	BOOST_CHECK_THROW(f.create(2), error_policy::NoSuchType<int>);
+	BOOST_CHECK_THROW(f.create(3), error_policy::NoSuchType<int>);
 }
 
 BOOST_AUTO_TEST_CASE(CachingFactory) {
