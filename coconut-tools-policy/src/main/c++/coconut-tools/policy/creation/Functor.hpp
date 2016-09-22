@@ -14,7 +14,8 @@ public:
 
     using Instance = std::result_of_t<FunctionType(Arguments...)>;
 
-    Functor(FunctionType creator) :
+	template <class CompatibleFunctionType>
+    Functor(CompatibleFunctionType creator) :
         creator_(creator) {
     }
 
@@ -29,7 +30,7 @@ private:
 };
 
 template <class... Arguments, class FunctionType>
-Functor<FunctionType, Arguments...> makeFunctor(FunctionType creator) {
+Functor<FunctionType, Arguments...> makeFunctor(FunctionType creator) { // TODO: unnecessary?
 	return Functor<FunctionType, Arguments...>(std::move(creator));
 }
 
