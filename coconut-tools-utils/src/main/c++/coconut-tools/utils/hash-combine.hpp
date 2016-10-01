@@ -6,7 +6,7 @@
 namespace coconut_tools {
 namespace utils {
 
-size_t hashCombine(size_t seed, size_t value) {
+inline size_t hashCombine(size_t seed, size_t value) {
 	// Code from boost
 	// Reciprocal of the golden ratio helps spread entropy and handles duplicates.
 	// See Mike Seymour in magic-numbers-in-boosthash-combine: http://stackoverflow.com/questions/4948780
