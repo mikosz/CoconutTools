@@ -9,9 +9,12 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 
-#include "coconut-tools/concurrent/Lockable.hpp"
+#include "coconut-tools/concurrent/LockableInstance.hpp"
 
 using namespace coconut_tools;
+using namespace coconut_tools::concurrent;
+
+// TODO: duplicated code from Lockable test - is that bad?
 
 namespace /* anonymous */ {
 
@@ -22,12 +25,11 @@ const size_t SLOW_THREAD_COUNT = 2;
 const size_t SLOW_THREAD_OPS = 100;
 const size_t SLOW_THREAD_SLEEP_TIME_MS = 10;
 
-template <class M>
-class IntHolder : public concurrent::Lockable<IntHolder<M>, M> {
+class IntHolder {
 public:
 
-    IntHolder() :
-        value_(0) {
+    IntHolder(int initValue = 0) :
+        value_(initValue) {
     }
 
     int& value() {
@@ -57,7 +59,7 @@ void sleepyIncrement(volatile I& v, M& m, size_t ops, size_t sleepTimeMs) {
 }
 
 template <class I, class M>
-void runTest(volatile I& i, M& m) {
+void runTest(volatile I& i, M& m, int offset) {
     std::vector<std::shared_ptr<boost::thread> > threads;
 
     for (size_t s = 0; s < SLOW_THREAD_COUNT; ++s) {
@@ -80,30 +82,24 @@ void runTest(volatile I& i, M& m) {
 
     std::for_each(threads.begin(), threads.end(), std::bind(&boost::thread::join, std::placeholders::_1));
 
-    BOOST_CHECK_EQUAL(const_cast<I&>(i).value(),
-            (FAST_THREAD_OPS * FAST_THREAD_COUNT) + (SLOW_THREAD_OPS * SLOW_THREAD_COUNT));
+    BOOST_CHECK_EQUAL(i.lock()->value(),
+            (FAST_THREAD_OPS * FAST_THREAD_COUNT) + (SLOW_THREAD_OPS * SLOW_THREAD_COUNT) + offset);
 }
 
-BOOST_AUTO_TEST_SUITE(LockableTestSuite);
+BOOST_AUTO_TEST_SUITE(LockableInstanceTestSuite);
 
 BOOST_AUTO_TEST_CASE(boostSharedTest) {
-    volatile IntHolder<boost::shared_mutex> i;
+    volatile LockableInstance<IntHolder, boost::shared_mutex> i;
     boost::shared_mutex m;
-    runTest(i, m);
+    runTest(i, m, 0);
 }
 
-BOOST_AUTO_TEST_CASE(boostScopedTest) {
-    volatile IntHolder<boost::mutex> i;
+BOOST_AUTO_TEST_CASE(constructorTest) {
+    volatile LockableInstance<IntHolder> i(1000);
     boost::mutex m;
-    runTest(i, m);
+    runTest(i, m, 1000);
 }
 
-BOOST_AUTO_TEST_CASE(stdTest) {
-    volatile IntHolder<std::mutex> i;
-    boost::mutex m;
-    runTest(i, m);
-}
-
-BOOST_AUTO_TEST_SUITE_END(/* LockableTestSuite */);
+BOOST_AUTO_TEST_SUITE_END(/* LockableInstanceTestSuite */);
 
 } // anonymous namespace
