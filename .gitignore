@@ -19,3 +19,5 @@ Makefile
 cmake_install.cmake
 cmake.cfg
 
+# visual-studio files
+.vs/
