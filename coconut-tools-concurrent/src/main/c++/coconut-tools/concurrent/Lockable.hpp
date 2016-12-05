@@ -47,11 +47,9 @@ public:
 
 protected:
 
-    Lockable() {
-    }
+    Lockable() = default;
 
-    virtual ~Lockable() {
-    }
+    virtual ~Lockable() = default;
 
 private:
 
