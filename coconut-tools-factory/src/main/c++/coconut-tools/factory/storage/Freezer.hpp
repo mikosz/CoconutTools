@@ -52,7 +52,6 @@ public:
         }
     }
 
-	// TODO: remove isStored, which may be invalid for Volatile. Add cleanup of invalid elements.
     bool isStored(const IdentifierParam identifier) const {
         return storage_.count(identifier) != 0;
     }
@@ -94,21 +93,9 @@ public:
 		totalSize_ = 0u;
 	}
 
-protected:
+private:
 
     using Stored = std::shared_ptr<InstanceType>;
-
-    Stored getStored(const IdentifierParam identifier) const {
-        typename Storage::const_iterator it = storage_.find(identifier);
-        if (it == storage_.end()) {
-            return Stored();
-        } else {
-			queue_.splice(queue_.end(), queue_, it->second.queueIt);
-            return Stored(it->second.data);
-        }
-    }
-
-private:
 
 	using Queue = std::list<Identifier>;
 

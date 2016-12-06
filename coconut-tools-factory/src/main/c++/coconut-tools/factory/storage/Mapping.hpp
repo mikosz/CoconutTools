@@ -29,7 +29,6 @@ public:
         }
     }
 
-	// TODO: remove isStored, which may be invalid for Volatile. Add cleanup of invalid elements.
     bool isStored(const IdentifierParam identifier) const {
         return storage_.count(identifier) != 0;
     }
