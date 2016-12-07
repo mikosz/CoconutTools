@@ -120,20 +120,20 @@ BOOST_AUTO_TEST_CASE(RemovesLRUWhenLimitExceeded) {
 
 	Freezer freezer;
 	freezer.setMaxFreezerSize(3);
-	freezer.setSizeFunc([](const int&) { return 1; });
+	freezer.setSizeFunc([](const auto&) { return 1; });
 
-	for (size_t i = 0; i < 3; ++i) {
+	for (auto i = 0; i < 3; ++i) {
 		freezer.store(i, std::make_unique<int>(i));
 	}
 
-	for (size_t i = 0; i < 3; ++i) {
+	for (auto i = 0; i < 3; ++i) {
 		BOOST_CHECK(freezer.isStored(i));
 	}
 
 	freezer.store(3, std::make_unique<int>(3));
 
 	BOOST_CHECK(!freezer.isStored(0));
-	for (size_t i = 1; i < 4; ++i) {
+	for (auto i = 1; i < 4; ++i) {
 		BOOST_CHECK(freezer.isStored(i));
 	}
 
@@ -142,13 +142,13 @@ BOOST_AUTO_TEST_CASE(RemovesLRUWhenLimitExceeded) {
 
 	BOOST_CHECK(freezer.isStored(1));
 	BOOST_CHECK(!freezer.isStored(2));
-	for (size_t i = 3; i < 5; ++i) {
+	for (auto i = 3; i < 5; ++i) {
 		BOOST_CHECK(freezer.isStored(i));
 	}
 
 	freezer.erase(1);
 	freezer.store(5, std::make_unique<int>(5));
-	for (size_t i = 3; i < 6; ++i) {
+	for (auto i = 3; i < 6; ++i) {
 		BOOST_CHECK(freezer.isStored(i));
 	}
 }

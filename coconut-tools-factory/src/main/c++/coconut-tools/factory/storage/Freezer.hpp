@@ -35,8 +35,8 @@ public:
 		totalSize_ = std::accumulate(
 			storage_.begin(),
 			storage_.end(),
-			0u,
-			[this](size_t value, const Storage::value_type& entry) {
+			static_cast<size_t>(0),
+			[this](auto value, const auto& entry) {
 				return sizeFunc_(*entry.second.data) + value;
 			});
 		cleanup();
