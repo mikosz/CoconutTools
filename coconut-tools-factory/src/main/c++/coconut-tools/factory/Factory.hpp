@@ -75,6 +75,14 @@ public:
     	return lock()->create(id, std::forward<CreatorParams>(creatorParams)...);
     }
 
+	const Storage& storage() const {
+		return storage_;
+	}
+
+	Storage& storage() {
+		return storage_;
+	}
+
 private:
 
     Storage storage_;

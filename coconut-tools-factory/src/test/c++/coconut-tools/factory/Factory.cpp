@@ -13,7 +13,7 @@
 
 #include "coconut-tools/test-utils/GMockFixture.hpp"
 
-namespace {
+namespace /* anonymous */ {
 
 using namespace coconut_tools;
 using namespace coconut_tools::factory;

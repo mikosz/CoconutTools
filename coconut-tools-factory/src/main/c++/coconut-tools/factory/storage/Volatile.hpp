@@ -37,8 +37,7 @@ public:
     using Stored = typename Super::Stored;
 
     Instance get(const IdentifierParam identifier) const {
-        Stored stored = Super::getStored(identifier);
-        return stored.lock();
+        return Super::getStored(identifier).lock();
     }
 
 };
