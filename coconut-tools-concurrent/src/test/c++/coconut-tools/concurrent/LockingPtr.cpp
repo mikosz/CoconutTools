@@ -1,9 +1,11 @@
+#define BOOST_TEST_NO_LIB
+#include <boost/test/auto_unit_test.hpp>
+
 #include <vector>
 #include <algorithm>
 #include <functional>
 #include <memory>
 
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 

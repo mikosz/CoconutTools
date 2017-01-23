@@ -5,7 +5,6 @@ set(DEPENDENCY_LIBRARIES
     )
 
 SET(TEST_LIBRARIES
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     )
 	
 library_module(coconut-tools-system "${TEST_LIBRARIES}" "${DEPENDENCY_LIBRARIES}" ${LIBRARY_TYPE})
