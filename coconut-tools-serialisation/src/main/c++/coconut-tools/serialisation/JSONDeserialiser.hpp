@@ -75,6 +75,9 @@ private:
 };
 
 } // namespace serialisation
+
+using serialisation::JSONDeserialiser;
+
 } // namespace coconut_tools
 
 

@@ -4,6 +4,7 @@
 #include <coconut-tools/test-utils/GMockFixture.hpp>
 
 #include "coconut-tools/serialisation/Serialiser.hpp"
+#include "coconut-tools/serialisation/common-serialisers.hpp"
 
 using namespace coconut_tools;
 using namespace coconut_tools::serialisation;

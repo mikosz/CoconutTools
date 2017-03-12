@@ -54,6 +54,9 @@ private:
 };
 
 } // namespace serialisation
+
+using serialisation::BinarySerialiser;
+
 } // namespace coconut_tools
 
 

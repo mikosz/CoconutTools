@@ -46,8 +46,8 @@ public:
 	template <
 		class T,
 		std::enable_if_t<
-			(std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value) &&
-			!utils::IsIterable<T>::value
+			(std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value) /* &&
+			!utils::IsIterable<T>::value */
 			>* = nullptr
 		>
 	Serialiser& operator<<(const T& value) {
@@ -57,19 +57,33 @@ public:
 		return *this;
 	}
 
-	template <class T, std::enable_if_t<utils::IsIterable<T>::value>* = nullptr>
-	Serialiser& operator<<(const T& iterable) {
-		const auto elements = static_cast<std::uint64_t>(std::distance(begin(iterable), end(iterable)));
-		if (elements > std::numeric_limits<std::uint32_t>::max()) {
+	template <class T>
+	Serialiser& operator<<(const std::vector<T>& vector) {
+		if (vector.size() > std::numeric_limits<std::uint32_t>::max()) {
 			throw std::runtime_error("Serialised array too large"); // TODO: custom exception
 		}
-		writeArrayStart(static_cast<std::uint32_t>(elements));
-		for (const auto& element : iterable) {
+		writeArrayStart(static_cast<std::uint32_t>(vector.size()));
+		for (const auto& element : vector) {
 			*this << element;
 		}
 		writeArrayEnd();
 		return *this;
 	}
+
+	// TODO: re-enable when the same in Deserialiser works, remove specialisations from common-serialisers
+	//template <class T, std::enable_if_t<utils::IsIterable<T>::value>* = nullptr>
+	//Serialiser& operator<<(const T& iterable) {
+	//	const auto elements = static_cast<std::uint64_t>(std::distance(begin(iterable), end(iterable)));
+	//	if (elements > std::numeric_limits<std::uint32_t>::max()) {
+	//		throw std::runtime_error("Serialised array too large"); // TODO: custom exception
+	//	}
+	//	writeArrayStart(static_cast<std::uint32_t>(elements));
+	//	for (const auto& element : iterable) {
+	//		*this << element;
+	//	}
+	//	writeArrayEnd();
+	//	return *this;
+	//}
 
 	template <>
 	Serialiser& operator<<(const Label& label) {
@@ -144,12 +158,10 @@ private:
 
 };
 
-template <class EnumType>
-inline void serialise(serialisation::Serialiser& serialiser, EnumType enumValue, std::enable_if_t<std::is_enum<EnumType>::value>* = nullptr) {
-	serialiser << toString(enumValue);
-}
-
 } // namespace serialisation
+
+using serialisation::Serialiser;
+
 } // namespace coconut_tools
 
 

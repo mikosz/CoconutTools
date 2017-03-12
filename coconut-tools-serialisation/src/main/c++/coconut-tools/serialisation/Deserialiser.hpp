@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <cstddef>
 #include <type_traits>
 
@@ -36,8 +37,10 @@ public:
 
 	template <
 		class T,
-		std::enable_if_t<std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value
-		>* = nullptr>
+		std::enable_if_t<
+			std::is_class<T>::value || std::is_enum<T>::value || std::is_union<T>::value
+			>* = nullptr
+		>
 	Deserialiser& operator>>(T& value) {
 		readObjectStart();
 		serialise(*this, value);
@@ -50,7 +53,7 @@ public:
 	Deserialiser& operator>>(std::vector<T>& vector) {
 		auto arrayElementsCount = readArrayStart();
 		vector.reserve(arrayElementsCount);
-		T element;
+		auto element = T();
 		for (auto arrayElementsLeft = arrayElementsCount; arrayElementsLeft > 0; --arrayElementsLeft) {
 			*this >> element;
 			vector.emplace_back(std::move(element));
@@ -133,14 +136,10 @@ private:
 
 };
 
-template <class EnumType>
-inline void serialise(serialisation::Deserialiser& deserialiser, EnumType& enumValue, std::enable_if_t<std::is_enum<EnumType>::value>* = nullptr) {
-	std::string name;
-	deserialiser >> name;
-	fromString(enumValue, name);
-}
-
 } // namespace serialisation
+
+using serialisation::Deserialiser;
+
 } // namespace coconut_tools
 
 

@@ -68,6 +68,9 @@ private:
 };
 
 } // namespace serialisation
+
+using serialisation::JSONSerialiser;
+
 } // namespace coconut_tools
 
 
