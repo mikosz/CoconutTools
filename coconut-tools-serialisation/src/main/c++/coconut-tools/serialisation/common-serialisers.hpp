@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <tuple>
 #include <unordered_map>
 
 #include "Deserialiser.hpp"
@@ -36,7 +37,7 @@ inline void serialise(
 	serialiser << toString(enumValue);
 }
 
-// --- containers
+// --- pair & tuple
 
 // TODO: wanted to make SerialiserType a template paremeter, but then compilation fails...
 template <class FirstType, class SecondType>
@@ -58,6 +59,67 @@ inline void serialise(
 	serialiser(Deserialiser::Label("first"), pair.first);
 	serialiser(Deserialiser::Label("second"), pair.second);
 }
+
+namespace detail {
+
+// TODO: see above
+template <size_t ELEMENT, class... T>
+inline std::enable_if_t<ELEMENT == sizeof...(T), void> serialise(
+	Serialiser& serialiser,
+	typename Serialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	)
+{
+}
+
+template <size_t ELEMENT, class... T>
+inline std::enable_if_t<ELEMENT < sizeof...(T), void> serialise(
+	Serialiser& serialiser,
+	typename Serialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	)
+{
+	serialiser(Serialiser::Label("element-" + std::to_string(ELEMENT)), std::get<ELEMENT>(tuple));
+	serialise<ELEMENT + 1, T...>(serialiser, tuple);
+}
+
+template <size_t ELEMENT, class... T>
+inline std::enable_if_t<ELEMENT == sizeof...(T), void> serialise(
+	Deserialiser& deserialiser,
+	typename Deserialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	)
+{
+}
+
+template <size_t ELEMENT, class... T>
+inline std::enable_if_t<ELEMENT < sizeof...(T), void> serialise(
+	Deserialiser& deserialiser,
+	typename Deserialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	)
+{
+	deserialiser(Deserialiser::Label("element-" + std::to_string(ELEMENT)), std::get<ELEMENT>(tuple));
+	serialise<ELEMENT + 1, T...>(deserialiser, tuple);
+}
+
+} // namespace detail
+
+template <class... T>
+inline void serialise(
+	Serialiser& serialiser,
+	typename Serialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	)
+{
+	detail::serialise<0, T...>(serialiser, tuple);
+}
+
+template <class... T>
+inline void serialise(
+	Deserialiser& deserialiser,
+	typename Deserialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	)
+{
+	detail::serialise<0, T...>(deserialiser, tuple);
+}
+
+// --- containers
 
 template <class Key, class Value>
 inline void serialise(Deserialiser& deserialiser, std::unordered_map<Key, Value>& map) {

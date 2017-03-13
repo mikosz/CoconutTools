@@ -1,8 +1,10 @@
 #define BOOST_TEST_NO_LIB
 #include <boost/test/auto_unit_test.hpp>
 
+#include <string>
 #include <sstream>
 #include <unordered_map>
+#include <tuple>
 
 #include "coconut-tools/serialisation/BinarySerialiser.hpp"
 #include "coconut-tools/serialisation/BinaryDeserialiser.hpp"
@@ -13,6 +15,8 @@
 
 using namespace coconut_tools;
 using namespace coconut_tools::serialisation;
+
+using namespace std::string_literals;
 
 namespace /* anonymous */ {
 
@@ -109,6 +113,27 @@ BOOST_AUTO_TEST_CASE(SerialisesUnorderedMaps) { // TODO: see above
 	}
 
 	BOOST_CHECK(map == deserialised);
+}
+
+BOOST_AUTO_TEST_CASE(SerialisesTuples) { // TODO: see above
+	// auto tuple = std::make_tuple("string"s, 123, "const char*"); // TODO: doesn't work for const char* ???
+	auto tuple = std::make_tuple("string"s, 123, 0.5f);
+
+	std::stringstream ss;
+
+	{
+		BinarySerialiser serialiser(ss);
+		serialiser << tuple;
+	}
+
+	auto deserialised = decltype(tuple)();
+	
+	{
+		BinaryDeserialiser deserialiser(ss);
+		deserialiser >> deserialised;
+	}
+
+	BOOST_CHECK(tuple == deserialised);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* SerialisationTwoWaySerialisationTestSuite */);
