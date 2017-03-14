@@ -14,8 +14,9 @@ namespace factory {
  * A generic implementation of the "Factory" design pattern.
  * 
  * @param IdentifierType Type of the parameter identifying objects to be created
- * @param InstanceType Type, or supertype, of objects that will be returned by the create function. This
- *     type will be wrapped into some storage type.
+ * @param CreatorType A policy class from which Factory publicly inherits. It may provide additional functions
+ *     to be exposed for the user. Required to implement a doCreate(IdentifierType, ...) function, that returns
+ *     a newly created object and to define an Instance type that is the result of this function.
  * @param StorageType A policy class that stores created objects. Requirements for this class are:
  *     * default-constructible
  *     * defines an Instance type - this is the final type that will be returned by the create() function
@@ -24,37 +25,31 @@ namespace factory {
  *     * implements a store(IdentifierType, decltype(CreatorType::doCreate(...))) function that stores the
  *       provided object and returns it as a StorageType::Instance
  *     * implements a get(IdentifierType) that returns a stored StorageType::Instance
- * @param CreatorType A policy class from which Factory publicly inherits. It may provide additional functions
- *     to be exposed for the user. Required to implement a doCreate(IdentifierType, ...) function, that returns
- *     a newly created object. The type must be compatible with StorageType's store function parameter.
  * @param MutexType Type of a the mutex that will be used to achieve thread safety. Must be compatible with
  *     concurrent::Lockable's MutexType parameter.
  */
 template <
-    class IdentifierType,
-    class InstanceType,
-    template<class /* IdentifierType */, class /* InstanceType */> class StorageType,
-    class CreatorType,
-    class MutexType
-    >
+	class IdentifierType,
+	class CreatorType,
+	template<class /* IdentifierType */, class /* CreatorType::InstanceType */> class StorageType,
+	class MutexType
+	>
 class Factory :
 	public CreatorType,
 	public concurrent::Lockable<
-		Factory<IdentifierType, InstanceType, StorageType, CreatorType, MutexType>,
+		Factory<IdentifierType, CreatorType, StorageType, MutexType>,
 		MutexType
 		>
 {
 public:
 
-    using Identifier = IdentifierType;
+	using Identifier = IdentifierType;
 
-    using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
+	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
-    using Instance = InstanceType;
+	using Storage = StorageType<Identifier, typename CreatorType::Instance>;
 
-    using Storage = StorageType<Identifier, Instance>;
-
-    using StoredInstance = typename Storage::Instance;
+	using StoredInstance = typename Storage::Instance;
 
 	template <class... CreatorParams>
 	Factory(CreatorParams&&... creatorParams) :
@@ -63,17 +58,17 @@ public:
 	}
 
 	template <class... CreatorParams>
-    StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) {
+	StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) {
 		if (!storage_.isStored(id)) {
 			return storage_.store(id, doCreate(id, std::forward<CreatorParams>(creatorParams)...));
 		}
 		return storage_.get(id);
-    }
+	}
 
 	template <class... CreatorParams>
-    StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) volatile {
-    	return lock()->create(id, std::forward<CreatorParams>(creatorParams)...);
-    }
+	StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) volatile {
+		return lock()->create(id, std::forward<CreatorParams>(creatorParams)...);
+	}
 
 	const Storage& storage() const {
 		return storage_;
@@ -85,7 +80,7 @@ public:
 
 private:
 
-    Storage storage_;
+	Storage storage_;
 
 };
 

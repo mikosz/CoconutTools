@@ -20,6 +20,8 @@ public:
 
 	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
+	using Instance = typename CreationPolicy::Instance;
+
 	bool isCreatorRegistered(const IdentifierParam id) const {
 		return creators_.count(id) != 0;
 	}
@@ -42,11 +44,11 @@ public:
 protected:
 
 	template <class... CreateParams>
-	typename CreationPolicy::Instance doCreate(const IdentifierParam id, CreateParams&&... createParams) {
+	typename Instance doCreate(const IdentifierParam id, CreateParams&&... createParams) {
 		auto it = creators_.find(id);
 		if (it == creators_.end()) {
 			ErrorPolicy<Identifier>::noSuchType(id);
-			return CreationPolicy::Instance();
+			return Instance();
 		}
 		return it->second.create(std::forward<CreateParams>(createParams)...);
 	}

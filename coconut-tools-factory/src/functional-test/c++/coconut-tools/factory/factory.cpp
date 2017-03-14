@@ -69,9 +69,8 @@ BOOST_AUTO_TEST_SUITE(FactoryFunctionalTestSuite);
 BOOST_AUTO_TEST_CASE(RegisteredTypesCreatingFactory) {
 	using Factory = Factory<
 		std::string,
-		std::unique_ptr<AbstractClass>,
-		storage::None,
 		CreatorRegistry<std::string, policy::creation::New<AbstractClass>, error_policy::ExceptionThrowing>,
+		storage::None,
 		FakeMutex
 		>;
 
@@ -104,9 +103,8 @@ BOOST_AUTO_TEST_CASE(RegisteredFunctorsCreatingFactory) {
 	using FunctorType = std::function<int()>;
 	using Factory = Factory<
 		int,
-		int,
-		storage::None,
 		CreatorRegistry<int, policy::creation::Functor<FunctorType>, error_policy::ExceptionThrowing>,
+		storage::None,
 		FakeMutex
 		>;
 
@@ -138,9 +136,8 @@ BOOST_AUTO_TEST_CASE(CachingFactory) {
 	using FunctorType = std::function<std::unique_ptr<int>()>;
 	using Factory = Factory<
 		int,
-		int,
-		storage::Permanent,
 		CreatorRegistry<int, policy::creation::Functor<FunctorType>, error_policy::ExceptionThrowing>,
+		storage::Permanent,
 		FakeMutex
 		>;
 
@@ -164,9 +161,8 @@ BOOST_AUTO_TEST_CASE(ThreadSafeFactory) {
 	using FunctorType = std::function<std::unique_ptr<int>()>;
 	using Factory = volatile Factory<
 		int,
-		int,
-		storage::Permanent,
 		CreatorRegistry<int, policy::creation::Functor<FunctorType>, error_policy::ExceptionThrowing>,
+		storage::Permanent,
 		boost::mutex
 		>;
 

@@ -51,9 +51,8 @@ private:
 
 	using AppenderTypeFactory = Factory<
 		AppenderTypeId,
-		std::unique_ptr<Appender::Initialiser>,
-		factory::storage::None,
 		factory::CreatorRegistry<AppenderTypeId, policy::creation::Functor<FunctorType>, factory::error_policy::ExceptionThrowing>,
+		factory::storage::None,
 		concurrent::FakeMutex
 		>;
 

@@ -12,20 +12,20 @@ template <class FunctionType, class... Arguments>
 class Functor {
 public:
 
-    using Instance = std::result_of_t<FunctionType(Arguments...)>;
+	using Instance = std::result_of_t<FunctionType(Arguments...)>;
 
 	template <class CompatibleFunctionType>
-    Functor(CompatibleFunctionType creator) :
-        creator_(creator) {
-    }
+	Functor(CompatibleFunctionType creator) :
+		creator_(creator) {
+	}
 
-    Instance create(Arguments&&... arguments) {
-        return creator_(std::forward<Arguments>(arguments)...);
-    }
+	Instance create(Arguments&&... arguments) {
+		return creator_(std::forward<Arguments>(arguments)...);
+	}
 
 private:
 
-    FunctionType creator_;
+	FunctionType creator_;
 
 };
 

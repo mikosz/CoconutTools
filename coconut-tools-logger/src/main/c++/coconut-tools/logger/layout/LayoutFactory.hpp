@@ -24,9 +24,8 @@ namespace layout {
 class LayoutFactory :
 	public Factory<
 		std::string,
-		LayoutSharedPtr,
-		factory::storage::Permanent,
 		factory::CreatorRegistry<std::string, policy::creation::New<Layout>, factory::error_policy::ExceptionThrowing>,
+		factory::storage::Permanent,
 		concurrent::FakeMutex
 		>
 {
@@ -62,13 +61,12 @@ private:
 
 	using LayoutTypeFactory = Factory<
 		LayoutTypeId,
-		std::unique_ptr<Layout::Initialiser>,
-		factory::storage::None,
 		factory::CreatorRegistry<
 			LayoutTypeId,
 			policy::creation::Functor<FunctorType>,
 			factory::error_policy::ExceptionThrowing
 			>,
+		factory::storage::None,
 		concurrent::FakeMutex
 		>;
 

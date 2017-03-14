@@ -22,12 +22,16 @@ using namespace coconut_tools::factory;
 class MockCreator {
 public:
 
+	using Instance = std::shared_ptr<int>;
+
 	MOCK_METHOD1(doCreate, std::shared_ptr<int> (const std::string&));
 
 };
 
 class MockParametrisedCreator {
 public:
+
+	using Instance = std::shared_ptr<int>;
 
 	MOCK_METHOD2(doCreate, std::shared_ptr<int> (const std::string&, int));
 
@@ -101,6 +105,8 @@ std::shared_ptr<typename SingletonMockStorageAdapter<T1, T2>::Delegate> Singleto
 
 struct IntConstructedCreator {
 
+	using Instance = int;
+
 	IntConstructedCreator(int value) :
 		value(value)
 	{
@@ -116,9 +122,8 @@ BOOST_FIXTURE_TEST_SUITE(FactoryTestSuite, test_utils::GMockFixture);
 BOOST_AUTO_TEST_CASE(CallsCreators) {
 	Factory<
 		std::string,
-		std::shared_ptr<int>,
-		storage::None,
 		MockCreator,
+		storage::None,
 		boost::mutex
 		> f;
 
@@ -136,9 +141,8 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 
 	Factory<
 		std::string,
-		int,
-		SingletonMockStorageAdapter,
 		MockCreator,
+		SingletonMockStorageAdapter,
 		boost::mutex
 		> f;
 
@@ -178,9 +182,8 @@ BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
 BOOST_AUTO_TEST_CASE(PassesArgumentsToCreatorConstructor) {
 	Factory<
 		int,
-		int,
-		storage::None,
 		IntConstructedCreator,
+		storage::None,
 		boost::mutex
 		> f(42);
 
@@ -190,9 +193,8 @@ BOOST_AUTO_TEST_CASE(PassesArgumentsToCreatorConstructor) {
 BOOST_AUTO_TEST_CASE(PassesArgumentsToCreatorCreator) {
 	Factory<
 		std::string,
-		std::shared_ptr<int>,
-		storage::None,
 		MockParametrisedCreator,
+		storage::None,
 		boost::mutex
 		> f;
 

@@ -9,6 +9,8 @@
 
 #include <boost/call_traits.hpp>
 
+#include "detail/InstanceType.hpp"
+
 namespace coconut_tools {
 namespace factory {
 namespace storage {
@@ -17,13 +19,13 @@ template <class IdentifierType, class InstanceType>
 class Freezer {
 public:
 
-    using Identifier = IdentifierType;
+	using Identifier = IdentifierType;
 
-    using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
+	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
-    using Instance = std::shared_ptr<InstanceType>;
+	using Instance = std::shared_ptr<detail::InstanceTypeT<InstanceType>>;
 
-	using SizeFunc = std::function<size_t (const InstanceType&)>;
+	using SizeFunc = std::function<size_t (const detail::InstanceTypeT<Instance>&)>;
 
 	void setMaxFreezerSize(size_t size) {
 		maxSize_ = size;
@@ -42,50 +44,50 @@ public:
 		cleanup();
 	}
 
-    Instance get(const IdentifierParam identifier) const { // TODO: duplicated from getStored below
-        typename Storage::const_iterator it = storage_.find(identifier);
-        if (it == storage_.end()) {
-            return Instance();
-        } else {
+	Instance get(const IdentifierParam identifier) const { // TODO: duplicated from getStored below
+		typename Storage::const_iterator it = storage_.find(identifier);
+		if (it == storage_.end()) {
+			return Instance();
+		} else {
 			queue_.splice(queue_.end(), queue_, it->second.queueIt);
-            return Instance(it->second.data);
-        }
-    }
+			return Instance(it->second.data);
+		}
+	}
 
-    bool isStored(const IdentifierParam identifier) const {
-        return storage_.count(identifier) != 0;
-    }
+	bool isStored(const IdentifierParam identifier) const {
+		return storage_.count(identifier) != 0;
+	}
 
-    Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {
-        if (isStored(identifier)) {
-            erase(identifier);
-        }
-        Instance permanent(instance.release());
+	Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {
+		if (isStored(identifier)) {
+			erase(identifier);
+		}
+		Instance permanent(instance.release());
 
 		StorageEntry entry;
 		entry.data = permanent;
 		entry.queueIt = queue_.emplace(queue_.end(), identifier);
 
-        storage_.emplace(std::make_pair(identifier, std::move(entry)));
+		storage_.emplace(std::make_pair(identifier, std::move(entry)));
 		if (sizeFunc_) {
 			totalSize_ += sizeFunc_(*permanent);
 		}
 
 		cleanup();
 
-        return permanent;
-    }
+		return permanent;
+	}
 
-    void erase(const IdentifierParam identifier) {
+	void erase(const IdentifierParam identifier) {
 		auto storageIt = storage_.find(identifier);
-        if (storageIt != storage_.end()) {
+		if (storageIt != storage_.end()) {
 			if (sizeFunc_) {
 				totalSize_ -= sizeFunc_(*storageIt->second.data);
 			}
 			queue_.erase(storageIt->second.queueIt);
 			storage_.erase(storageIt);
 		}
-    }
+	}
 
 	void clear() {
 		storage_.clear();
@@ -95,7 +97,7 @@ public:
 
 private:
 
-    using Stored = std::shared_ptr<InstanceType>;
+	using Stored = std::shared_ptr<InstanceType>;
 
 	using Queue = std::list<Identifier>;
 
@@ -109,7 +111,7 @@ private:
 
 	using Storage = std::unordered_map<Identifier, StorageEntry>;
 
-    Storage storage_;
+	Storage storage_;
 
 	mutable Queue queue_;
 

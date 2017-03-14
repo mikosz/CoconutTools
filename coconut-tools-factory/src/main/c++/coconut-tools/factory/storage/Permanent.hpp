@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "detail/InstanceType.hpp"
 #include "Mapping.hpp"
 
 namespace coconut_tools {
@@ -13,8 +14,8 @@ template <class IdentifierType, class InstanceType>
 class Permanent :
     public Mapping<
         IdentifierType,
-        std::shared_ptr<InstanceType>,
-        std::shared_ptr<InstanceType>
+        std::shared_ptr<detail::InstanceTypeT<InstanceType>>,
+        std::shared_ptr<detail::InstanceTypeT<InstanceType>>
         >
 {
 };
