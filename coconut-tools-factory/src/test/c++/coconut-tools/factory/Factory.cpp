@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(CallsCreators) {
 }
 
 BOOST_AUTO_TEST_CASE(StoresCreatedInstances) {
-	using Storage = SingletonMockStorageAdapter<std::string, int>;
+	using Storage = SingletonMockStorageAdapter<std::string, std::shared_ptr<int>>;
 
 	Storage::reset();
 
