@@ -2,6 +2,7 @@
 #define COCONUT_TOOLS_FACTORY_STORAGE_VOLATILE_HPP_
 
 #include <memory>
+#include <functional>
 
 #include "detail/InstanceType.hpp"
 #include "Mapping.hpp"
@@ -14,30 +15,32 @@ template <class IdentifierType, class InstanceType>
 class Volatile :
 	public Mapping<
 		IdentifierType,
-		std::weak_ptr<detail::InstanceTypeT<InstanceType>>,
-		std::shared_ptr<detail::InstanceTypeT<InstanceType>>
+		std::weak_ptr<detail::InstanceTypeT<InstanceType>>
 		>
 {
 private:
 
+	using StoredType = std::weak_ptr<detail::InstanceTypeT<InstanceType>>;
+
 	using Super = Mapping<
 		IdentifierType,
-		std::weak_ptr<detail::InstanceTypeT<InstanceType>>,
-		std::shared_ptr<detail::InstanceTypeT<InstanceType>>
+		StoredType
 		>;
 
 public:
 
-	using Instance = typename Super::Instance;
-
-	using Identifier = typename Super::Identifier;
+	using Instance = std::shared_ptr<detail::InstanceTypeT<InstanceType>>;
 
 	using IdentifierParam = typename Super::IdentifierParam;
 
-	using Stored = typename Super::Stored;
+	using Creator = std::function<InstanceType()>;
 
-	Instance get(const IdentifierParam identifier) const {
-		return Super::getStored(identifier).lock();
+	Instance get(const IdentifierParam identifier, Creator creator) const {
+		auto stored = Super::getStored(identifier).lock();
+		if (!stored) {
+			auto permanent = PermanentType(creator());
+			Super::store(identifier)
+		}
 	}
 
 };

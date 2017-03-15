@@ -10,28 +10,13 @@ namespace coconut_tools {
 namespace factory {
 namespace storage {
 
-template <class IdentifierType, class StoredType, class PermanentType>
+template <class IdentifierType, class StoredType>
 class Mapping {
 public:
 
 	using Identifier = IdentifierType;
 
 	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
-
-	using Instance = PermanentType;
-
-	Instance get(const IdentifierParam identifier) const {
-		typename Storage::const_iterator it = storage_.find(identifier);
-		if (it == storage_.end()) {
-			return Instance();
-		} else {
-			return Instance(it->second);
-		}
-	}
-
-	bool isStored(const IdentifierParam identifier) const {
-		return storage_.count(identifier) != 0;
-	}
 
 	Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {
 		if (isStored(identifier)) {
