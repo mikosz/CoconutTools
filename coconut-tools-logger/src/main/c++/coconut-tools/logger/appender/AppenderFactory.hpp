@@ -58,7 +58,7 @@ private:
 
 	AppenderTypeFactory typeFactory_;
 
-	factory::storage::Permanent<Appender::Id, Appender> instanceStorage_;
+	factory::storage::Permanent<Appender::Id, std::unique_ptr<Appender>> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

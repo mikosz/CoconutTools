@@ -40,11 +40,8 @@ void AppenderFactory::reloadConfiguration(logger::configuration::ConstLoggerConf
 }
 
 AppenderSharedPtr AppenderFactory::create(const Appender::Id& appenderId) {
-	if (instanceStorage_.isStored(appenderId)) {
-		return instanceStorage_.get(appenderId);
-	}
-
-	auto initialiser = typeFactory_.create(loggerConfiguration_->appenderTypeId(appenderId));
-	instanceStorage_.store(appenderId, initialiser->initialise(appenderId, *loggerConfiguration_, &layoutFactory_));
-	return instanceStorage_.get(appenderId);
+	return instanceStorage_.get(appenderId, [this, &appenderId]() {
+			auto initialiser = typeFactory_.create(loggerConfiguration_->appenderTypeId(appenderId));
+			return initialiser->initialise(appenderId, *loggerConfiguration_, &layoutFactory_);
+		});
 }

@@ -72,7 +72,7 @@ private:
 
 	LayoutTypeFactory typeFactory_;
 
-	factory::storage::Permanent<Layout::Id, Layout> instanceStorage_;
+	factory::storage::Permanent<Layout::Id, std::unique_ptr<Layout>> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 

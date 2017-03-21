@@ -5,7 +5,7 @@
 #include <functional>
 
 #include "detail/InstanceType.hpp"
-#include "Mapping.hpp"
+#include "detail/Mapping.hpp"
 
 namespace coconut_tools {
 namespace factory {
@@ -13,7 +13,7 @@ namespace storage {
 
 template <class IdentifierType, class InstanceType>
 class Volatile :
-	public Mapping<
+	public detail::Mapping<
 		IdentifierType,
 		std::weak_ptr<detail::InstanceTypeT<InstanceType>>
 		>
@@ -35,12 +35,14 @@ public:
 
 	using Creator = std::function<InstanceType()>;
 
-	Instance get(const IdentifierParam identifier, Creator creator) const {
-		auto stored = Super::getStored(identifier).lock();
-		if (!stored) {
+	Instance get(const IdentifierParam identifier, Creator creator) {
+		auto permanent = Super::getStored(identifier).lock();
+		if (!permanent) {
 			auto permanent = PermanentType(creator());
-			Super::store(identifier)
+			Super::store(identifier, permanent)
 		}
+
+		return permanent;
 	}
 
 };

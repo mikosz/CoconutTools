@@ -1,6 +1,7 @@
 #ifndef COCONUT_TOOLS_FACTORY_STORAGE_NONE_HPP_
 #define COCONUT_TOOLS_FACTORY_STORAGE_NONE_HPP_
 
+#include <functional>
 #include <memory>
 
 #include <boost/call_traits.hpp>
@@ -28,8 +29,10 @@ public:
 
     typedef Instance Permanent;
 
-    Permanent get(const IdentifierParam) const {
-        throw GetCalledOnNone();
+	using Creator = std::function<InstanceType()>;
+
+	Instance get(const IdentifierParam identifier, Creator creator) {
+        throw creator();
     }
 
     bool isStored(const IdentifierParam) const {

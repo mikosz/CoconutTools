@@ -61,10 +61,9 @@ public:
 	StoredInstance create(const IdentifierParam id, CreatorParams&&... creatorParams) {
 		return storage_.get(
 			id,
-			[creatorParams = std::forward<CreatorParams>(creatorParams)..., &id]() {
-					return doCreate(id, std::forward<CreatorParams>(creatorParams)...)
-				}
-			);
+			[this, &creatorParams..., &id]() {
+					return doCreate(id, std::forward<CreatorParams>(creatorParams)...);
+				});
 	}
 
 	template <class... CreatorParams>

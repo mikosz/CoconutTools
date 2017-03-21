@@ -36,11 +36,8 @@ void LayoutFactory::reloadConfiguration(logger::configuration::ConstLoggerConfig
 }
 
 LayoutSharedPtr LayoutFactory::create(const Layout::Id& layoutId) {
-	if (instanceStorage_.isStored(layoutId)) {
-		return instanceStorage_.get(layoutId);
-	}
-
-	auto initialiser = typeFactory_.create(loggerConfiguration_->layoutTypeId(layoutId));
-	instanceStorage_.store(layoutId, initialiser->initialise(layoutId, *loggerConfiguration_));
-	return instanceStorage_.get(layoutId);
+	return instanceStorage_.get(layoutId, [this, &layoutId]() {
+			auto initialiser = typeFactory_.create(loggerConfiguration_->layoutTypeId(layoutId));
+			return initialiser->initialise(layoutId, *loggerConfiguration_);
+		});
 }

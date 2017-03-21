@@ -1,6 +1,7 @@
-#ifndef COCONUT_TOOLS_FACTORY_STORAGE_MAPPING_HPP_
-#define COCONUT_TOOLS_FACTORY_STORAGE_MAPPING_HPP_
+#ifndef COCONUT_TOOLS_FACTORY_STORAGE_DETAIL_MAPPING_HPP_
+#define COCONUT_TOOLS_FACTORY_STORAGE_DETAIL_MAPPING_HPP_
 
+#include <algorithm>
 #include <memory>
 #include <unordered_map>
 
@@ -9,6 +10,7 @@
 namespace coconut_tools {
 namespace factory {
 namespace storage {
+namespace detail {
 
 template <class IdentifierType, class StoredType>
 class Mapping {
@@ -18,13 +20,9 @@ public:
 
 	using IdentifierParam = typename boost::call_traits<Identifier>::param_type;
 
-	Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {
-		if (isStored(identifier)) {
-			erase(identifier);
-		}
-		Instance permanent(instance.release());
-		storage_.insert(std::make_pair(identifier, Stored(permanent)));
-		return permanent;
+	StoredType store(const IdentifierParam identifier, StoredType stored) {
+		storage_.erase(identifier);
+		return storage_.emplace(identifier, std::move(stored)).first->second;
 	}
 
 	void erase(const IdentifierParam identifier) {
@@ -56,8 +54,9 @@ private:
 
 };
 
+} // namespace detail
 } // namespace storage
 } // namespace factory
 } // namespace coconut_tools
 
-#endif /* COCONUT_TOOLS_FACTORY_STORAGE_MAPPING_HPP_ */
+#endif /* COCONUT_TOOLS_FACTORY_STORAGE_DETAIL_MAPPING_HPP_ */

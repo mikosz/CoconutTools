@@ -54,10 +54,6 @@ public:
 		}
 	}
 
-	bool isStored(const IdentifierParam identifier) const {
-		return storage_.count(identifier) != 0;
-	}
-
 	Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {
 		if (isStored(identifier)) {
 			erase(identifier);
