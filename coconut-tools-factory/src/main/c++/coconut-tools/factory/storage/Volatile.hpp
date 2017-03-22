@@ -2,8 +2,10 @@
 #define COCONUT_TOOLS_FACTORY_STORAGE_VOLATILE_HPP_
 
 #include <memory>
+#include <functional>
 
-#include "Mapping.hpp"
+#include "detail/InstanceType.hpp"
+#include "detail/Mapping.hpp"
 
 namespace coconut_tools {
 namespace factory {
@@ -11,34 +13,41 @@ namespace storage {
 
 template <class IdentifierType, class InstanceType>
 class Volatile :
-    public Mapping<
-        IdentifierType,
-        std::weak_ptr<InstanceType>,
-        std::shared_ptr<InstanceType>
-        >
+	public detail::Mapping<
+		IdentifierType,
+		std::weak_ptr<detail::InstanceTypeT<InstanceType>>
+		>
 {
 private:
 
-    typedef Mapping<
-                IdentifierType,
-				std::weak_ptr<InstanceType>,
-				std::shared_ptr<InstanceType>
-                >
-            Super;
+	using StoredType = std::weak_ptr<detail::InstanceTypeT<InstanceType>>;
+
+	using Super = Mapping<
+		IdentifierType,
+		StoredType
+		>;
 
 public:
 
-    using Instance = typename Super::Instance;
+	using Instance = std::shared_ptr<detail::InstanceTypeT<InstanceType>>;
 
-    using Identifier = typename Super::Identifier;
+	using IdentifierParam = typename Super::IdentifierParam;
 
-    using IdentifierParam = typename Super::IdentifierParam;
+	using Creator = std::function<InstanceType()>;
 
-    using Stored = typename Super::Stored;
+	Instance get(const IdentifierParam identifier, Creator creator) {
+		auto permanent = Super::getStored(identifier).lock();
+		if (!permanent) {
+			permanent = Instance(creator());
+			Super::store(identifier, permanent);
+		}
 
-    Instance get(const IdentifierParam identifier) const {
-        return Super::getStored(identifier).lock();
-    }
+		return permanent;
+	}
+
+	bool isStored(const IdentifierParam identifier) const {
+		return !Super::getStored(identifier).expired();
+	}
 
 };
 

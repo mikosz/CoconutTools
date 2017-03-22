@@ -40,7 +40,7 @@ private:
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
-	factory::storage::Permanent<LoggerId, Logger> storage_;
+	factory::storage::Permanent<LoggerId, std::unique_ptr<Logger>> storage_;
 
 	appender::AppenderFactory appenderFactory_;
 

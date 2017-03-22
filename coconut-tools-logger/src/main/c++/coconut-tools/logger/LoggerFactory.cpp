@@ -25,17 +25,13 @@ LoggerSharedPtr LoggerFactory::create(const LoggerId& loggerId) {
 	if (!loggerConfiguration_) {
 		return SystemLogger::instance();
 	} else {
-		auto logger = storage_.get(loggerId);
-		if (logger) {
-			return logger;
-		}
-
-		LoggerUniquePtr newLogger(new Logger(loggerConfiguration_->loggerLevel(loggerId)));
-		auto appenders = loggerConfiguration_->appenderIds(loggerId);
-		for (auto appender : appenders) {
-			newLogger->addAppender(appenderFactory_.create(appender));
-		}
-		return storage_.store(loggerId, LoggerUniquePtr(newLogger.release()));
+		return storage_.get(loggerId, [this, &loggerId]() {
+				auto logger = std::make_unique<Logger>(loggerConfiguration_->loggerLevel(loggerId));
+				for (const auto& appender : loggerConfiguration_->appenderIds(loggerId)) {
+					logger->addAppender(appenderFactory_.create(appender));
+				}
+				return logger;
+			});
 	}
 }
 

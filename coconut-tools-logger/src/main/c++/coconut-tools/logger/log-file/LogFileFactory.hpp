@@ -29,13 +29,12 @@ private:
 
 	using Factory = Factory<
 		std::string,
-		LogFile,
-		factory::storage::Permanent,
 		factory::CreatorRegistry<
 			std::string,
 			policy::creation::Functor<FunctorType>,
 			factory::error_policy::ExceptionThrowing
 			>,
+		factory::storage::Permanent,
 		concurrent::FakeMutex
 		>;
 

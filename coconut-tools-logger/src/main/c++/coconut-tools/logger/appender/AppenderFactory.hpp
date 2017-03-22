@@ -51,15 +51,14 @@ private:
 
 	using AppenderTypeFactory = Factory<
 		AppenderTypeId,
-		std::unique_ptr<Appender::Initialiser>,
-		factory::storage::None,
 		factory::CreatorRegistry<AppenderTypeId, policy::creation::Functor<FunctorType>, factory::error_policy::ExceptionThrowing>,
+		factory::storage::None,
 		concurrent::FakeMutex
 		>;
 
 	AppenderTypeFactory typeFactory_;
 
-	factory::storage::Permanent<Appender::Id, Appender> instanceStorage_;
+	factory::storage::Permanent<Appender::Id, std::unique_ptr<Appender>> instanceStorage_;
 
 	configuration::ConstLoggerConfigurationSharedPtr loggerConfiguration_;
 
