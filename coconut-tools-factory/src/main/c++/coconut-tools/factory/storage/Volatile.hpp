@@ -38,11 +38,15 @@ public:
 	Instance get(const IdentifierParam identifier, Creator creator) {
 		auto permanent = Super::getStored(identifier).lock();
 		if (!permanent) {
-			auto permanent = PermanentType(creator());
-			Super::store(identifier, permanent)
+			permanent = Instance(creator());
+			Super::store(identifier, permanent);
 		}
 
 		return permanent;
+	}
+
+	bool isStored(const IdentifierParam identifier) const {
+		return !Super::getStored(identifier).expired();
 	}
 
 };

@@ -6,14 +6,9 @@
 
 #include <boost/call_traits.hpp>
 
-#include "coconut-tools/exceptions/LogicError.hpp"
-
 namespace coconut_tools {
 namespace factory {
 namespace storage {
-
-class GetCalledOnNone : public exceptions::LogicError {
-};
 
 template <class IdentifierType, class InstanceType>
 class None {
@@ -32,7 +27,7 @@ public:
 	using Creator = std::function<InstanceType()>;
 
 	Instance get(const IdentifierParam identifier, Creator creator) {
-        throw creator();
+        return creator();
     }
 
     bool isStored(const IdentifierParam) const {

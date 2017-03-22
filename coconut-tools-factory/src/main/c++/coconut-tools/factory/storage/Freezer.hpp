@@ -15,6 +15,8 @@ namespace coconut_tools {
 namespace factory {
 namespace storage {
 
+// TODO: Freezer is now broken, i.e. doesn't fulfill the current requirements of
+// Factory on storage implementations. Thing is I don't use it at the moment.
 template <class IdentifierType, class InstanceType>
 class Freezer {
 public:
@@ -44,7 +46,7 @@ public:
 		cleanup();
 	}
 
-	Instance get(const IdentifierParam identifier) const { // TODO: duplicated from getStored below
+	Instance get(const IdentifierParam identifier) const {
 		typename Storage::const_iterator it = storage_.find(identifier);
 		if (it == storage_.end()) {
 			return Instance();
@@ -52,6 +54,10 @@ public:
 			queue_.splice(queue_.end(), queue_, it->second.queueIt);
 			return Instance(it->second.data);
 		}
+	}
+
+	bool isStored(const IdentifierParam identifier) const {
+		return storage_.count(identifier) != 0;
 	}
 
 	Instance store(const IdentifierParam identifier, std::unique_ptr<typename Instance::element_type>&& instance) {

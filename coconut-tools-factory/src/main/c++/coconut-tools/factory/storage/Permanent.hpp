@@ -43,6 +43,10 @@ public:
 		return permanent;
 	}
 
+	bool isStored(const IdentifierParam identifier) const {
+		return static_cast<bool>(Super::getStored(identifier));
+	}
+
 };
 
 } // namespace storage

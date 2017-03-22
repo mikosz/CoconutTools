@@ -31,6 +31,7 @@ namespace factory {
 template <
 	class IdentifierType,
 	class CreatorType,
+	// TODO: instead of CreatorType::InstanceType, shouldn't storages take a CreatorFunc parameter?
 	template<class /* IdentifierType */, class /* CreatorType::InstanceType */> class StorageType,
 	class MutexType
 	>
