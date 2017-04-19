@@ -164,6 +164,11 @@ function(library_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
 	
     target_link_libraries(${TEST_NAME} ${TEST_DEPENDENCIES})
     add_test(NAME ${MODULE_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
+    
+    if(${MSVC})
+      set_target_properties(${TEST_NAME} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+      set_target_properties(${TEST_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:CONSOLE")
+    endif()
   endif(TEST_SRCS)
   
   if(FUNCTIONAL_TEST_SRCS)

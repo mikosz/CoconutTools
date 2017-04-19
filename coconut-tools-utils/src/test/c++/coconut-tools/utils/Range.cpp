@@ -1,7 +1,18 @@
 #define BOOST_TEST_NO_LIB
 #include <boost/test/auto_unit_test.hpp>
 
+#include "coconut-tools/system/platform.hpp"
+
+#if defined(CT_COMPILER_VISUAL_CXX)
+#	pragma warning(push)
+#	pragma warning(disable: 4172) // boost adaptor reversed emits "returning address of temporary"
+#endif /* CT_COMPILER_VISUAL_CXX */
+
 #include <boost/range/adaptor/reversed.hpp>
+
+#if defined(CT_COMPILER_VISUAL_CXX)
+#	pragma warning(pop)
+#endif /* CT_COMPILER_VISUAL_CXX */
 
 #include "coconut-tools/utils/Range.hpp"
 
