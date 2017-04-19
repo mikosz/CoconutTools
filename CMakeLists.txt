@@ -37,6 +37,8 @@ else()
   message(SEND_ERROR "At least one of BUILD_STATIC_LIBS or BUILD_DYNAMIC_LIBS needs to be set")
 endif()
 
+set(CMAKE_DEBUG_POSTFIX ".d")
+
 if(${COMPILER_IS_DEBUG_BUILD})
   set(CMAKE_BUILD_TYPE "Debug")
 else()
@@ -81,7 +83,7 @@ set(MODULES
     "coconut-tools-exceptions"
     "coconut-tools-factory"
     "coconut-tools-logger"
-	"coconut-tools-serialisation"
+	  "coconut-tools-serialisation"
     "coconut-tools-singleton"
     "coconut-tools-policy"
     "coconut-tools-system"
