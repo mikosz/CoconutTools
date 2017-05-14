@@ -1,17 +1,17 @@
 #define BOOST_TEST_NO_LIB
 #include <boost/test/auto_unit_test.hpp>
 
-#include "coconut-tools/enum/flag.hpp"
+#include "coconut-tools/enums/flag.hpp"
 
 namespace /* anonymous */ {
 
-CCN_FLAG(TestFlag,
+CT_FLAG(TestFlag,
 	(VALUE0)
 	(VALUE1)
 	(VALUE2)
 	);
 
-CCN_FLAG_VALUES(TestFlagValues,
+CT_FLAG_VALUES(TestFlagValues,
 	(VALUE3)(3)
 	(VALUE4)(4)
 	);
@@ -19,12 +19,12 @@ CCN_FLAG_VALUES(TestFlagValues,
 class C {
 public:
 
-	CCN_MEMBER_FLAG(MemberTestFlag,
+	CT_MEMBER_FLAG(MemberTestFlag,
 		(VALUE0)
 		(VALUE1)
 		);
 
-	CCN_MEMBER_FLAG_VALUES(MemberTestFlagValues,
+	CT_MEMBER_FLAG_VALUES(MemberTestFlagValues,
 		(VALUE3)(3)
 		(VALUE4)(4)
 		);
