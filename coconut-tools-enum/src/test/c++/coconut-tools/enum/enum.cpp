@@ -1,7 +1,7 @@
 #define BOOST_TEST_NO_LIB
 #include <boost/test/auto_unit_test.hpp>
 
-#include "coconut-tools/enum.hpp"
+#include "coconut-tools/enum/enum.hpp"
 
 namespace /* anonymous */ {
 

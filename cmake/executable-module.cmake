@@ -46,6 +46,45 @@ function(executable_module MODULE_NAME TEST_LIBRARIES DEPENDENCY_LIBRARIES)
         set(SHADERS_${BASE_SRC_DIR} ${SHADERS_${BASE_SRC_DIR}} ${VERTEX_SHADER})
       endforeach(VERTEX_SHADER)
         
+      file(GLOB_RECURSE GEOMETRY_SHADER_SRCS "${SHADER_DIR}/*.g.hlsl")
+      foreach(GEOMETRY_SHADER ${GEOMETRY_SHADER_SRCS})
+        set_source_files_properties(
+          ${GEOMETRY_SHADER}
+          PROPERTIES
+          VS_SHADER_TYPE Geometry
+          VS_SHADER_MODEL 5.0
+          VS_SHADER_ENTRYPOINT main
+          VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+          )
+        set(SHADERS_${BASE_SRC_DIR} ${SHADERS_${BASE_SRC_DIR}} ${GEOMETRY_SHADER})
+      endforeach(GEOMETRY_SHADER)
+
+      file(GLOB_RECURSE HULL_SHADER_SRCS "${SHADER_DIR}/*.h.hlsl")
+      foreach(HULL_SHADER ${HULL_SHADER_SRCS})
+        set_source_files_properties(
+          ${HULL_SHADER}
+          PROPERTIES
+          VS_SHADER_TYPE Hull
+          VS_SHADER_MODEL 5.0
+          VS_SHADER_ENTRYPOINT main
+          VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+          )
+        set(SHADERS_${BASE_SRC_DIR} ${SHADERS_${BASE_SRC_DIR}} ${HULL_SHADER})
+      endforeach(HULL_SHADER)
+
+      file(GLOB_RECURSE DOMAIN_SHADER_SRCS "${SHADER_DIR}/*.d.hlsl")
+      foreach(DOMAIN_SHADER ${DOMAIN_SHADER_SRCS})
+        set_source_files_properties(
+          ${DOMAIN_SHADER}
+          PROPERTIES
+          VS_SHADER_TYPE Domain
+          VS_SHADER_MODEL 5.0
+          VS_SHADER_ENTRYPOINT main
+          VS_SHADER_FLAGS ${SHADER_DEBUG_FLAG}
+          )
+        set(SHADERS_${BASE_SRC_DIR} ${SHADERS_${BASE_SRC_DIR}} ${DOMAIN_SHADER})
+      endforeach(DOMAIN_SHADER)
+
       file(GLOB_RECURSE PIXEL_SHADER_SRCS "${SHADER_DIR}/*.p.hlsl")
       foreach(PIXEL_SHADER ${PIXEL_SHADER_SRCS})
         set_source_files_properties(
