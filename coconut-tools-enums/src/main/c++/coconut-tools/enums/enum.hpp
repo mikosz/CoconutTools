@@ -140,12 +140,12 @@
 	\
 	template <class IntegralType, std::enable_if_t<std::is_integral<IntegralType>::value>* = nullptr> \
 	adlFunctionModifier void fromIntegral(EnumName& value, IntegralType integral) { \
-		value = static_cast<EnumName>(integral); \
 		const auto& lookup = all ## EnumName ## Values(); \
-		if (lookup.count(value) == 0) { \
+		if (lookup.count(static_cast<EnumName>(integral)) == 0) { \
 				/* TODO: this will throw out_of_range if name not found. return optional or throw custom exception */ \
 				throw std::out_of_range("Incorrect value for " # EnumName ": " + std::to_string(integral)); \
 		} \
+		value = static_cast<EnumName>(integral); \
 	} \
 	\
 	adlFunctionModifier std::ostream& operator<<(std::ostream& os, EnumName value) { \

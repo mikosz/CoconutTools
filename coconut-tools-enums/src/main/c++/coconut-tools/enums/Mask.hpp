@@ -16,6 +16,8 @@ public:
 
 	using Flag = FlagType;
 
+	using IntegralType = std::underlying_type_t<Flag>;
+
 	constexpr Mask() noexcept :
 		mask_(IntegralType(0))
 	{
@@ -58,9 +60,11 @@ public:
 		return os << std::bitset<8 * sizeof(IntegralType)>(mask.mask_);
 	}
 
-private:
+	constexpr IntegralType integralValue() const noexcept {
+		return mask_;
+	}
 
-	using IntegralType = std::underlying_type_t<Flag>;
+private:
 
 	IntegralType mask_;
 
