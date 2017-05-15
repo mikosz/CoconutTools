@@ -45,11 +45,11 @@ struct BasicTypeStruct {
 	std::vector<SubStruct> v;
 };
 
-CCN_MAKE_SERIALISABLE(SerialiserType, s, SubStruct, ss) {
+CT_MAKE_SERIALISABLE(SerialiserType, s, SubStruct, ss) {
 	s(SerialiserType::Label("i"), ss.i);
 }
 
-CCN_MAKE_SERIALISABLE(SerialiserType, s, BasicTypeStruct, bts) {
+CT_MAKE_SERIALISABLE(SerialiserType, s, BasicTypeStruct, bts) {
 	s(SerialiserType::Label("int"), bts.i);
 	s(SerialiserType::Label("float"), bts.f);
 	s(SerialiserType::Label("string"), bts.s);

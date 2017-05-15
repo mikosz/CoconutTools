@@ -1,17 +1,17 @@
 #define BOOST_TEST_NO_LIB
 #include <boost/test/auto_unit_test.hpp>
 
-#include "coconut-tools/enum.hpp"
+#include "coconut-tools/enums/enum.hpp"
 
 namespace /* anonymous */ {
 
-CCN_ENUM(TestEnum,
+CT_ENUM(TestEnum,
 	(VALUE0)
 	(VALUE1)
 	(VALUE2)
 	);
 
-CCN_ENUM_VALUES(TestEnumValues,
+CT_ENUM_VALUES(TestEnumValues,
 	(TRIANGLE)(3)
 	(SQUARE)(4)
 	);
@@ -19,12 +19,12 @@ CCN_ENUM_VALUES(TestEnumValues,
 class C {
 public:
 
-	CCN_MEMBER_ENUM(MemberTestEnum,
+	CT_MEMBER_ENUM(MemberTestEnum,
 		(VALUE0)
 		(VALUE1)
 		);
 
-	CCN_MEMBER_ENUM_VALUES(MemberTestEnumValues,
+	CT_MEMBER_ENUM_VALUES(MemberTestEnumValues,
 		(TRIANGLE)(3)
 		(SQUARE)(4)
 		);
