@@ -10,7 +10,7 @@
 namespace coconut_tools {
 namespace enums {
 
-template <class FlagType, class = std::enable_if_t<IsFlagV<FlagType>>>
+template <class FlagType>
 class Mask {
 public:
 
@@ -26,6 +26,7 @@ public:
 	constexpr Mask(Flag flag) noexcept :
 		mask_(static_cast<IntegralType>(flag))
 	{
+		static_assert(IsFlagV<Flag>, "Mask template type is not a flag type");
 	}
 
 	constexpr explicit operator bool() const noexcept {
