@@ -38,10 +38,13 @@
 
 #include "enum.hpp"
 
+namespace coconut_tools {
+namespace enums {
+
 namespace detail {
 
 template <class T>
-constexpr bool isFlag(const T&) noexcept {
+constexpr bool enumIsCTFlag(const T) noexcept {
 	return false;
 }
 
@@ -53,8 +56,8 @@ private:
 
 	template <class U>
 	static constexpr bool checkIsFlag(std::enable_if_t<std::is_enum_v<U>>* = nullptr) noexcept {
-		using detail::isFlag;
-		return isFlag(static_cast<T>(0));
+		using detail::enumIsCTFlag;
+		return enumIsCTFlag(U());
 	}
 
 	template <class U>
@@ -70,6 +73,9 @@ public:
 
 template <class T>
 constexpr auto IsFlagV = IsFlag<T>::value;
+
+} // namespace enums
+} // namespace coconut_tools
 
 #define CT_FLAG_value_incrementing(r, data, i, value) \
 	(value)(1 << i)
@@ -88,7 +94,7 @@ constexpr auto IsFlagV = IsFlag<T>::value;
 		BOOST_PP_CAT(CT_FLAG_domain_, domainType)(values) \
 	) \
 	\
-	localFunctionModifier constexpr bool isFlag(EnumName) noexcept { \
+	localFunctionModifier constexpr bool enumIsCTFlag(const EnumName) noexcept { \
 		return true; \
 	};
 
