@@ -55,11 +55,7 @@ struct ChildEndCall : ParserCallbackCall {
 
 void childEnd(ExpectedCalls* expectedPtr) {
     ExpectedCalls& expected = utils::pointee(expectedPtr);
-
     BOOST_REQUIRE(!expected.empty());
-
-    ChildEndCall& newChildCall = dynamic_cast<ChildEndCall&>(*expected.front());
-
     expected.pop_front();
 }
 

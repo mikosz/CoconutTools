@@ -47,8 +47,8 @@ private:
 
 };
 
-template <class I, class M>
-void sleepyIncrement(volatile I& v, M& m, size_t ops, size_t sleepTimeMs) {
+template <class I>
+void sleepyIncrement(volatile I& v, size_t ops, size_t sleepTimeMs) {
     for (size_t i = 0; i < ops; ++i) {
         typename I::WriteLocked ptr = v.lock();
         int value = ptr->value();
@@ -59,15 +59,15 @@ void sleepyIncrement(volatile I& v, M& m, size_t ops, size_t sleepTimeMs) {
     }
 }
 
-template <class I, class M>
-void runTest(volatile I& i, M& m, int offset) {
+template <class I>
+void runTest(volatile I& i, int offset) {
     std::vector<std::shared_ptr<boost::thread> > threads;
 
     for (size_t s = 0; s < SLOW_THREAD_COUNT; ++s) {
         threads.push_back(
                 std::shared_ptr<boost::thread>(new boost::thread(
                         std::bind(
-                                &sleepyIncrement<I, M>, std::ref(i), std::ref(m),
+                                &sleepyIncrement<I>, std::ref(i),
                                 SLOW_THREAD_OPS, SLOW_THREAD_SLEEP_TIME_MS))));
     }
 
@@ -75,7 +75,7 @@ void runTest(volatile I& i, M& m, int offset) {
         threads.push_back(
                 std::shared_ptr<boost::thread>(new boost::thread(
                         std::bind(
-                                &sleepyIncrement<I, M>, std::ref(i), std::ref(m),
+                                &sleepyIncrement<I>, std::ref(i),
                                 FAST_THREAD_OPS, FAST_THREAD_SLEEP_TIME_MS))));
     }
 
@@ -91,14 +91,12 @@ BOOST_AUTO_TEST_SUITE(LockableInstanceTestSuite);
 
 BOOST_AUTO_TEST_CASE(boostSharedTest) {
     volatile LockableInstance<IntHolder, boost::shared_mutex> i;
-    boost::shared_mutex m;
-    runTest(i, m, 0);
+    runTest(i, 0);
 }
 
 BOOST_AUTO_TEST_CASE(constructorTest) {
     volatile LockableInstance<IntHolder> i(1000);
-    boost::mutex m;
-    runTest(i, m, 1000);
+    runTest(i, 1000);
 }
 
 BOOST_AUTO_TEST_SUITE_END(/* LockableInstanceTestSuite */);

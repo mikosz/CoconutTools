@@ -14,7 +14,7 @@ using namespace coconut_tools::configuration::readers;
 
 namespace {
 
-class UnpairedParserBeginEnds : exceptions::LogicError {
+class UnpairedParserBeginEnds : public exceptions::LogicError {
 public:
 
     UnpairedParserBeginEnds() :

@@ -26,6 +26,7 @@ void Formatter::format(FormatList& result, const std::string& s) const {
     std::ostringstream oss;
     std::string::size_type end = s.length();
     state = READY;
+	prevState = state;
     for (std::string::size_type pos = 0; pos != end; ++pos) {
         if (s[pos] == formatterChars_.escape) {
             switch (state) {

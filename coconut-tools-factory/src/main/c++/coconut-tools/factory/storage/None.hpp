@@ -26,7 +26,7 @@ public:
 
 	using Creator = std::function<InstanceType()>;
 
-	Instance get(const IdentifierParam identifier, Creator creator) {
+	Instance get(const IdentifierParam /*identifier*/, Creator creator) {
         return creator();
     }
 

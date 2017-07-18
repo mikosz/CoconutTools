@@ -39,7 +39,7 @@ void serialise(Serialiser& s, const BasicTypeStruct&) {
 struct BadStruct {
 };
 
-void serialise(Serialiser& s, const BadStruct&) {
+void serialise(Serialiser& /*s*/, const BadStruct&) {
 	assert(testIs != nullptr);
 	testIs->setstate(std::ios::badbit);
 }
@@ -47,7 +47,7 @@ void serialise(Serialiser& s, const BadStruct&) {
 struct FailStruct {
 };
 
-void serialise(Serialiser& s, const FailStruct&) {
+void serialise(Serialiser& /*s*/, const FailStruct&) {
 	assert(testIs != nullptr);
 	testIs->setstate(std::ios::failbit);
 }

@@ -47,7 +47,7 @@ void serialise(Deserialiser& s, BasicTypeStruct& bts) {
 struct BadStruct {
 };
 
-void serialise(Deserialiser& s, const BadStruct&) {
+void serialise(Deserialiser& /*s*/, const BadStruct&) {
 	assert(testIs != nullptr);
 	testIs->setstate(std::ios::badbit);
 }
@@ -55,7 +55,7 @@ void serialise(Deserialiser& s, const BadStruct&) {
 struct FailStruct {
 };
 
-void serialise(Deserialiser& s, const FailStruct&) {
+void serialise(Deserialiser& /*s*/, const FailStruct&) {
 	assert(testIs != nullptr);
 	testIs->setstate(std::ios::failbit);
 }
@@ -79,11 +79,13 @@ BOOST_AUTO_TEST_CASE(ThrowsIfFailedRead) {
 
 	BinaryDeserialiser s(iss);
 
-	BOOST_CHECK_THROW(s >> BadStruct(), std::runtime_error);
+	auto bs = BadStruct();
+	BOOST_CHECK_THROW(s >> bs, std::runtime_error);
 
 	iss.clear();
 
-	BOOST_CHECK_THROW(s >> FailStruct(), std::runtime_error);
+	auto fs = FailStruct();
+	BOOST_CHECK_THROW(s >> fs, std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(DeserialisesDataFromBinaryBigEndian) {

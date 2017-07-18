@@ -43,7 +43,7 @@ void BinarySerialiser::writeArrayStart(std::uint32_t elementCount) {
 void BinarySerialiser::writeArrayEnd() {
 }
 
-void BinarySerialiser::writeLabel(const std::string& label) {
+void BinarySerialiser::writeLabel(const std::string& /*label*/) {
 }
 
 void BinarySerialiser::write(bool b) {

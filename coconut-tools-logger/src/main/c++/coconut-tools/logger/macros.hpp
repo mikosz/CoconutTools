@@ -16,7 +16,9 @@
 		} \
 	} // anonymous namespace
 
+// TODO: __pragma should be windows only
 #define CT_LOGGER_LOCAL_CATEGORY(NAME) \
+	__pragma(warning(suppress: 4456)); \
 	auto loggerCategory = [](coconut_tools::logger::FakeParam) { return (NAME); }
 
 #define CT_LOGGER_CONTEXT coconut_tools::logger::Context(loggerCategory(coconut_tools::logger::FakeParam()), __FILE__, __LINE__, CT_FUNCTION_NAME)

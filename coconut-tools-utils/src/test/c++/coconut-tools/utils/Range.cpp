@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(IterationBackwardWorks) {
 }
 
 BOOST_AUTO_TEST_CASE(RangeBasedForIteratesOverIndices) {
-	auto index = 42u;
+	auto index = 42;
 	for (auto i : IndexRange(42, 50)) {
 		BOOST_CHECK_EQUAL(index, i);
 		++index;
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(RangeBasedForIteratesOverIndices) {
 }
 
 BOOST_AUTO_TEST_CASE(RangeAdaptorReversedIteratesReversed) {
-	auto index = 49u;
+	auto index = 49;
 	for (auto i : IndexRange(42, 50) | boost::adaptors::reversed) {
 		BOOST_CHECK_EQUAL(index, i);
 		--index;

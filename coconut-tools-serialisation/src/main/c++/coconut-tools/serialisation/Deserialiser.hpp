@@ -29,6 +29,11 @@ public:
 
 	virtual ~Deserialiser() = default;
 
+	Deserialiser& operator>>(Label label) {
+		readLabel(std::move(label.label));
+		return *this;
+	}
+
 	template <class T, std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
 	Deserialiser& operator>>(T& value) {
 		read(value);
@@ -59,18 +64,6 @@ public:
 			vector.emplace_back(std::move(element));
 		}
 		readArrayEnd();
-		return *this;
-	}
-
-	template <>
-	Deserialiser& operator>>(const Label& label) {
-		readLabel(std::move(label.label));
-		return *this;
-	}
-
-	template <>
-	Deserialiser& operator >> (Label& label) {
-		readLabel(std::move(label.label));
 		return *this;
 	}
 
