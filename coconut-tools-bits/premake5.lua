@@ -1,1 +1,1 @@
-header_project "coconut-tools-bits"
+structure.header_project "coconut-tools-bits"

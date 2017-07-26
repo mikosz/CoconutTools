@@ -1,1 +1,1 @@
-header_project "coconut-tools-enums"
+structure.header_project "coconut-tools-enums"

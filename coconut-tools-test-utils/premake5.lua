@@ -1,1 +1,1 @@
-header_project("coconut-tools-test-utils")
+structure.header_project("coconut-tools-test-utils")

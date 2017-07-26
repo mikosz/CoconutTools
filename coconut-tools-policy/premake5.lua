@@ -1,1 +1,1 @@
-header_project "coconut-tools-policy"
+structure.header_project "coconut-tools-policy"

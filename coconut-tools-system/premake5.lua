@@ -3,4 +3,4 @@ function system_common()
 	links { "coconut-tools-exceptions" }
 end
 
-library_project("coconut-tools-system", system_common)
+structure.library_project("coconut-tools-system", system_common)

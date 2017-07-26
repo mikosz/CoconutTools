@@ -1,1 +1,1 @@
-header_project "coconut-tools-concurrent"
+structure.header_project "coconut-tools-concurrent"

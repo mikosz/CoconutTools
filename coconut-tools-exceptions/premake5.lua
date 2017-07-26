@@ -1,1 +1,1 @@
-library_project "coconut-tools-exceptions"
+structure.library_project "coconut-tools-exceptions"

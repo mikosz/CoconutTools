@@ -1,1 +1,1 @@
-header_project("coconut-tools-singleton")
+structure.header_project("coconut-tools-singleton")

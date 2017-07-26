@@ -1,21 +1,21 @@
 include "premake5.cfg.lua"
 
-include "premake/project.lua"
+structure = require "structure"
+
 include "premake/boost.lua"
 include "premake/gmock.lua"
 
 workspace "CoconutTools"
 
-	configurations { "DebugStatic", "DebugShared", "ReleaseStatic", "ReleaseShared" }
+	-- configurations { "DebugStatic", "DebugShared", "ReleaseStatic", "ReleaseShared" }
+	configurations { "DebugStatic", "ReleaseStatic" } -- dllexport not set up
 	
 	platforms { "Win64" }
 	
 	language "C++"
 
 	location "build"
-	targetdir("%{wks.location}/bin/%{prj.name}/%{cfg.platform}/%{cfg.shortname}")
-	objdir("%{wks.location}/obj/%{prj.name}/%{cfg.platform}/%{cfg.shortname}")
-		
+	
 	-- Configuration specific settings
 	
 	filter "configurations:Debug*"
@@ -39,7 +39,6 @@ workspace "CoconutTools"
 	
 	-- Global includes
 	
-	includedirs { "*/" .. source_dir("main") }
 	includedirs { BOOST_INCLUDE_DIR }
 	
 	-- Dependency libraries
@@ -55,17 +54,21 @@ workspace "CoconutTools"
 		defines { "_SCL_SECURE_NO_WARNINGS" }
 	filter {}
 	
-include "coconut-tools-bits"
-include "coconut-tools-concurrent"
-include "coconut-tools-configuration"
-include "coconut-tools-enums"
-include "coconut-tools-exceptions"
-include "coconut-tools-factory"
-include "coconut-tools-logger"
-include "coconut-tools-policy"
-include "coconut-tools-serialisation"
-include "coconut-tools-singleton"
-include "coconut-tools-system"
-include "coconut-tools-test-utils"
-include "coconut-tools-utils"
-include "coconut-tools-version"
+	include "coconut-tools-bits"
+	include "coconut-tools-concurrent"
+	include "coconut-tools-configuration"
+	include "coconut-tools-enums"
+	include "coconut-tools-exceptions"
+	include "coconut-tools-factory"
+	include "coconut-tools-logger"
+	include "coconut-tools-policy"
+	include "coconut-tools-serialisation"
+	include "coconut-tools-singleton"
+	include "coconut-tools-system"
+	include "coconut-tools-test-utils"
+	include "coconut-tools-utils"
+	include "coconut-tools-version"
+
+	structure.create_install_project()
+	structure.create_run_tests_project()
+	
