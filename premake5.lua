@@ -2,8 +2,8 @@ include "premake5.cfg.lua"
 
 structure = require "structure"
 
-include "premake/boost.lua"
-include "premake/gmock.lua"
+include "boost.lua"
+include "gmock.lua"
 
 workspace "CoconutTools"
 
