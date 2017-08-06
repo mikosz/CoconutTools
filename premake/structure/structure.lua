@@ -43,7 +43,7 @@ local create_test_projects = function(name, is_library, common_settings)
 		project(name.."-unit-test")
 			kind "ConsoleApp"
 			targetdir(target_dir_path("tests"))
-			sources("test")
+			sources "test"
 			includedirs { source_dir("main") }
 			if is_library then
 				links(name)
@@ -60,7 +60,7 @@ local create_test_projects = function(name, is_library, common_settings)
 		project(name.."-functional-test")
 			kind "ConsoleApp"
 			targetdir(target_dir_path("tests"))
-			sources("functional-test")
+			sources "functional-test"
 			includedirs { source_dir("main") }
 			if is_library then
 				links(name)
@@ -68,9 +68,9 @@ local create_test_projects = function(name, is_library, common_settings)
 			if common_settings then
 				common_settings()
 			end
-
-			table.insert(test_projects, name.."-functional-test")
 		project "*"
+
+		table.insert(test_projects, name.."-functional-test")
 	end
 end
 
@@ -126,6 +126,28 @@ function m.library_project(name, common_settings)
 	table.insert(library_projects, name)
 
 	create_test_projects(name, true, common_settings)
+end
+
+function m.executable_project(name, is_windowed, common_settings)
+	create_project(name)
+
+	project(name)
+		if is_windowed then
+			kind "WindowedApp"
+		else
+			kind "ConsoleApp"
+		end
+		
+		targetdir(target_dir_path("bin"))
+		
+		filter "configurations:Debug*"
+			targetsuffix(".d")
+		filter {}
+		
+		if common_settings then
+			common_settings()
+		end
+	project "*"
 end
 
 -- install target
