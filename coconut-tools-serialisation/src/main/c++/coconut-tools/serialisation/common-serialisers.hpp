@@ -65,8 +65,8 @@ namespace detail {
 // TODO: see above
 template <size_t ELEMENT, class... T>
 inline std::enable_if_t<ELEMENT == sizeof...(T), void> serialise(
-	Serialiser& serialiser,
-	typename Serialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	Serialiser& /*serialiser*/,
+	typename Serialiser::template SerialiseArgument<std::tuple<T...>> /*tuple*/
 	)
 {
 }
@@ -83,8 +83,8 @@ inline std::enable_if_t<ELEMENT < sizeof...(T), void> serialise(
 
 template <size_t ELEMENT, class... T>
 inline std::enable_if_t<ELEMENT == sizeof...(T), void> serialise(
-	Deserialiser& deserialiser,
-	typename Deserialiser::template SerialiseArgument<std::tuple<T...>> tuple
+	Deserialiser& /*deserialiser*/,
+	typename Deserialiser::template SerialiseArgument<std::tuple<T...>> /*tuple*/
 	)
 {
 }

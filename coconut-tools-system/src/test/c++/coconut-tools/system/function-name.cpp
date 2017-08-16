@@ -8,14 +8,14 @@ using namespace coconut_tools::system;
 
 namespace {
 
-std::string freeFunction(int parameter) {
+std::string freeFunction(int /* parameter */) {
 	return CT_FUNCTION_NAME;
 }
 
 class Class {
 public:
 
-	std::string classFunction(const char* parameter) const {
+	std::string classFunction(const char* /* parameter */) const {
 		return CT_FUNCTION_NAME;
 	}
 

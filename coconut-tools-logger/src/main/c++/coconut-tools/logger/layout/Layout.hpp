@@ -37,8 +37,8 @@ protected:
 	}
 
 	void doInitialise(
-		const Id& id,
-		const logger::configuration::LoggerConfiguration& configuration
+		const Id& /*id*/,
+		const logger::configuration::LoggerConfiguration& /*configuration*/
 		) override {
 	}
 

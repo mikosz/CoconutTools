@@ -31,37 +31,37 @@ protected:
 	void readArrayEnd() override {
 	}
 
-	void readLabel(std::string label) override {
+	void readLabel(std::string /*label*/) override {
 	}
 
-	void read(bool& i) override {
+	void read(bool& /*i*/) override {
 	}
 
-	void read(std::uint8_t& i) override {
+	void read(std::uint8_t& /*i*/) override {
 	}
 
-	void read(std::int8_t& i) override {
+	void read(std::int8_t& /*i*/) override {
 	}
 
-	void read(std::uint16_t& i) override {
+	void read(std::uint16_t& /*i*/) override {
 	}
 
-	void read(std::int16_t& i) override {
+	void read(std::int16_t& /*i*/) override {
 	}
 
-	void read(std::uint32_t& i) override {
+	void read(std::uint32_t& /*i*/) override {
 	}
 
-	void read(std::int32_t& i) override {
+	void read(std::int32_t& /*i*/) override {
 	}
 
-	void read(std::uint64_t& i) override {
+	void read(std::uint64_t& /*i*/) override {
 	}
 
-	void read(std::int64_t& i) override {
+	void read(std::int64_t& /*i*/) override {
 	}
 
-	void read(float& f) override {
+	void read(float& /*f*/) override {
 	}
 
 };

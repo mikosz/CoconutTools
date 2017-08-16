@@ -7,17 +7,11 @@ Release/
 
 # build artifacts
 build/
-*.so
-*.o
-*.a
-unit-tests
+obj/
 
-# cmake project files
-CMakeCache.txt
-CMakeFiles/
-Makefile
-cmake_install.cmake
-cmake.cfg
+# premake local files
+premake5.cfg.lua
 
 # visual-studio files
 .vs/
+

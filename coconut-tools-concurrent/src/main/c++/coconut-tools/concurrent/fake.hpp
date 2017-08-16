@@ -12,7 +12,7 @@ class FakeMutex {
 class FakeLock {
 public:
 
-	FakeLock(FakeMutex& mutex) {
+	FakeLock(FakeMutex& /*mutex*/) {
 	}
 
 };

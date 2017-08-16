@@ -17,7 +17,7 @@ using namespace coconut_tools::logger::appender;
 const std::string DebugWindowAppender::CLASS_NAME("coconut_tools::logger::appender::DebugWindowAppender");
 
 void DebugWindowAppender::doAppend(const std::string& message) {
-	OutputDebugString(message.c_str());
+	OutputDebugStringA(message.c_str());
 }
 
 #endif /* CT_COMPILER_VISUAL_CXX */

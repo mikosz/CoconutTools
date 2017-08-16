@@ -8,13 +8,13 @@ using namespace coconut_tools::configuration::parsers;
 namespace {
 
 void addTreeNodes(
-        const std::string& node,
+        const std::string& name,
         boost::property_tree::ptree tree,
         PropertyTreeParser::NewChildCallback newChildCallback,
         PropertyTreeParser::ChildrenEndCallback childrenEndCallback
         ) {
     std::string trimmedData = boost::trim_copy(tree.data());
-    newChildCallback(node, trimmedData);
+    newChildCallback(name, trimmedData);
 
 	for (const auto& node : tree) {
 		addTreeNodes(node.first, node.second, newChildCallback, childrenEndCallback);
