@@ -14,36 +14,41 @@ end
 
 -- header_project and library_project
 
-local source_dir = function(kind)
-	return "src/"..kind.."/c++/"
+local source_dir = function(source_dir_name)
+	return "src/"..source_dir_name.."/c++/"
 end
 
-local source_patterns = function(kind)
-	return { source_dir(kind).."**.hpp", source_dir(kind).."**.cpp" }
+local source_patterns = function(source_dir_name)
+	return { source_dir(source_dir_name).."**.hpp", source_dir(source_dir_name).."**.cpp" }
 end
 
-local create_vpaths = function(patterns, kind)
+local create_vpaths = function(patterns, source_dir_name)
 	for _, pattern in pairs(patterns) do
 		for _, file in pairs(os.matchfiles(pattern)) do
-			local file_with_namespace = file:sub(string.len(source_dir(kind)) + 1)
+			local file_with_namespace = file:sub(string.len(source_dir(source_dir_name)) + 1)
 			local namespace_path = path.getdirectory(file_with_namespace)
 			vpaths { [ namespace_path:gsub("/", "::") ] = file }
 		end
 	end
 end
 
-local sources = function(kind)
-	local patterns = source_patterns(kind)
-	create_vpaths(patterns, kind)
+local sources = function(source_dir_name)
+	local patterns = source_patterns(source_dir_name)
+	create_vpaths(patterns, source_dir_name)
 	files(patterns)
+end
+
+local create_project = function(name, source_dir_name)
+	group(m.current_group)
+	project(name)
+		sources(source_dir_name)
 end
 
 local create_test_projects = function(name, is_library, common_settings)
 	if not table.isempty(os.matchfiles(source_dir("test").."**.cpp")) then
-		project(name.."-unit-test")
+		create_project(name.."-unit-test", "test")
 			kind "ConsoleApp"
 			targetdir(target_dir_path("tests"))
-			sources "test"
 			includedirs { source_dir("main") }
 			if is_library then
 				links(name)
@@ -57,10 +62,9 @@ local create_test_projects = function(name, is_library, common_settings)
 	end
 
 	if not table.isempty(os.matchfiles(source_dir("functional-test").."**.cpp")) then
-		project(name.."-functional-test")
+		create_project(name.."-functional-test", "functional-test")
 			kind "ConsoleApp"
 			targetdir(target_dir_path("tests"))
-			sources "functional-test"
 			includedirs { source_dir("main") }
 			if is_library then
 				links(name)
@@ -82,17 +86,21 @@ local gather_headers = function()
 	end
 end
 
-local create_project = function(name)
-	project(name)
-		sources "main"
+local create_main_project = function(name)
+
+	create_project(name, "main")
 	project "*"
-		includedirs(source_dir("main"))
-		
+	
+	includedirs(source_dir("main"))
 	gather_headers()
 end
 
+function m.set_group(name)
+	m.current_group = name
+end
+
 function m.header_project(name)
-	create_project(name)
+	create_main_project(name)
 
 	project(name)
 		kind "Utility"
@@ -102,7 +110,7 @@ function m.header_project(name)
 end
 
 function m.library_project(name, common_settings)
-	create_project(name)
+	create_main_project(name)
 
 	project(name)
 		filter "configurations:*Shared"
@@ -129,7 +137,7 @@ function m.library_project(name, common_settings)
 end
 
 function m.executable_project(name, is_windowed, common_settings)
-	create_project(name)
+	create_main_project(name)
 
 	project(name)
 		if is_windowed then
@@ -160,6 +168,7 @@ newoption {
 local install_prefix = _OPTIONS["install-prefix"]
 
 function m.create_install_project()
+	group ""
 	project "INSTALL"
 		kind "Utility"
 		dependson(library_projects)
@@ -213,6 +222,7 @@ function m.create_install_project()
 end
 
 function m.create_run_tests_project()
+	group ""
 	project "RUN_TESTS"
 		kind "Utility"
 		dependson(test_projects)
